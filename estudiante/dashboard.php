@@ -35,27 +35,6 @@ $gradoEstudiante =
 
 $errores = [];
 
-$grados = [
-    "9" => [
-        "nombre" => "Noveno",
-        "descripcion" => "Fortalece tus bases y comienza tu preparación.",
-        "icono" => "bi-1-circle-fill"
-    ],
-
-    "10" => [
-        "nombre" => "Décimo",
-        "descripcion" => "Desarrolla y profundiza tus conocimientos.",
-        "icono" => "bi-2-circle-fill"
-    ],
-
-    "11" => [
-        "nombre" => "Undécimo",
-        "descripcion" => "Prepárate para alcanzar tu mejor resultado en Saber 11°.",
-        "icono" => "bi-3-circle-fill"
-    ]
-];
-
-
 $contenidoGrados = [];
 
 $progresoGeneral = 0;
@@ -63,50 +42,127 @@ $progresoGeneral = 0;
 
 /*
 |--------------------------------------------------------------------------
-| OBTENER CONTENIDOS Y PROGRESO
+| GRADOS DISPONIBLES
+|--------------------------------------------------------------------------
+*/
+
+$grados = [
+
+    "9" => [
+        "nombre" =>
+            "Noveno",
+
+        "descripcion" =>
+            "Fortalece tus bases y comienza tu preparación.",
+
+        "icono" =>
+            "bi-1-circle-fill"
+    ],
+
+
+    "10" => [
+        "nombre" =>
+            "Décimo",
+
+        "descripcion" =>
+            "Desarrolla y profundiza tus conocimientos.",
+
+        "icono" =>
+            "bi-2-circle-fill"
+    ],
+
+
+    "11" => [
+        "nombre" =>
+            "Undécimo",
+
+        "descripcion" =>
+            "Prepárate para alcanzar tu mejor resultado en Saber 11°.",
+
+        "icono" =>
+            "bi-3-circle-fill"
+    ]
+
+];
+
+
+/*
+|--------------------------------------------------------------------------
+| INICIALIZAR INFORMACIÓN DE LOS GRADOS
+|--------------------------------------------------------------------------
+*/
+
+foreach (
+    $grados
+    as $grado => $datos
+) {
+
+    $contenidoGrados[$grado] = [
+
+        "total_temas" =>
+            0,
+
+        "progreso" =>
+            0
+
+    ];
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| OBTENER RESUMEN DE CONTENIDOS
 |--------------------------------------------------------------------------
 |
-| El estudiante puede consultar TODOS los grados.
+| El dashboard solamente necesita:
 |
+| - Cantidad de temas por grado.
+| - Progreso del estudiante por grado.
+|
+| No cargamos los temas completos porque serán mostrados
+| posteriormente en grado.php.
+|
+|--------------------------------------------------------------------------
 */
 
 try {
 
-    /*
-    |--------------------------------------------------------------------------
-    | TEMAS
-    |--------------------------------------------------------------------------
-    */
-
     $sql = "
+
         SELECT
-            t.id_tema,
-            t.id_materia,
-            t.nombre AS tema,
-            t.descripcion,
+
             t.grado,
-            m.nombre AS materia,
+
+            COUNT(t.id_tema) AS total_temas,
 
             COALESCE(
-                p.porcentaje_avance,
+                ROUND(
+                    AVG(
+                        COALESCE(
+                            p.porcentaje_avance,
+                            0
+                        )
+                    )
+                ),
                 0
-            ) AS porcentaje_avance
+            ) AS progreso
 
         FROM temas t
 
-        INNER JOIN materias m
-            ON t.id_materia = m.id_materia
-
         LEFT JOIN progreso p
             ON p.id_tema = t.id_tema
-            AND p.id_usuario = ?
+            AND p.id_usuario = :id_usuario
 
-        WHERE t.grado IN ('9', '10', '11')
+        WHERE t.grado IN (
+            '9',
+            '10',
+            '11'
+        )
 
-        ORDER BY
-            t.grado ASC,
-            m.id_materia ASC,
-            t.id_tema ASC
+        GROUP BY
+            t.grado
+
     ";
 
 
@@ -115,11 +171,14 @@ try {
 
 
     $stmt->execute([
-        $idUsuario
+
+        ":id_usuario" =>
+            $idUsuario
+
     ]);
 
 
-    $temas =
+    $resultados =
         $stmt->fetchAll(
             PDO::FETCH_ASSOC
         );
@@ -127,123 +186,79 @@ try {
 
     /*
     |--------------------------------------------------------------------------
-    | ORGANIZAR POR GRADO
+    | GUARDAR RESULTADOS
     |--------------------------------------------------------------------------
     */
 
-    foreach ($grados as $grado => $datos) {
-
-        $contenidoGrados[$grado] = [
-            "temas" => [],
-            "total_temas" => 0,
-            "progreso" => 0
-        ];
-
-    }
-
-
-    foreach ($temas as $tema) {
+    foreach (
+        $resultados
+        as $resultado
+    ) {
 
         $grado =
-            (string)$tema["grado"];
+            (string)$resultado["grado"];
 
 
-        if (!isset($contenidoGrados[$grado])) {
+        if (
+            !isset(
+                $contenidoGrados[$grado]
+            )
+        ) {
 
             continue;
 
         }
 
 
-        $porcentaje =
-            (float)$tema["porcentaje_avance"];
+        $totalTemas =
+            (int)$resultado["total_temas"];
+
+
+        $progreso =
+            (float)$resultado["progreso"];
 
 
         /*
         |--------------------------------------------------------------------------
-        | NORMALIZAR PORCENTAJE
+        | NORMALIZAR PROGRESO
         |--------------------------------------------------------------------------
         */
 
-        if ($porcentaje < 0) {
+        if ($progreso < 0) {
 
-            $porcentaje = 0;
-
-        }
-
-
-        if ($porcentaje > 100) {
-
-            $porcentaje = 100;
+            $progreso = 0;
 
         }
 
 
-        $tema["porcentaje_avance"] =
-            $porcentaje;
+        if ($progreso > 100) {
+
+            $progreso = 100;
+
+        }
 
 
-        $contenidoGrados[$grado]["temas"][] =
-            $tema;
+        $contenidoGrados[$grado] = [
+
+            "total_temas" =>
+                $totalTemas,
+
+            "progreso" =>
+                $progreso
+
+        ];
 
     }
 
 
     /*
     |--------------------------------------------------------------------------
-    | CALCULAR PROGRESO POR GRADO
+    | CALCULAR PROGRESO GENERAL
     |--------------------------------------------------------------------------
-    */
-
-    foreach (
-        $contenidoGrados
-        as $grado => &$contenido
-    ) {
-
-        $totalTemas =
-            count($contenido["temas"]);
-
-
-        $contenido["total_temas"] =
-            $totalTemas;
-
-
-        if ($totalTemas > 0) {
-
-            $suma = 0;
-
-
-            foreach (
-                $contenido["temas"]
-                as $tema
-            ) {
-
-                $suma +=
-                    (float)$tema["porcentaje_avance"];
-
-            }
-
-
-            $contenido["progreso"] =
-                round(
-                    $suma / $totalTemas
-                );
-
-        } else {
-
-            $contenido["progreso"] =
-                0;
-
-        }
-
-    }
-
-    unset($contenido);
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | PROGRESO GENERAL
+    |
+    | Se calcula como el promedio del progreso de todos los temas
+    | disponibles en 9°, 10° y 11°.
+    |
     |--------------------------------------------------------------------------
     */
 
@@ -253,26 +268,31 @@ try {
 
 
     foreach (
-        $contenidoGrados
-        as $contenido
+        $resultados
+        as $resultado
     ) {
 
-        foreach (
-            $contenido["temas"]
-            as $tema
-        ) {
+        $totalTemas =
+            (int)$resultado["total_temas"];
 
-            $totalTemasGeneral++;
 
-            $sumaProgresoGeneral +=
-                (float)$tema["porcentaje_avance"];
+        $progreso =
+            (float)$resultado["progreso"];
 
-        }
+
+        $totalTemasGeneral +=
+            $totalTemas;
+
+
+        $sumaProgresoGeneral +=
+            ($progreso * $totalTemas);
 
     }
 
 
-    if ($totalTemasGeneral > 0) {
+    if (
+        $totalTemasGeneral > 0
+    ) {
 
         $progresoGeneral =
             round(
@@ -286,7 +306,7 @@ try {
 } catch (PDOException $e) {
 
     $errores[] =
-        "No fue posible cargar los contenidos.";
+        "No fue posible cargar la información de los contenidos.";
 
 }
 
@@ -301,17 +321,21 @@ try {
 
     <meta charset="UTF-8">
 
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
+
 
     <title>
         Dashboard | ICFES Platform
     </title>
 
 
-    <!-- Bootstrap -->
+    <!-- =====================================================
+         BOOTSTRAP
+    ====================================================== -->
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -319,7 +343,9 @@ try {
     >
 
 
-    <!-- Bootstrap Icons -->
+    <!-- =====================================================
+         BOOTSTRAP ICONS
+    ====================================================== -->
 
     <link
         rel="stylesheet"
@@ -329,6 +355,12 @@ try {
 
     <style>
 
+        /*
+        |--------------------------------------------------------------------------
+        | GENERAL
+        |--------------------------------------------------------------------------
+        */
+
         body {
 
             font-size: 0.95rem;
@@ -336,12 +368,24 @@ try {
         }
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | NAVBAR
+        |--------------------------------------------------------------------------
+        */
+
         .navbar-brand {
 
             font-weight: 600;
 
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | TARJETA DE BIENVENIDA
+        |--------------------------------------------------------------------------
+        */
 
         .bienvenida {
 
@@ -358,6 +402,12 @@ try {
 
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | TARJETAS DE GRADO
+        |--------------------------------------------------------------------------
+        */
 
         .tarjeta-grado {
 
@@ -388,6 +438,12 @@ try {
         }
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | ICONOS DE GRADO
+        |--------------------------------------------------------------------------
+        */
+
         .icono-grado {
 
             width: 70px;
@@ -407,12 +463,20 @@ try {
 
             font-size: 2rem;
 
-            background: #e9f2ff;
+            background:
+                #e9f2ff;
 
-            color: #0d6efd;
+            color:
+                #0d6efd;
 
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | BARRAS DE PROGRESO
+        |--------------------------------------------------------------------------
+        */
 
         .barra-progreso {
 
@@ -422,6 +486,12 @@ try {
 
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | ESTADÍSTICAS
+        |--------------------------------------------------------------------------
+        */
 
         .estadistica {
 
@@ -434,50 +504,11 @@ try {
         }
 
 
-        .tema-item {
-
-            border: 1px solid #e9ecef;
-
-            border-radius: 10px;
-
-            padding: 12px;
-
-            margin-bottom: 8px;
-
-            background: #fff;
-
-        }
-
-
-        .tema-item:last-child {
-
-            margin-bottom: 0;
-
-        }
-
-
-        .tema-enlace {
-
-            text-decoration: none;
-
-            color: inherit;
-
-        }
-
-
-        .tema-enlace:hover {
-
-            color: inherit;
-
-        }
-
-
-        .grado-badge {
-
-            font-size: 0.75rem;
-
-        }
-
+        /*
+        |--------------------------------------------------------------------------
+        | TEXTO DE PROGRESO
+        |--------------------------------------------------------------------------
+        */
 
         .progreso-texto {
 
@@ -486,18 +517,37 @@ try {
         }
 
 
-        .seccion-grado {
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN DE GRADO
+        |--------------------------------------------------------------------------
+        */
 
-            scroll-margin-top: 80px;
+        .boton-grado {
+
+            min-height: 42px;
 
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | RESPONSIVE
+        |--------------------------------------------------------------------------
+        */
 
         @media (max-width: 767px) {
 
             .bienvenida h2 {
 
                 font-size: 1.4rem;
+
+            }
+
+
+            .tarjeta-grado {
+
+                margin-bottom: 0;
 
             }
 
@@ -519,6 +569,9 @@ try {
 
     <div class="container">
 
+
+        <!-- LOGO -->
+
         <a
             href="dashboard.php"
             class="navbar-brand"
@@ -531,15 +584,24 @@ try {
         </a>
 
 
-        <div class="d-flex align-items-center gap-2">
+
+        <!-- USUARIO -->
+
+        <div
+            class="d-flex align-items-center gap-2"
+        >
 
             <span
                 class="text-white d-none d-md-inline"
             >
 
-                <i class="bi bi-person-circle"></i>
+                <i
+                    class="bi bi-person-circle"
+                ></i>
 
-                <?= htmlspecialchars($nombres) ?>
+                <?= htmlspecialchars(
+                    $nombres
+                ) ?>
 
             </span>
 
@@ -549,7 +611,9 @@ try {
                 class="btn btn-light btn-sm"
             >
 
-                <i class="bi bi-box-arrow-right"></i>
+                <i
+                    class="bi bi-box-arrow-right"
+                ></i>
 
                 Cerrar sesión
 
@@ -564,25 +628,32 @@ try {
 
 
 <!-- =========================================================
-     CONTENIDO
+     CONTENIDO PRINCIPAL
 ========================================================= -->
 
 <div class="container py-4">
 
 
     <!-- =====================================================
-         MENSAJES
+         MENSAJES DE ERROR
     ====================================================== -->
 
-    <?php foreach ($errores as $error): ?>
+    <?php foreach (
+        $errores
+        as $error
+    ): ?>
 
         <div
             class="alert alert-danger alert-dismissible fade show"
         >
 
-            <i class="bi bi-exclamation-triangle-fill"></i>
+            <i
+                class="bi bi-exclamation-triangle-fill"
+            ></i>
 
-            <?= htmlspecialchars($error) ?>
+            <?= htmlspecialchars(
+                $error
+            ) ?>
 
 
             <button
@@ -596,6 +667,7 @@ try {
     <?php endforeach; ?>
 
 
+
     <!-- =====================================================
          BIENVENIDA
     ====================================================== -->
@@ -607,13 +679,19 @@ try {
         <div class="card-body p-4">
 
 
-            <div class="row align-items-center">
+            <div
+                class="row align-items-center"
+            >
 
+
+                <!-- MENSAJE -->
 
                 <div class="col-md-8">
 
 
-                    <div class="small mb-2 opacity-75">
+                    <div
+                        class="small mb-2 opacity-75"
+                    >
 
                         PLATAFORMA DE PREPARACIÓN SABER 11°
 
@@ -623,7 +701,9 @@ try {
                     <h2 class="mb-2">
 
                         ¡Hola,
-                        <?= htmlspecialchars($nombres) ?>!
+                        <?= htmlspecialchars(
+                            $nombres
+                        ) ?>!
 
                     </h2>
 
@@ -634,12 +714,17 @@ try {
                         y comienza a avanzar en tus contenidos.
 
                         Puedes acceder libremente a
-                        <strong>9°, 10° y 11°</strong>.
+                        <strong>
+                            9°, 10° y 11°
+                        </strong>.
 
                     </p>
 
                 </div>
 
+
+
+                <!-- PROGRESO GENERAL -->
 
                 <div
                     class="col-md-4 mt-3 mt-md-0"
@@ -649,7 +734,9 @@ try {
                         class="text-md-end"
                     >
 
-                        <div class="small opacity-75">
+                        <div
+                            class="small opacity-75"
+                        >
 
                             Progreso general
 
@@ -672,7 +759,13 @@ try {
                             <div
                                 class="progress-bar bg-white"
                                 role="progressbar"
-                                style="width: <?= $progresoGeneral ?>%;"
+                                style="
+                                    width:
+                                    <?= $progresoGeneral ?>%;
+                                "
+                                aria-valuenow="<?= $progresoGeneral ?>"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
                             ></div>
 
                         </div>
@@ -695,11 +788,15 @@ try {
     ====================================================== -->
 
     <div
-        class="row g-3 mb-4"
+        class="row g-3 mb-5"
     >
 
 
-        <div class="col-6 col-md-4">
+        <!-- PUNTOS -->
+
+        <div
+            class="col-6 col-md-4"
+        >
 
             <div
                 class="card estadistica h-100"
@@ -707,18 +804,23 @@ try {
 
                 <div class="card-body">
 
+
                     <div
                         class="text-muted small"
                     >
 
-                        <i class="bi bi-star-fill text-warning"></i>
+                        <i
+                            class="bi bi-star-fill text-warning"
+                        ></i>
 
                         Puntos
 
                     </div>
 
 
-                    <div class="fs-4 fw-bold">
+                    <div
+                        class="fs-4 fw-bold"
+                    >
 
                         <?= $puntos ?>
 
@@ -731,7 +833,12 @@ try {
         </div>
 
 
-        <div class="col-6 col-md-4">
+
+        <!-- NIVEL -->
+
+        <div
+            class="col-6 col-md-4"
+        >
 
             <div
                 class="card estadistica h-100"
@@ -739,18 +846,23 @@ try {
 
                 <div class="card-body">
 
+
                     <div
                         class="text-muted small"
                     >
 
-                        <i class="bi bi-trophy-fill text-warning"></i>
+                        <i
+                            class="bi bi-trophy-fill text-warning"
+                        ></i>
 
                         Nivel
 
                     </div>
 
 
-                    <div class="fs-4 fw-bold">
+                    <div
+                        class="fs-4 fw-bold"
+                    >
 
                         <?= $nivel ?>
 
@@ -763,7 +875,12 @@ try {
         </div>
 
 
-        <div class="col-12 col-md-4">
+
+        <!-- GRADO -->
+
+        <div
+            class="col-12 col-md-4"
+        >
 
             <div
                 class="card estadistica h-100"
@@ -771,20 +888,27 @@ try {
 
                 <div class="card-body">
 
+
                     <div
                         class="text-muted small"
                     >
 
-                        <i class="bi bi-mortarboard-fill text-primary"></i>
+                        <i
+                            class="bi bi-mortarboard-fill text-primary"
+                        ></i>
 
                         Mi grado
 
                     </div>
 
 
-                    <div class="fs-4 fw-bold">
+                    <div
+                        class="fs-4 fw-bold"
+                    >
 
-                        <?php if ($gradoEstudiante !== ""): ?>
+                        <?php if (
+                            $gradoEstudiante !== ""
+                        ): ?>
 
                             <?= htmlspecialchars(
                                 $gradoEstudiante
@@ -813,10 +937,14 @@ try {
          SELECTOR DE GRADOS
     ====================================================== -->
 
-    <div class="mb-4">
+    <section>
 
 
-        <div class="text-center mb-4">
+        <!-- TÍTULO -->
+
+        <div
+            class="text-center mb-4"
+        >
 
             <h3 class="mb-1">
 
@@ -825,7 +953,9 @@ try {
             </h3>
 
 
-            <p class="text-muted mb-0">
+            <p
+                class="text-muted mb-0"
+            >
 
                 Puedes explorar los contenidos de cualquier grado.
 
@@ -834,7 +964,12 @@ try {
         </div>
 
 
-        <div class="row g-4">
+
+        <!-- TARJETAS -->
+
+        <div
+            class="row g-4"
+        >
 
 
             <?php foreach (
@@ -849,6 +984,7 @@ try {
                     $contenidoGrados[$grado]["progreso"]
                     ?? 0;
 
+
                 $totalTemasGrado =
                     $contenidoGrados[$grado]["total_temas"]
                     ?? 0;
@@ -856,26 +992,44 @@ try {
                 ?>
 
 
-                <div class="col-md-4">
+                <!-- =================================================
+                     TARJETA DEL GRADO
+                ================================================== -->
 
+                <div
+                    class="col-md-4"
+                >
 
                     <div
                         class="card tarjeta-grado"
                     >
 
                         <div
-                            class="card-body text-center p-4"
+                            class="card-body text-center p-4 d-flex flex-column"
                         >
 
 
-                            <div class="icono-grado">
+                            <!-- ICONO -->
+
+                            <div
+                                class="icono-grado"
+                            >
 
                                 <i
-                                    class="bi <?= $datos["icono"] ?>"
+                                    class="
+                                        bi
+                                        <?= htmlspecialchars(
+                                            $datos["icono"]
+                                        )
+                                        ?>
+                                    "
                                 ></i>
 
                             </div>
 
+
+
+                            <!-- NOMBRE -->
 
                             <h4>
 
@@ -883,14 +1037,21 @@ try {
                                     $datos["nombre"]
                                 ) ?>
 
-                                <span class="text-muted">
+                                <span
+                                    class="text-muted"
+                                >
 
-                                    (<?= $grado ?>°)
+                                    (<?= htmlspecialchars(
+                                        $grado
+                                    ) ?>°)
 
                                 </span>
 
                             </h4>
 
+
+
+                            <!-- DESCRIPCIÓN -->
 
                             <p
                                 class="text-muted"
@@ -903,16 +1064,23 @@ try {
                             </p>
 
 
+
+                            <!-- PROGRESO -->
+
                             <div
-                                class="text-start mt-4"
+                                class="text-start mt-3"
                             >
+
 
                                 <div
                                     class="d-flex justify-content-between mb-1"
                                 >
 
                                     <span
-                                        class="progreso-texto text-muted"
+                                        class="
+                                            progreso-texto
+                                            text-muted
+                                        "
                                     >
 
                                         Tu progreso
@@ -938,7 +1106,10 @@ try {
                                     <div
                                         class="progress-bar"
                                         role="progressbar"
-                                        style="width: <?= $progresoGrado ?>%;"
+                                        style="
+                                            width:
+                                            <?= $progresoGrado ?>%;
+                                        "
                                         aria-valuenow="<?= $progresoGrado ?>"
                                         aria-valuemin="0"
                                         aria-valuemax="100"
@@ -948,7 +1119,11 @@ try {
 
 
                                 <div
-                                    class="small text-muted mt-2"
+                                    class="
+                                        small
+                                        text-muted
+                                        mt-2
+                                    "
                                 >
 
                                     <?= $totalTemasGrado ?>
@@ -960,22 +1135,48 @@ try {
                             </div>
 
 
-                            <a
-                                href="#grado-<?= $grado ?>"
-                                class="btn btn-primary w-100 mt-4"
+
+                            <!-- BOTÓN -->
+
+                            <div
+                                class="mt-auto pt-4"
                             >
 
-                                <i class="bi bi-arrow-right-circle-fill"></i>
+                                <a
+                                    href="
+                                        grado.php?grado=
+                                        <?= urlencode(
+                                            $grado
+                                        )
+                                        ?>
+                                    "
+                                    class="
+                                        btn
+                                        btn-primary
+                                        w-100
+                                        boton-grado
+                                    "
+                                >
 
-                                Explorar <?= $grado ?>°
+                                    <i
+                                        class="
+                                            bi
+                                            bi-arrow-right-circle-fill
+                                        "
+                                    ></i>
 
-                            </a>
+                                    Explorar <?= htmlspecialchars(
+                                        $grado
+                                    ) ?>°
+
+                                </a>
+
+                            </div>
 
 
                         </div>
 
                     </div>
-
 
                 </div>
 
@@ -985,407 +1186,21 @@ try {
 
         </div>
 
-    </div>
-
-
-
-    <!-- =====================================================
-         CONTENIDOS POR GRADO
-    ====================================================== -->
-
-    <div class="mt-5">
-
-
-        <div class="text-center mb-4">
-
-            <h3>
-
-                Contenidos disponibles
-
-            </h3>
-
-
-            <p class="text-muted">
-
-                Selecciona un tema para comenzar o continuar
-                tu preparación.
-
-            </p>
-
-        </div>
-
-
-        <?php foreach (
-            $grados
-            as $grado => $datos
-        ): ?>
-
-
-            <?php
-
-            $temasGrado =
-                $contenidoGrados[$grado]["temas"]
-                ?? [];
-
-            $progresoGrado =
-                $contenidoGrados[$grado]["progreso"]
-                ?? 0;
-
-            ?>
-
-
-            <section
-                id="grado-<?= $grado ?>"
-                class="seccion-grado mb-5"
-            >
-
-
-                <div
-                    class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3"
-                >
-
-
-                    <div>
-
-                        <h4 class="mb-1">
-
-                            <?= htmlspecialchars(
-                                $datos["nombre"]
-                            ) ?>
-
-                            <span class="text-muted">
-
-                                · <?= $grado ?>°
-
-                            </span>
-
-                        </h4>
-
-
-                        <div class="text-muted small">
-
-                            <?= count($temasGrado) ?>
-
-                            tema(s)
-
-                        </div>
-
-                    </div>
-
-
-                    <div
-                        class="mt-2 mt-md-0"
-                    >
-
-                        <span
-                            class="badge bg-primary grado-badge"
-                        >
-
-                            <?= $progresoGrado ?>% completado
-
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-
-                <?php if (empty($temasGrado)): ?>
-
-
-                    <div
-                        class="card border-0 shadow-sm"
-                    >
-
-                        <div
-                            class="card-body text-center py-4"
-                        >
-
-                            <i
-                                class="bi bi-journal-x fs-2 text-muted"
-                            ></i>
-
-
-                            <p
-                                class="text-muted mb-0 mt-2"
-                            >
-
-                                Aún no hay contenidos disponibles
-                                para este grado.
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                <?php else: ?>
-
-
-                    <?php
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | AGRUPAR TEMAS POR MATERIA
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $materias =
-                        [];
-
-                    foreach (
-                        $temasGrado
-                        as $tema
-                    ) {
-
-                        $nombreMateria =
-                            $tema["materia"];
-
-                        if (
-                            !isset(
-                                $materias[
-                                    $nombreMateria
-                                ]
-                            )
-                        ) {
-
-                            $materias[
-                                $nombreMateria
-                            ] = [];
-
-                        }
-
-                        $materias[
-                            $nombreMateria
-                        ][] = $tema;
-
-                    }
-
-                    ?>
-
-
-                    <?php foreach (
-                        $materias
-                        as $nombreMateria => $temasMateria
-                    ): ?>
-
-
-                        <div class="mb-4">
-
-
-                            <h5 class="mb-3">
-
-                                <i
-                                    class="bi bi-book-half text-primary"
-                                ></i>
-
-                                <?= htmlspecialchars(
-                                    $nombreMateria
-                                ) ?>
-
-                            </h5>
-
-
-                            <div
-                                class="row g-3"
-                            >
-
-
-                                <?php foreach (
-                                    $temasMateria
-                                    as $tema
-                                ): ?>
-
-
-                                    <?php
-
-                                    $avance =
-                                        (float)$tema[
-                                            "porcentaje_avance"
-                                        ];
-
-                                    ?>
-
-
-                                    <div
-                                        class="col-md-6 col-lg-4"
-                                    >
-
-
-                                        <a
-                                            href="tema.php?id=<?= (int)$tema["id_tema"] ?>"
-                                            class="tema-enlace"
-                                        >
-
-
-                                            <div
-                                                class="tema-item h-100"
-                                            >
-
-
-                                                <div
-                                                    class="d-flex justify-content-between align-items-start gap-2"
-                                                >
-
-
-                                                    <div>
-
-                                                        <strong>
-
-                                                            <?= htmlspecialchars(
-                                                                $tema["tema"]
-                                                            ) ?>
-
-                                                        </strong>
-
-
-                                                        <?php if (
-                                                            !empty(
-                                                                $tema["descripcion"]
-                                                            )
-                                                        ): ?>
-
-                                                            <div
-                                                                class="small text-muted mt-1"
-                                                            >
-
-                                                                <?= htmlspecialchars(
-                                                                    $tema["descripcion"]
-                                                                ) ?>
-
-                                                            </div>
-
-                                                        <?php endif; ?>
-
-                                                    </div>
-
-
-                                                    <span
-                                                        class="badge bg-light text-dark border"
-                                                    >
-
-                                                        <?= $avance ?>%
-
-                                                    </span>
-
-                                                </div>
-
-
-                                                <div
-                                                    class="progress barra-progreso mt-3"
-                                                >
-
-                                                    <div
-                                                        class="progress-bar"
-                                                        role="progressbar"
-                                                        style="width: <?= $avance ?>%;"
-                                                        aria-valuenow="<?= $avance ?>"
-                                                        aria-valuemin="0"
-                                                        aria-valuemax="100"
-                                                    ></div>
-
-                                                </div>
-
-
-                                                <div
-                                                    class="d-flex justify-content-between mt-2"
-                                                >
-
-                                                    <span
-                                                        class="small text-muted"
-                                                    >
-
-                                                        <?php if (
-                                                            $avance >= 100
-                                                        ): ?>
-
-                                                            <i
-                                                                class="bi bi-check-circle-fill text-success"
-                                                            ></i>
-
-                                                            Completado
-
-                                                        <?php elseif (
-                                                            $avance > 0
-                                                        ): ?>
-
-                                                            <i
-                                                                class="bi bi-play-circle-fill text-primary"
-                                                            ></i>
-
-                                                            En progreso
-
-                                                        <?php else: ?>
-
-                                                            <i
-                                                                class="bi bi-circle text-muted"
-                                                            ></i>
-
-                                                            Sin comenzar
-
-                                                        <?php endif; ?>
-
-                                                    </span>
-
-
-                                                    <span
-                                                        class="small text-primary"
-                                                    >
-
-                                                        Ver tema
-
-                                                        <i
-                                                            class="bi bi-arrow-right"
-                                                        ></i>
-
-                                                    </span>
-
-                                                </div>
-
-
-                                            </div>
-
-
-                                        </a>
-
-
-                                    </div>
-
-
-                                <?php endforeach; ?>
-
-
-                            </div>
-
-
-                        </div>
-
-
-                    <?php endforeach; ?>
-
-
-                <?php endif; ?>
-
-
-            </section>
-
-
-        <?php endforeach; ?>
-
-
-    </div>
+    </section>
 
 
 </div>
 
 
 
-<!-- Bootstrap JS -->
+<!-- =========================================================
+     BOOTSTRAP JS
+========================================================= -->
 
 <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    src="
+        https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js
+    "
 ></script>
 
 
