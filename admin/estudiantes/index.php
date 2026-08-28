@@ -675,7 +675,7 @@ foreach (
     >
 
     <title>
-        Estudiantes | ICFES Platform
+        Estudiantes | Studia360
     </title>
 
 
@@ -696,94 +696,39 @@ foreach (
 
 
     <style>
-
+        :root {
+            --primary:#2563eb; --primary-dark:#1d4ed8; --dark:#17202a;
+            --bg:#f4f7fb; --border:#e5eaf1; --muted:#64748b;
+            --radius:18px; --shadow:0 10px 30px rgba(15,23,42,.07);
+        }
         body {
-            font-size: 0.92rem;
+            font-size:.92rem; color:#17202a;
+            background:radial-gradient(circle at 8% 0%,rgba(37,99,235,.08),transparent 28rem),var(--bg);
         }
-
-
-        .navbar-brand {
-            font-weight: 600;
-        }
-
-
-        .panel-principal {
-            border: 0;
-            box-shadow: 0 0.125rem 0.35rem rgba(0, 0, 0, 0.08);
-        }
-
-
-        .barra-control {
-            background: #ffffff;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-
-        .tabla-estudiantes th {
-            white-space: nowrap;
-            font-size: 0.82rem;
-        }
-
-
-        .tabla-estudiantes td {
-            font-size: 0.86rem;
-        }
-
-
-        .acciones-masivas {
-            display: none;
-        }
-
-
-        .acciones-masivas.visible {
-            display: flex;
-        }
-
-
-        .contador-seleccionados {
-            font-size: 0.85rem;
-        }
-
-
-        .estadistica {
-            font-size: 0.8rem;
-        }
-
-
-        .estadistica strong {
-            font-size: 1rem;
-        }
-
-
-        .btn-accion {
-            min-width: 38px;
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | CAMPO CURSO OCULTO
-        |--------------------------------------------------------------------------
-        */
-
-        #contenedorCurso {
-            display: none;
-        }
-
-
-        #contenedorCurso.visible {
-            display: block;
-        }
-
-
-        @media (max-width: 768px) {
-
-            .acciones-masivas {
-                width: 100%;
-            }
-
-        }
-
+        .navbar-studia{min-height:64px;background:linear-gradient(135deg,#171d24,#252f3a)!important;box-shadow:0 4px 18px rgba(15,23,42,.16)}
+        .navbar-brand{font-weight:750;letter-spacing:-.02em;font-size:1.15rem}
+        .brand-mark{width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,.12);margin-right:8px}
+        .admin-pill{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid rgba(255,255,255,.16);border-radius:999px;color:#e9eef5;background:rgba(255,255,255,.06)}
+        .page-header{padding:8px 2px 20px}.eyebrow{display:inline-flex;gap:7px;color:var(--primary);font-weight:700;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
+        .page-title{font-size:clamp(1.65rem,2.5vw,2.2rem);font-weight:750;letter-spacing:-.035em;margin:0}.page-subtitle{color:var(--muted);margin-top:4px}
+        .header-actions .btn,.btn,.form-select{border-radius:10px}.header-actions .btn{font-weight:600}
+        .panel-principal{border:1px solid rgba(226,232,240,.9);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;background:#fff}
+        .barra-control{background:linear-gradient(180deg,#fff,#fbfcfe);border-bottom:1px solid var(--border);padding:18px!important}
+        .form-select:focus{border-color:rgba(37,99,235,.55);box-shadow:0 0 0 .2rem rgba(37,99,235,.11)}
+        .btn-primary{background:var(--primary);border-color:var(--primary)}.btn-primary:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+        .stats-strip{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}.stat-chip{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:6px 11px;border:1px solid var(--border);border-radius:11px;background:#fff;color:#475569}.stat-chip strong{color:#0f172a}
+        .stat-dot{width:8px;height:8px;border-radius:50%;display:inline-block}.stat-total .stat-dot{background:#2563eb}.stat-active .stat-dot{background:#16a34a}.stat-inactive .stat-dot{background:#dc2626}.stat-pending .stat-dot{background:#f59e0b}
+        .acciones-masivas{display:none;min-height:58px;background:#f8fafc}.acciones-masivas.visible{display:flex}
+        .selection-info{color:#475569}.selection-count{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 7px;border-radius:8px;background:#dbeafe;color:#1d4ed8;font-weight:800;margin-right:5px}
+        .table-wrap{overflow-x:auto}.tabla-estudiantes{min-width:1180px}
+        .tabla-estudiantes thead th{white-space:nowrap;font-size:.77rem;letter-spacing:.035em;text-transform:uppercase;color:#cbd5e1;background:#1e293b;border:0;padding:13px 11px}
+        .tabla-estudiantes tbody td{font-size:.86rem;padding:13px 11px;border-color:#edf1f5;vertical-align:middle}.tabla-estudiantes tbody tr{transition:background .16s ease}
+        .tabla-estudiantes tbody tr:hover{background:#f8fbff}.student-name{font-weight:700;color:#1e293b}.student-id{font-size:.75rem;color:#94a3b8}
+        .badge{font-weight:650;border-radius:8px;padding:6px 8px}.btn-accion{width:35px;height:35px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:9px}
+        .empty-state{padding:70px 20px}.empty-icon{width:70px;height:70px;display:inline-flex;align-items:center;justify-content:center;border-radius:20px;background:#eff6ff;color:var(--primary);font-size:1.7rem;margin-bottom:15px}.empty-state h5{font-weight:750}
+        .alert{border-radius:12px;border-width:1px}#contenedorCurso{display:none}#contenedorCurso.visible{display:block}
+        @media(max-width:992px){.stats-strip{justify-content:flex-start;margin-top:8px}}
+        @media(max-width:768px){.acciones-masivas{width:100%;gap:12px;flex-direction:column;align-items:stretch!important}.header-actions{width:100%}.header-actions .btn{flex:1}.barra-control{padding:14px!important}}
     </style>
 
 </head>
@@ -796,50 +741,16 @@ foreach (
      NAVBAR
 ========================================================= -->
 
-<nav class="navbar navbar-dark bg-dark">
-
-    <div class="container-fluid">
-
-        <a
-            href="../dashboard.php"
-            class="navbar-brand"
-        >
-
-            <i class="bi bi-mortarboard-fill"></i>
-
-            ICFES Platform
-
+<nav class="navbar navbar-dark navbar-studia">
+    <div class="container-fluid px-3 px-lg-4">
+        <a href="../dashboard.php" class="navbar-brand d-flex align-items-center">
+            <span class="brand-mark"><i class="bi bi-mortarboard-fill"></i></span>Studia360
         </a>
-
-
         <div class="d-flex align-items-center gap-2">
-
-            <span
-                class="text-white d-none d-md-inline"
-            >
-
-                <i class="bi bi-shield-check"></i>
-
-                Administrador
-
-            </span>
-
-
-            <a
-                href="../../cerrar_sesion.php"
-                class="btn btn-outline-light btn-sm"
-            >
-
-                <i class="bi bi-box-arrow-right"></i>
-
-                Cerrar sesión
-
-            </a>
-
+            <span class="admin-pill d-none d-sm-inline-flex"><i class="bi bi-shield-check"></i>Administrador</span>
+            <a href="../../cerrar_sesion.php" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right me-1"></i>Cerrar sesión</a>
         </div>
-
     </div>
-
 </nav>
 
 
@@ -853,61 +764,17 @@ foreach (
     <!-- =====================================================
          ENCABEZADO
     ====================================================== -->
-
-    <div
-        class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3"
-    >
-
+    <div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
         <div>
-
-            <h3 class="mb-1">
-
-                <i class="bi bi-people-fill"></i>
-
-                Estudiantes
-
-            </h3>
-
-            <div class="text-muted">
-
-                Administración de estudiantes registrados.
-
-            </div>
-
+            <div class="eyebrow"><i class="bi bi-grid-1x2-fill"></i>Gestión de usuarios</div>
+            <h1 class="page-title">Estudiantes</h1>
+            <div class="page-subtitle">Administra cuentas, cursos, estados y acceso de los estudiantes de Studia360.</div>
         </div>
-
-
-        <div
-            class="d-flex gap-2 mt-2 mt-md-0"
-        >
-
-            <a
-                href="crear.php"
-                class="btn btn-primary btn-sm"
-            >
-
-                <i class="bi bi-person-plus-fill"></i>
-
-                Nuevo estudiante
-
-            </a>
-
-
-            <a
-                href="importar.php"
-                class="btn btn-success btn-sm"
-            >
-
-                <i class="bi bi-file-earmark-excel-fill"></i>
-
-                Importar Excel
-
-            </a>
-
+        <div class="header-actions d-flex gap-2 mt-3 mt-md-0">
+            <a href="crear.php" class="btn btn-primary btn-sm px-3"><i class="bi bi-person-plus-fill me-1"></i>Nuevo estudiante</a>
+            <a href="importar.php" class="btn btn-success btn-sm px-3"><i class="bi bi-file-earmark-spreadsheet-fill me-1"></i>Importar</a>
         </div>
-
     </div>
-
 
     <!-- =====================================================
          MENSAJES
@@ -1146,70 +1013,25 @@ foreach (
                 <!-- =================================================
                      ESTADÍSTICAS
                 ================================================== -->
-
-                <div
-                    class="col-12 col-md-auto ms-md-auto"
-                >
-
-                    <div
-                        class="d-flex gap-3 align-items-center justify-content-md-end mt-2 mt-md-0"
-                    >
-
-                        <div class="estadistica">
-
-                            <span class="text-muted">
-                                Total:
-                            </span>
-
-                            <strong>
-                                <?= $totalEstudiantes ?>
-                            </strong>
-
+                <div class="col-12 col-lg-auto ms-lg-auto">
+                    <div class="stats-strip mt-2 mt-lg-0">
+                        <div class="stat-chip stat-total">
+                            <span class="stat-dot"></span>
+                            Total <strong><?= $totalEstudiantes ?></strong>
                         </div>
-
-
-                        <div class="estadistica">
-
-                            <span class="text-muted">
-                                Activos:
-                            </span>
-
-                            <strong class="text-success">
-                                <?= $estudiantesActivos ?>
-                            </strong>
-
+                        <div class="stat-chip stat-active">
+                            <span class="stat-dot"></span>
+                            Activos <strong><?= $estudiantesActivos ?></strong>
                         </div>
-
-
-                        <div class="estadistica">
-
-                            <span class="text-muted">
-                                Inactivos:
-                            </span>
-
-                            <strong class="text-danger">
-                                <?= $estudiantesInactivos ?>
-                            </strong>
-
+                        <div class="stat-chip stat-inactive">
+                            <span class="stat-dot"></span>
+                            Inactivos <strong><?= $estudiantesInactivos ?></strong>
                         </div>
-
-
-                        <div
-                            class="estadistica d-none d-lg-block"
-                        >
-
-                            <span class="text-muted">
-                                Pendientes:
-                            </span>
-
-                            <strong class="text-warning">
-                                <?= $estudiantesPendientes ?>
-                            </strong>
-
+                        <div class="stat-chip stat-pending d-none d-xl-inline-flex">
+                            <span class="stat-dot"></span>
+                            Pendientes <strong><?= $estudiantesPendientes ?></strong>
                         </div>
-
                     </div>
-
                 </div>
 
             </form>
@@ -1232,18 +1054,9 @@ foreach (
                 class="acciones-masivas px-3 py-2 border-bottom bg-light align-items-center justify-content-between"
             >
 
-                <div
-                    class="contador-seleccionados"
-                >
-
-                    <i class="bi bi-check2-square"></i>
-
-                    <strong id="cantidadSeleccionados">
-                        0
-                    </strong>
-
+                <div class="selection-info">
+                    <span class="selection-count" id="cantidadSeleccionados">0</span>
                     estudiante(s) seleccionado(s)
-
                 </div>
 
 
@@ -1310,7 +1123,7 @@ foreach (
 
             <?php if ($totalEstudiantes > 0): ?>
 
-                <div class="table-responsive">
+                <div class="table-wrap">
 
                     <table
                         class="table table-hover table-sm align-middle mb-0 tabla-estudiantes"
@@ -1416,28 +1229,17 @@ foreach (
 
 
                                 <td>
-
-                                    <span class="text-muted">
-
-                                        <?= (int)$estudiante["id_usuario"] ?>
-
-                                    </span>
-
+                                    <span class="student-id">#<?= (int)$estudiante["id_usuario"] ?></span>
                                 </td>
 
 
                                 <td>
-
-                                    <strong>
-
-                                        <?= htmlspecialchars(
-                                            $estudiante["nombres"] .
-                                            " " .
-                                            $estudiante["apellidos"]
-                                        ) ?>
-
-                                    </strong>
-
+                                    <div class="student-name">
+                                        <?= htmlspecialchars($estudiante["nombres"] . " " . $estudiante["apellidos"]) ?>
+                                    </div>
+                                    <div class="student-id">
+                                        ID #<?= (int)$estudiante["id_usuario"] ?>
+                                    </div>
                                 </td>
 
 
@@ -1715,13 +1517,7 @@ foreach (
                     class="text-center py-5"
                 >
 
-                    <div
-                        class="fs-1 text-muted mb-2"
-                    >
-
-                        <i class="bi bi-search"></i>
-
-                    </div>
+                    <div class="empty-icon"><i class="bi bi-people"></i></div>
 
 
                     <h5>

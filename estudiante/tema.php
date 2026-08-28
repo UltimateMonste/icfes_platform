@@ -2,117 +2,93 @@
 
 require_once __DIR__ . "/../includes/seguridad.php";
 
-exigirEstudiante();
+$usuarioActual = exigirEstudianteOAdmin();
+$rolActual = (int)($usuarioActual['id_rol'] ?? 0);
+$esAdministrador = ($rolActual === 1);
 
 
-/*
-|--------------------------------------------------------------------------
-| DATOS DEL USUARIO
-|--------------------------------------------------------------------------
-*/
+// =========================================================
+// DATOS BÁSICOS
+// =========================================================
 
-$idUsuario =
-    (int)($_SESSION["id_usuario"] ?? 0);
-
-$nombres =
-    trim($_SESSION["nombres"] ?? "Estudiante");
-
-
-/*
-|--------------------------------------------------------------------------
-| ID DEL TEMA
-|--------------------------------------------------------------------------
-*/
-
-$idTema =
-    filter_input(
-        INPUT_GET,
-        "id",
-        FILTER_VALIDATE_INT
-    );
-
+$idTema = filter_input(
+    INPUT_GET,
+    "id",
+    FILTER_VALIDATE_INT
+);
 
 if (!$idTema || $idTema <= 0) {
 
-    header(
-        "Location: dashboard.php"
-    );
-
+    redireccionarDashboardUsuario($usuarioActual);
     exit;
 
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| VARIABLES
-|--------------------------------------------------------------------------
-*/
+$errores = [];
+
+
+// =========================================================
+// USUARIO
+// =========================================================
+
+$idUsuario =
+    (int)($usuarioActual["id_usuario"] ?? 0);
+
+$nombres =
+    trim(($usuarioActual["nombres"] ?? $_SESSION["nombres"] ?? "Usuario"));
+
+if ($nombres === "") {
+    $nombres = $esAdministrador ? "Administrador" : "Estudiante";
+}
+
+
+// =========================================================
+// TEMA
+// =========================================================
 
 $tema = null;
-
+$contenido = null;
 $recursos = [];
-
-$evaluaciones = [];
-
 $progreso = 0;
 
-$error = null;
-
-
-/*
-|--------------------------------------------------------------------------
-| CONSULTAR TEMA
-|--------------------------------------------------------------------------
-*/
 
 try {
 
     /*
-    |--------------------------------------------------------------------------
-    | TEMA + MATERIA
-    |--------------------------------------------------------------------------
+    |---------------------------------------------------------
+    | TEMA
+    |---------------------------------------------------------
     */
 
     $sqlTema = "
-
         SELECT
-
             t.id_tema,
-            t.id_materia,
-            t.nombre,
-            t.descripcion,
-            t.contenido,
+            t.nombre AS tema_nombre,
+            t.descripcion AS tema_descripcion,
             t.grado,
-
-            m.nombre AS materia,
-            m.descripcion AS descripcion_materia
+            m.id_materia,
+            m.nombre AS materia_nombre,
+            m.descripcion AS materia_descripcion
 
         FROM temas t
 
         INNER JOIN materias m
             ON t.id_materia = m.id_materia
 
-        WHERE t.id_tema = :id_tema
+        WHERE t.id_tema = ?
 
         LIMIT 1
-
     ";
-
 
     $stmtTema =
         $conexion->prepare(
             $sqlTema
         );
 
-
     $stmtTema->execute([
-
-        ":id_tema" =>
-            $idTema
-
+        $idTema
     ]);
-
 
     $tema =
         $stmtTema->fetch(
@@ -122,273 +98,191 @@ try {
 
     if (!$tema) {
 
-        header(
-            "Location: dashboard.php"
-        );
-
-        exit;
+        $errores[] =
+            "El tema solicitado no existe.";
 
     }
 
 
     /*
-    |--------------------------------------------------------------------------
-    | PROGRESO DEL ESTUDIANTE
-    |--------------------------------------------------------------------------
+    |---------------------------------------------------------
+    | CONTENIDO
+    |---------------------------------------------------------
     */
 
-    $sqlProgreso = "
+    if ($tema) {
 
-        SELECT
+        $sqlContenido = "
+            SELECT
+                id_contenido,
+                contenido,
+                estado,
+                fecha_actualizacion
 
-            porcentaje_avance,
-            recursos_vistos,
-            evaluaciones_realizadas,
-            ultima_actividad
+            FROM contenido_temas
 
-        FROM progreso
+            WHERE id_tema = ?
 
-        WHERE id_usuario = :id_usuario
+            AND estado = 'Publicado'
 
-        AND id_tema = :id_tema
+            LIMIT 1
+        ";
 
-        LIMIT 1
+        $stmtContenido =
+            $conexion->prepare(
+                $sqlContenido
+            );
 
-    ";
-
-
-    $stmtProgreso =
-        $conexion->prepare(
-            $sqlProgreso
-        );
-
-
-    $stmtProgreso->execute([
-
-        ":id_usuario" =>
-            $idUsuario,
-
-        ":id_tema" =>
+        $stmtContenido->execute([
             $idTema
+        ]);
 
-    ]);
-
-
-    $datosProgreso =
-        $stmtProgreso->fetch(
-            PDO::FETCH_ASSOC
-        );
-
-
-    if ($datosProgreso) {
-
-        $progreso =
-            (float)(
-                $datosProgreso[
-                    "porcentaje_avance"
-                ]
-                ?? 0
+        $contenido =
+            $stmtContenido->fetch(
+                PDO::FETCH_ASSOC
             );
 
     }
 
 
-    if ($progreso < 0) {
-
-        $progreso = 0;
-
-    }
-
-
-    if ($progreso > 100) {
-
-        $progreso = 100;
-
-    }
-
-
     /*
-    |--------------------------------------------------------------------------
+    |---------------------------------------------------------
     | RECURSOS
-    |--------------------------------------------------------------------------
+    |---------------------------------------------------------
     */
 
-    $sqlRecursos = "
+    if ($tema) {
 
-        SELECT
+        $sqlRecursos = "
+            SELECT
+                id_recurso,
+                titulo,
+                tipo,
+                url,
+                descripcion,
+                imagen,
+                autor,
+                fuente,
+                visitas,
+                estado
 
-            id_recurso,
-            titulo,
-            tipo,
-            url,
-            descripcion,
-            imagen,
-            autor,
-            fuente,
-            fecha_publicacion,
-            orden
+            FROM recursos
 
-        FROM recursos
+            WHERE id_tema = ?
 
-        WHERE id_tema = :id_tema
+            AND estado = 'Activo'
 
-        AND estado = 'Activo'
+            ORDER BY
+                id_recurso ASC
+        ";
 
-        ORDER BY
+        $stmtRecursos =
+            $conexion->prepare(
+                $sqlRecursos
+            );
 
-            orden ASC,
-            id_recurso ASC
-
-    ";
-
-
-    $stmtRecursos =
-        $conexion->prepare(
-            $sqlRecursos
-        );
-
-
-    $stmtRecursos->execute([
-
-        ":id_tema" =>
+        $stmtRecursos->execute([
             $idTema
+        ]);
 
-    ]);
+        $recursos =
+            $stmtRecursos->fetchAll(
+                PDO::FETCH_ASSOC
+            );
 
-
-    $recursos =
-        $stmtRecursos->fetchAll(
-            PDO::FETCH_ASSOC
-        );
+    }
 
 
     /*
-    |--------------------------------------------------------------------------
-    | EVALUACIONES
-    |--------------------------------------------------------------------------
+    |---------------------------------------------------------
+    | PROGRESO
+    |---------------------------------------------------------
     */
 
-    $sqlEvaluaciones = "
+    if (
+        $tema &&
+        $idUsuario > 0
+    ) {
 
-        SELECT
+        $sqlProgreso = "
+            SELECT
+                porcentaje_avance
 
-            id_evaluacion,
-            titulo,
-            tipo,
-            descripcion,
-            tiempo_limite,
-            intentos_permitidos,
-            puntaje_maximo,
-            estado
+            FROM progreso
 
-        FROM evaluaciones
+            WHERE id_usuario = ?
 
-        WHERE id_tema = :id_tema
+            AND id_tema = ?
 
-        AND estado = 'Activo'
+            LIMIT 1
+        ";
 
-        ORDER BY
-            id_evaluacion ASC
+        $stmtProgreso =
+            $conexion->prepare(
+                $sqlProgreso
+            );
 
-    ";
-
-
-    $stmtEvaluaciones =
-        $conexion->prepare(
-            $sqlEvaluaciones
-        );
-
-
-    $stmtEvaluaciones->execute([
-
-        ":id_tema" =>
+        $stmtProgreso->execute([
+            $idUsuario,
             $idTema
+        ]);
 
-    ]);
+        $avance =
+            $stmtProgreso->fetchColumn();
 
 
-    $evaluaciones =
-        $stmtEvaluaciones->fetchAll(
-            PDO::FETCH_ASSOC
-        );
+        if (
+            $avance !== false
+        ) {
+
+            $progreso =
+                (float)$avance;
+
+        }
+
+    }
 
 
 } catch (PDOException $e) {
 
-    $error =
+    $errores[] =
         "No fue posible cargar el contenido del tema.";
 
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| DATOS VISUALES
-|--------------------------------------------------------------------------
-*/
+// =========================================================
+// NORMALIZAR PROGRESO
+// =========================================================
 
-$estadoProgreso =
-    "Sin comenzar";
+if ($progreso < 0) {
 
-
-if ($progreso >= 100) {
-
-    $estadoProgreso =
-        "Completado";
-
-} elseif ($progreso > 0) {
-
-    $estadoProgreso =
-        "En progreso";
+    $progreso = 0;
 
 }
 
+if ($progreso > 100) {
 
-/*
-|--------------------------------------------------------------------------
-| ICONOS DE RECURSOS
-|--------------------------------------------------------------------------
-*/
-
-function iconoRecurso(
-    string $tipo
-): string {
-
-    return match (
-        strtolower($tipo)
-    ) {
-
-        "video" =>
-            "bi-play-btn-fill",
-
-        "articulo" =>
-            "bi-file-text-fill",
-
-        "blog" =>
-            "bi-journal-text",
-
-        "app" =>
-            "bi-phone-fill",
-
-        "pdf" =>
-            "bi-file-earmark-pdf-fill",
-
-        "juego" =>
-            "bi-controller",
-
-        "simulador" =>
-            "bi-display-fill",
-
-        "presentacion" =>
-            "bi-easel-fill",
-
-        default =>
-            "bi-link-45deg"
-
-    };
+    $progreso = 100;
 
 }
 
+$progreso =
+    round($progreso);
+
+
+// =========================================================
+// DETERMINAR SI EXISTE CONTENIDO
+// =========================================================
+
+$hayContenido =
+    !empty($contenido)
+    &&
+    isset($contenido["contenido"])
+    &&
+    trim(
+        $contenido["contenido"]
+    ) !== "";
 
 ?>
 
@@ -406,16 +300,13 @@ function iconoRecurso(
         content="width=device-width, initial-scale=1.0"
     >
 
-
     <title>
 
         <?= htmlspecialchars(
-            $tema["nombre"]
+            $tema["tema_nombre"] ?? "Tema"
         ) ?>
 
-        |
-
-        ICFES Platform
+        | Studia360
 
     </title>
 
@@ -440,21 +331,25 @@ function iconoRecurso(
 
         body {
 
-            background: #f5f7fb;
+            background:
+                #f4f7fb;
 
-            color: #212529;
-
-        }
-
-
-        .navbar-brand {
-
-            font-weight: 600;
+            color:
+                #172033;
 
         }
 
 
-        .cabecera-tema {
+        .navbar {
+
+            box-shadow:
+                0 2px 10px
+                rgba(0,0,0,.08);
+
+        }
+
+
+        .hero-tema {
 
             background:
                 linear-gradient(
@@ -463,79 +358,122 @@ function iconoRecurso(
                     #084298
                 );
 
-            color: white;
+            color:
+                white;
 
-            border: 0;
+            border:
+                0;
 
-            border-radius: 16px;
+            border-radius:
+                18px;
 
-        }
-
-
-        .etiqueta-materia {
-
-            font-size: 0.78rem;
-
-            text-transform: uppercase;
-
-            letter-spacing: 0.05em;
-
-            opacity: 0.8;
+            box-shadow:
+                0 10px 30px
+                rgba(13,110,253,.15);
 
         }
 
 
         .contenido-card {
 
-            border: 0;
+            background:
+                white;
 
-            border-radius: 16px;
+            border:
+                0;
+
+            border-radius:
+                18px;
 
             box-shadow:
-                0 0.15rem 0.5rem
-                rgba(0, 0, 0, 0.06);
+                0 8px 30px
+                rgba(0,0,0,.07);
 
         }
 
 
         .contenido-educativo {
 
-            font-size: 1.05rem;
+            font-size:
+                17px;
 
-            line-height: 1.8;
+            line-height:
+                1.8;
+
+            color:
+                #263244;
+
+        }
+
+
+        .contenido-educativo h1,
+        .contenido-educativo h2,
+        .contenido-educativo h3,
+        .contenido-educativo h4,
+        .contenido-educativo h5,
+        .contenido-educativo h6 {
+
+            color:
+                #172033;
+
+            margin-top:
+                1.5em;
+
+            margin-bottom:
+                .7em;
+
+            line-height:
+                1.3;
+
+        }
+
+
+        .contenido-educativo h1:first-child,
+        .contenido-educativo h2:first-child,
+        .contenido-educativo h3:first-child {
+
+            margin-top:
+                0;
 
         }
 
 
         .contenido-educativo img {
 
-            max-width: 100%;
+            max-width:
+                100%;
 
-            height: auto;
+            height:
+                auto;
 
-            border-radius: 10px;
+            border-radius:
+                10px;
 
         }
 
 
         .contenido-educativo table {
 
-            width: 100%;
+            width:
+                100%;
 
-            margin: 1rem 0;
+            border-collapse:
+                collapse;
 
-            border-collapse: collapse;
+            margin:
+                20px 0;
 
         }
 
 
-        .contenido-educativo th,
-        .contenido-educativo td {
+        .contenido-educativo table td,
+        .contenido-educativo table th {
 
             border:
                 1px solid #dee2e6;
 
-            padding: 0.65rem;
+            padding:
+                10px;
 
         }
 
@@ -545,11 +483,37 @@ function iconoRecurso(
             border-left:
                 4px solid #0d6efd;
 
-            padding-left: 1rem;
+            padding:
+                12px 18px;
 
-            color: #6c757d;
+            background:
+                #f0f6ff;
 
-            font-style: italic;
+            margin:
+                20px 0;
+
+            border-radius:
+                0 10px 10px 0;
+
+        }
+
+
+        .contenido-educativo iframe {
+
+            max-width:
+                100%;
+
+            width:
+                100%;
+
+            min-height:
+                400px;
+
+            border:
+                0;
+
+            border-radius:
+                12px;
 
         }
 
@@ -557,13 +521,17 @@ function iconoRecurso(
         .recurso-card {
 
             border:
-                1px solid #e9ecef;
+                1px solid #e8edf3;
 
-            border-radius: 12px;
+            border-radius:
+                14px;
 
             transition:
-                transform 0.2s ease,
-                box-shadow 0.2s ease;
+                transform .2s ease,
+                box-shadow .2s ease;
+
+            height:
+                100%;
 
         }
 
@@ -571,77 +539,103 @@ function iconoRecurso(
         .recurso-card:hover {
 
             transform:
-                translateY(-2px);
+                translateY(-3px);
 
             box-shadow:
-                0 0.4rem 1rem
-                rgba(0, 0, 0, 0.08);
+                0 8px 20px
+                rgba(0,0,0,.08);
 
         }
 
 
         .icono-recurso {
 
-            width: 48px;
+            width:
+                48px;
 
-            height: 48px;
+            height:
+                48px;
 
-            display: flex;
+            display:
+                flex;
 
-            align-items: center;
+            align-items:
+                center;
 
-            justify-content: center;
+            justify-content:
+                center;
 
-            background: #e9f2ff;
+            border-radius:
+                12px;
 
-            color: #0d6efd;
+            background:
+                #e9f2ff;
 
-            border-radius: 10px;
+            color:
+                #0d6efd;
 
-            font-size: 1.3rem;
-
-            flex-shrink: 0;
+            font-size:
+                1.25rem;
 
         }
 
 
         .barra-progreso {
 
-            height: 10px;
+            height:
+                9px;
 
-            border-radius: 20px;
-
-        }
-
-
-        .card-lateral {
-
-            border: 0;
-
-            border-radius: 16px;
-
-            box-shadow:
-                0 0.15rem 0.5rem
-                rgba(0, 0, 0, 0.06);
+            border-radius:
+                20px;
 
         }
 
 
-        .evaluacion-card {
+        .estado-vacio {
+
+            padding:
+                60px 20px;
+
+            text-align:
+                center;
+
+            color:
+                #6c757d;
+
+        }
+
+
+        .sidebar-card {
 
             border:
-                1px solid #e9ecef;
+                0;
 
-            border-radius: 12px;
+            border-radius:
+                16px;
+
+            box-shadow:
+                0 6px 22px
+                rgba(0,0,0,.06);
 
         }
 
 
-        @media (max-width: 767px) {
+        @media (
+            max-width: 767px
+        ) {
 
             .contenido-educativo {
 
-                font-size: 1rem;
+                font-size:
+                    16px;
+
+            }
+
+
+            .hero-tema h1 {
+
+                font-size:
+                    1.6rem;
 
             }
 
@@ -664,46 +658,46 @@ function iconoRecurso(
     <div class="container">
 
         <a
-            href="dashboard.php"
+            href="<?= htmlspecialchars(
+                $esAdministrador
+                    ? urlAplicacion("/admin/dashboard.php")
+                    : urlAplicacion("/estudiante/dashboard.php")
+            ) ?>"
             class="navbar-brand"
         >
 
-            <i
-                class="bi bi-mortarboard-fill"
-            ></i>
+            <i class="bi bi-mortarboard-fill"></i>
 
-            ICFES Platform
+            Studia360
 
         </a>
 
 
-        <div
-            class="d-flex align-items-center gap-2"
-        >
+        <div class="d-flex align-items-center gap-2">
 
             <span
                 class="text-white d-none d-md-inline"
             >
 
-                <i
-                    class="bi bi-person-circle"
-                ></i>
+                <i class="bi bi-person-circle"></i>
 
                 <?= htmlspecialchars(
                     $nombres
                 ) ?>
 
+                <?php if ($esAdministrador): ?>
+                    <span class="badge text-bg-light text-primary ms-1">Vista previa</span>
+                <?php endif; ?>
+
             </span>
 
 
             <a
-                href="../cerrar_sesion.php"
+                href="<?= htmlspecialchars(urlAplicacion("/cerrar_sesion.php")) ?>"
                 class="btn btn-light btn-sm"
             >
 
-                <i
-                    class="bi bi-box-arrow-right"
-                ></i>
+                <i class="bi bi-box-arrow-right"></i>
 
                 Cerrar sesión
 
@@ -724,71 +718,59 @@ function iconoRecurso(
 <div class="container py-4">
 
 
-    <?php if ($error): ?>
+    <?php foreach ($errores as $error): ?>
 
         <div
             class="alert alert-danger"
         >
 
-            <i
-                class="bi bi-exclamation-triangle-fill"
-            ></i>
+            <i class="bi bi-exclamation-triangle-fill"></i>
 
-            <?= htmlspecialchars($error) ?>
-
-        </div>
-
-    <?php else: ?>
-
-
-        <!-- =================================================
-             VOLVER
-        ================================================== -->
-
-        <div class="mb-3">
-
-            <a
-                href="grado.php?grado=<?= urlencode($tema["grado"]) ?>"
-                class="btn btn-outline-primary btn-sm"
-            >
-
-                <i
-                    class="bi bi-arrow-left"
-                ></i>
-
-                Volver a
-                <?= htmlspecialchars(
-                    $tema["grado"]
-                ) ?>°
-
-            </a>
+            <?= htmlspecialchars(
+                $error
+            ) ?>
 
         </div>
 
+    <?php endforeach; ?>
+
+
+    <?php if ($esAdministrador && $tema): ?>
+
+        <div class="alert alert-warning border-0 shadow-sm mb-4">
+            <i class="bi bi-eye-fill"></i>
+            <strong>Vista previa del administrador.</strong>
+            Estás viendo la versión publicada que reciben los estudiantes.
+        </div>
+
+    <?php endif; ?>
+
+
+    <?php if ($tema): ?>
 
 
         <!-- =================================================
-             CABECERA
+             ENCABEZADO
         ================================================== -->
 
         <div
-            class="card cabecera-tema shadow-sm mb-4"
+            class="card hero-tema mb-4"
         >
 
             <div class="card-body p-4">
 
-                <div class="row align-items-center">
+                <div
+                    class="d-flex flex-column flex-md-row justify-content-between gap-4"
+                >
 
-
-                    <div class="col-lg-8">
-
+                    <div>
 
                         <div
-                            class="etiqueta-materia mb-2"
+                            class="small text-uppercase opacity-75 mb-2"
                         >
 
                             <?= htmlspecialchars(
-                                $tema["materia"]
+                                $tema["materia_nombre"]
                             ) ?>
 
                             ·
@@ -803,105 +785,59 @@ function iconoRecurso(
                         <h1 class="mb-2">
 
                             <?= htmlspecialchars(
-                                $tema["nombre"]
+                                $tema["tema_nombre"]
                             ) ?>
 
                         </h1>
 
 
-                        <?php if (
-                            !empty(
-                                $tema["descripcion"]
-                            )
-                        ): ?>
+                        <p class="mb-0 opacity-75">
 
-                            <p
-                                class="mb-0 opacity-75"
-                            >
+                            <?= htmlspecialchars(
+                                $tema["tema_descripcion"]
+                                ?? ""
+                            ) ?>
 
-                                <?= htmlspecialchars(
-                                    $tema["descripcion"]
-                                ) ?>
-
-                            </p>
-
-                        <?php endif; ?>
-
+                        </p>
 
                     </div>
 
 
                     <div
-                        class="col-lg-4 mt-4 mt-lg-0"
+                        class="text-md-end"
                     >
 
-                        <div>
+                        <?php if ($esAdministrador): ?>
 
-                            <div
-                                class="
-                                    d-flex
-                                    justify-content-between
-                                    mb-2
-                                "
+                            <a
+                                href="<?= htmlspecialchars(urlAplicacion('/admin/contenidos/editar_tema.php?id=' . (int)$idTema)) ?>"
+                                class="btn btn-light"
                             >
 
-                                <span>
+                                <i class="bi bi-pencil-square"></i>
 
-                                    Tu progreso
+                                Volver al editor
 
-                                </span>
+                            </a>
 
+                        <?php else: ?>
 
-                                <strong>
-
-                                    <?= $progreso ?>%
-
-                                </strong>
-
-                            </div>
-
-
-                            <div
-                                class="
-                                    progress
-                                    barra-progreso
-                                    bg-white
-                                    bg-opacity-25
-                                "
+                            <a
+                                href="grado.php?grado=<?= urlencode(
+                                    $tema["grado"]
+                                ) ?>"
+                                class="btn btn-light"
                             >
 
-                                <div
-                                    class="
-                                        progress-bar
-                                        bg-white
-                                    "
-                                    role="progressbar"
-                                    style="
-                                        width:
-                                        <?= $progreso ?>%;
-                                    "
-                                    aria-valuenow="<?= $progreso ?>"
-                                    aria-valuemin="0"
-                                    aria-valuemax="100"
-                                ></div>
+                                <i class="bi bi-arrow-left"></i>
 
-                            </div>
+                                Volver a temas
 
+                            </a>
 
-                            <div
-                                class="small mt-2 opacity-75"
-                            >
-
-                                <?= htmlspecialchars(
-                                    $estadoProgreso
-                                ) ?>
-
-                            </div>
-
-                        </div>
+                        <?php endif; ?>
 
                     </div>
-
 
                 </div>
 
@@ -911,217 +847,179 @@ function iconoRecurso(
 
 
 
-        <!-- =================================================
-             CONTENIDO + LATERAL
-        ================================================== -->
-
         <div class="row g-4">
 
 
-            <!-- =================================================
+            <!-- =============================================
                  CONTENIDO PRINCIPAL
-            ================================================== -->
+            ============================================== -->
 
-            <div class="col-lg-8">
+            <div class="col-12 col-lg-8 col-xl-9">
 
 
-                <div
-                    class="
-                        card
-                        contenido-card
-                        mb-4
-                    "
-                >
+                <?php if ($hayContenido): ?>
+
 
                     <div
-                        class="card-body p-4 p-md-5"
+                        class="card contenido-card"
                     >
 
-
                         <div
-                            class="
-                                d-flex
-                                align-items-center
-                                gap-2
-                                mb-4
-                            "
+                            class="card-body p-4 p-lg-5"
                         >
-
-                            <i
-                                class="
-                                    bi
-                                    bi-book-half
-                                    text-primary
-                                    fs-4
-                                "
-                            ></i>
-
-
-                            <h3 class="mb-0">
-
-                                Aprende
-
-                            </h3>
-
-                        </div>
-
-
-                        <?php if (
-                            !empty(
-                                trim(
-                                    (string)$tema[
-                                        "contenido"
-                                    ]
-                                )
-                            )
-                        ): ?>
 
                             <div
                                 class="contenido-educativo"
                             >
 
-                                <?= $tema["contenido"] ?>
+                                <?= $contenido["contenido"] ?>
 
                             </div>
 
-
-                        <?php else: ?>
-
-
-                            <div
-                                class="
-                                    text-center
-                                    py-5
-                                    text-muted
-                                "
-                            >
-
-                                <i
-                                    class="
-                                        bi
-                                        bi-journal-text
-                                        fs-1
-                                    "
-                                ></i>
-
-
-                                <h5 class="mt-3">
-
-                                    Contenido en preparación
-
-                                </h5>
-
-
-                                <p class="mb-0">
-
-                                    Este tema todavía no
-                                    tiene contenido educativo
-                                    publicado.
-
-                                </p>
-
-                            </div>
-
-
-                        <?php endif; ?>
-
+                        </div>
 
                     </div>
 
-                </div>
+
+                <?php else: ?>
+
+
+                    <div
+                        class="card contenido-card"
+                    >
+
+                        <div
+                            class="estado-vacio"
+                        >
+
+                            <i
+                                class="bi bi-journal-x fs-1 d-block mb-3"
+                            ></i>
+
+
+                            <h4>
+
+                                Contenido próximamente
+
+                            </h4>
+
+
+                            <p class="mb-0">
+
+                                Este tema todavía no tiene
+                                una lección publicada.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                <?php endif; ?>
 
 
 
-                <!-- =================================================
+                <!-- =========================================
                      RECURSOS
-                ================================================== -->
+                ========================================== -->
 
                 <?php if (
                     !empty($recursos)
                 ): ?>
 
+                    <div class="mt-4">
 
-                    <div
-                        class="
-                            card
-                            contenido-card
-                            mb-4
-                        "
-                    >
+                        <div class="mb-3">
 
-                        <div class="card-body p-4">
+                            <h3 class="h4 mb-1">
 
+                                <i class="bi bi-collection-play text-primary"></i>
 
-                            <div
-                                class="
-                                    d-flex
-                                    align-items-center
-                                    gap-2
-                                    mb-4
-                                "
-                            >
+                                Recursos complementarios
 
-                                <i
-                                    class="
-                                        bi
-                                        bi-collection-play-fill
-                                        text-primary
-                                        fs-4
-                                    "
-                                ></i>
+                            </h3>
 
 
-                                <h3 class="mb-0">
+                            <p class="text-muted mb-0">
 
-                                    Recursos complementarios
+                                Material adicional para profundizar
+                                en este tema.
 
-                                </h3>
+                            </p>
 
-                            </div>
-
-
-                            <div
-                                class="row g-3"
-                            >
+                        </div>
 
 
-                                <?php foreach (
-                                    $recursos
-                                    as $recurso
-                                ): ?>
+                        <div class="row g-3">
 
+
+                            <?php foreach (
+                                $recursos
+                                as $recurso
+                            ): ?>
+
+
+                                <div
+                                    class="col-12 col-md-6"
+                                >
 
                                     <div
-                                        class="col-12"
+                                        class="card recurso-card"
                                     >
 
-                                        <div
-                                            class="
-                                                recurso-card
-                                                p-3
-                                            "
-                                        >
+                                        <div class="card-body">
 
                                             <div
-                                                class="
-                                                    d-flex
-                                                    align-items-start
-                                                    gap-3
-                                                "
+                                                class="d-flex gap-3"
                                             >
 
-
                                                 <div
-                                                    class="icono-recurso"
+                                                    class="icono-recurso flex-shrink-0"
                                                 >
 
+                                                    <?php
+
+                                                    $iconos = [
+
+                                                        "video" =>
+                                                            "bi-play-circle-fill",
+
+                                                        "articulo" =>
+                                                            "bi-file-text-fill",
+
+                                                        "blog" =>
+                                                            "bi-journal-text",
+
+                                                        "app" =>
+                                                            "bi-phone-fill",
+
+                                                        "pdf" =>
+                                                            "bi-file-earmark-pdf-fill",
+
+                                                        "juego" =>
+                                                            "bi-controller",
+
+                                                        "simulador" =>
+                                                            "bi-cpu-fill",
+
+                                                        "presentacion" =>
+                                                            "bi-easel-fill"
+
+                                                    ];
+
+                                                    $icono =
+                                                        $iconos[
+                                                            $recurso["tipo"]
+                                                        ]
+                                                        ??
+                                                        "bi-link-45deg";
+
+                                                    ?>
+
+
                                                     <i
-                                                        class="
-                                                            bi
-                                                            <?= iconoRecurso(
-                                                                $recurso["tipo"]
-                                                            ) ?>
-                                                        "
+                                                        class="bi <?= $icono ?>"
                                                     ></i>
 
                                                 </div>
@@ -1131,9 +1029,7 @@ function iconoRecurso(
                                                     class="flex-grow-1"
                                                 >
 
-                                                    <h5
-                                                        class="mb-1"
-                                                    >
+                                                    <h5 class="h6 mb-1">
 
                                                         <?= htmlspecialchars(
                                                             $recurso["titulo"]
@@ -1142,12 +1038,8 @@ function iconoRecurso(
                                                     </h5>
 
 
-                                                    <div
-                                                        class="
-                                                            small
-                                                            text-muted
-                                                            mb-2
-                                                        "
+                                                    <span
+                                                        class="badge text-bg-primary mb-2"
                                                     >
 
                                                         <?= htmlspecialchars(
@@ -1156,22 +1048,7 @@ function iconoRecurso(
                                                             )
                                                         ) ?>
 
-
-                                                        <?php if (
-                                                            !empty(
-                                                                $recurso["autor"]
-                                                            )
-                                                        ): ?>
-
-                                                            ·
-
-                                                            <?= htmlspecialchars(
-                                                                $recurso["autor"]
-                                                            ) ?>
-
-                                                        <?php endif; ?>
-
-                                                    </div>
+                                                    </span>
 
 
                                                     <?php if (
@@ -1181,10 +1058,7 @@ function iconoRecurso(
                                                     ): ?>
 
                                                         <p
-                                                            class="
-                                                                text-muted
-                                                                mb-3
-                                                            "
+                                                            class="small text-muted mb-3"
                                                         >
 
                                                             <?= htmlspecialchars(
@@ -1196,242 +1070,28 @@ function iconoRecurso(
                                                     <?php endif; ?>
 
 
-                                                    <?php if (
-                                                        !empty(
+                                                    <a
+                                                        href="<?= htmlspecialchars(
                                                             $recurso["url"]
-                                                        )
-                                                    ): ?>
+                                                        ) ?>"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        class="btn btn-sm btn-outline-primary"
+                                                    >
 
-                                                        <a
-                                                            href="<?= htmlspecialchars(
-                                                                $recurso["url"]
-                                                            ) ?>"
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            class="
-                                                                btn
-                                                                btn-outline-primary
-                                                                btn-sm
-                                                            "
-                                                        >
+                                                        Abrir recurso
 
-                                                            <i
-                                                                class="
-                                                                    bi
-                                                                    bi-box-arrow-up-right
-                                                                "
-                                                            ></i>
+                                                        <i
+                                                            class="bi bi-box-arrow-up-right"
+                                                        ></i>
 
-                                                            Abrir recurso
-
-                                                        </a>
-
-                                                    <?php endif; ?>
-
+                                                    </a>
 
                                                 </div>
 
-
                                             </div>
 
                                         </div>
-
-                                    </div>
-
-
-                                <?php endforeach; ?>
-
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                <?php endif; ?>
-
-
-
-                <!-- =================================================
-                     EVALUACIONES
-                ================================================== -->
-
-                <?php if (
-                    !empty($evaluaciones)
-                ): ?>
-
-
-                    <div
-                        class="
-                            card
-                            contenido-card
-                            mb-4
-                        "
-                    >
-
-                        <div class="card-body p-4">
-
-
-                            <div
-                                class="
-                                    d-flex
-                                    align-items-center
-                                    gap-2
-                                    mb-4
-                                "
-                            >
-
-                                <i
-                                    class="
-                                        bi
-                                        bi-clipboard-check-fill
-                                        text-primary
-                                        fs-4
-                                    "
-                                ></i>
-
-
-                                <h3 class="mb-0">
-
-                                    Evaluaciones
-
-                                </h3>
-
-                            </div>
-
-
-                            <?php foreach (
-                                $evaluaciones
-                                as $evaluacion
-                            ): ?>
-
-
-                                <div
-                                    class="
-                                        evaluacion-card
-                                        p-3
-                                        mb-3
-                                    "
-                                >
-
-                                    <div
-                                        class="
-                                            d-flex
-                                            justify-content-between
-                                            align-items-start
-                                            gap-3
-                                        "
-                                    >
-
-                                        <div>
-
-                                            <h5
-                                                class="mb-1"
-                                            >
-
-                                                <?= htmlspecialchars(
-                                                    $evaluacion["titulo"]
-                                                ) ?>
-
-                                            </h5>
-
-
-                                            <div
-                                                class="
-                                                    small
-                                                    text-muted
-                                                "
-                                            >
-
-                                                <?= htmlspecialchars(
-                                                    ucfirst(
-                                                        $evaluacion["tipo"]
-                                                    )
-                                                ) ?>
-
-
-                                                <?php if (
-                                                    $evaluacion[
-                                                        "tiempo_limite"
-                                                    ]
-                                                    !== null
-                                                ): ?>
-
-                                                    ·
-
-                                                    <?= (int)$evaluacion[
-                                                        "tiempo_limite"
-                                                    ] ?>
-
-                                                    minutos
-
-                                                <?php endif; ?>
-
-
-                                                <?php if (
-                                                    $evaluacion[
-                                                        "puntaje_maximo"
-                                                    ]
-                                                    !== null
-                                                ): ?>
-
-                                                    ·
-
-                                                    <?= htmlspecialchars(
-                                                        $evaluacion[
-                                                            "puntaje_maximo"
-                                                        ]
-                                                    ) ?>
-
-                                                    puntos
-
-                                                <?php endif; ?>
-
-                                            </div>
-
-
-                                            <?php if (
-                                                !empty(
-                                                    $evaluacion[
-                                                        "descripcion"
-                                                    ]
-                                                )
-                                            ): ?>
-
-                                                <p
-                                                    class="
-                                                        text-muted
-                                                        mt-2
-                                                        mb-0
-                                                    "
-                                                >
-
-                                                    <?= htmlspecialchars(
-                                                        $evaluacion[
-                                                            "descripcion"
-                                                        ]
-                                                    ) ?>
-
-                                                </p>
-
-                                            <?php endif; ?>
-
-                                        </div>
-
-
-                                        <a
-                                            href="#"
-                                            class="
-                                                btn
-                                                btn-primary
-                                                btn-sm
-                                            "
-                                        >
-
-                                            Comenzar
-
-                                        </a>
 
                                     </div>
 
@@ -1445,7 +1105,6 @@ function iconoRecurso(
 
                     </div>
 
-
                 <?php endif; ?>
 
 
@@ -1453,82 +1112,101 @@ function iconoRecurso(
 
 
 
-            <!-- =================================================
-                 COLUMNA LATERAL
-            ================================================== -->
+            <!-- =============================================
+                 SIDEBAR
+            ============================================== -->
 
-            <div class="col-lg-4">
+            <div class="col-12 col-lg-4 col-xl-3">
 
 
                 <div
-                    class="
-                        card
-                        card-lateral
-                        mb-4
-                    "
+                    class="card sidebar-card mb-3"
                 >
 
-                    <div class="card-body p-4">
+                    <div class="card-body">
 
+                        <h5 class="h6 mb-3">
 
-                        <h5>
+                            <i class="bi bi-graph-up-arrow text-primary"></i>
 
-                            <i
-                                class="
-                                    bi
-                                    bi-graph-up-arrow
-                                    text-primary
-                                "
-                            ></i>
-
-                            Tu avance
+                            <?= $esAdministrador ? "Vista del tema" : "Tu progreso" ?>
 
                         </h5>
 
 
                         <div
-                            class="
-                                display-5
-                                fw-bold
-                                text-primary
-                                my-3
-                            "
+                            class="d-flex justify-content-between mb-2"
                         >
 
-                            <?= $progreso ?>%
+                            <span
+                                class="small text-muted"
+                            >
+
+                                Avance
+
+                            </span>
+
+
+                            <strong>
+
+                                <?= $progreso ?>%
+
+                            </strong>
 
                         </div>
 
 
                         <div
-                            class="
-                                progress
-                                barra-progreso
-                                mb-2
-                            "
+                            class="progress barra-progreso"
                         >
 
                             <div
                                 class="progress-bar"
-                                style="
-                                    width:
-                                    <?= $progreso ?>%;
-                                "
+                                role="progressbar"
+                                style="width: <?= $progreso ?>%"
+                                aria-valuenow="<?= $progreso ?>"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
                             ></div>
 
                         </div>
 
 
                         <div
-                            class="small text-muted"
+                            class="small text-muted mt-3"
                         >
 
-                            <?= htmlspecialchars(
-                                $estadoProgreso
-                            ) ?>
+                            <?php if (
+                                $progreso >= 100
+                            ): ?>
+
+                                <i
+                                    class="bi bi-check-circle-fill text-success"
+                                ></i>
+
+                                Tema completado.
+
+                            <?php elseif (
+                                $progreso > 0
+                            ): ?>
+
+                                <i
+                                    class="bi bi-clock-fill text-warning"
+                                ></i>
+
+                                Tema en progreso.
+
+                            <?php else: ?>
+
+                                <i
+                                    class="bi bi-circle text-secondary"
+                                ></i>
+
+                                Tema pendiente.
+
+                            <?php endif; ?>
 
                         </div>
-
 
                     </div>
 
@@ -1537,84 +1215,88 @@ function iconoRecurso(
 
 
                 <div
-                    class="
-                        card
-                        card-lateral
-                    "
+                    class="card sidebar-card"
                 >
 
-                    <div class="card-body p-4">
+                    <div class="card-body">
 
+                        <h5 class="h6 mb-3">
 
-                        <h5 class="mb-3">
-
-                            <i
-                                class="
-                                    bi
-                                    bi-info-circle-fill
-                                    text-primary
-                                "
-                            ></i>
+                            <i class="bi bi-info-circle text-primary"></i>
 
                             Información
 
                         </h5>
 
 
-                        <div
-                            class="
-                                d-flex
-                                justify-content-between
-                                mb-2
-                            "
-                        >
-
-                            <span
-                                class="text-muted"
-                            >
-
-                                Grado
-
-                            </span>
+                        <div class="small">
 
 
-                            <strong>
+                            <div class="mb-3">
 
-                                <?= htmlspecialchars(
-                                    $tema["grado"]
-                                ) ?>°
+                                <span
+                                    class="text-muted"
+                                >
 
-                            </strong>
+                                    Materia
+
+                                </span>
+
+                                <div class="fw-semibold">
+
+                                    <?= htmlspecialchars(
+                                        $tema["materia_nombre"]
+                                    ) ?>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="mb-3">
+
+                                <span
+                                    class="text-muted"
+                                >
+
+                                    Grado
+
+                                </span>
+
+                                <div class="fw-semibold">
+
+                                    <?= htmlspecialchars(
+                                        $tema["grado"]
+                                    ) ?>°
+
+                                </div>
+
+                            </div>
+
+
+                            <div>
+
+                                <span
+                                    class="text-muted"
+                                >
+
+                                    Recursos
+
+                                </span>
+
+                                <div class="fw-semibold">
+
+                                    <?= count(
+                                        $recursos
+                                    ) ?>
+
+                                    disponibles
+
+                                </div>
+
+                            </div>
 
                         </div>
-
-
-                        <div
-                            class="
-                                d-flex
-                                justify-content-between
-                            "
-                        >
-
-                            <span
-                                class="text-muted"
-                            >
-
-                                Materia
-
-                            </span>
-
-
-                            <strong>
-
-                                <?= htmlspecialchars(
-                                    $tema["materia"]
-                                ) ?>
-
-                            </strong>
-
-                        </div>
-
 
                     </div>
 
@@ -1622,7 +1304,6 @@ function iconoRecurso(
 
 
             </div>
-
 
         </div>
 
@@ -1631,7 +1312,6 @@ function iconoRecurso(
 
 
 </div>
-
 
 
 <!-- Bootstrap JS -->
