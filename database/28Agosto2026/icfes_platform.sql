@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-08-2026 a las 08:49:11
+-- Tiempo de generación: 28-08-2026 a las 09:16:00
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -114,7 +114,7 @@ CREATE TABLE `contenido_temas` (
 --
 
 INSERT INTO `contenido_temas` (`id_contenido`, `id_tema`, `contenido`, `fecha_creacion`, `fecha_actualizacion`, `estado`) VALUES
-(1, 19, '<p><span style=\"font-family: &quot;Comic Sans MS&quot;;\">﻿</span><font face=\"Comic Sans MS\"># Biología Básica</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">La biología es la ciencia que estudia los seres vivos.</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">## ¿Qué estudia la biología?</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">La biología analiza:</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">• Los organismos.</font></p><p><font face=\"Comic Sans MS\">• Sus estructuras.</font></p><p><font face=\"Comic Sans MS\">• Sus funciones.</font></p><p><font face=\"Comic Sans MS\">• Sus relaciones con el ambiente.</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">### Concepto importante</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">Los seres vivos realizan funciones vitales como nutrición, relación y reproducción.</font></p>', '2026-08-28 05:55:57', '2026-08-28 05:55:57', 'Publicado'),
+(1, 19, '<p><a href=\"https://www.youtube.com/watch?v=6naSh-vJ6Gs\" target=\"_blank\">Hola</a><span style=\"font-family: &quot;Comic Sans MS&quot;;\">﻿</span><font face=\"Comic Sans MS\"># Biología Básica</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">La biología es la ciencia que estudia los seres vivos.</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">## ¿Qué estudia la biología?</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">La biología analiza:</font></p><p><font face=\"Comic Sans MS\">NONONO</font></p><p><font face=\"Comic Sans MS\">• Los organismos.</font></p><p><font face=\"Comic Sans MS\">• Sus estructuras.</font></p><p><font face=\"Comic Sans MS\">• Sus funciones.</font></p><p><font face=\"Comic Sans MS\">• Sus relaciones con el ambiente.</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">### Concepto importante</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">Los seres vivos realizan funciones vitales como nutrición, relación y reproducción.</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><img src=\"/icfes_platform/assets/uploads/contenidos/2e71b4e863f988ad4691d478845e560e_1787901241.jpg\" style=\"max-width: 100%; width: 50%;\" alt=\"IMG_0780.JPG\"><font face=\"Comic Sans MS\"><br></font></p>', '2026-08-28 05:55:57', '2026-08-28 07:14:11', 'Publicado'),
 (2, 20, '<p>Ostia sisisi</p>', '2026-08-28 06:12:09', '2026-08-28 06:12:09', 'Publicado');
 
 -- --------------------------------------------------------
@@ -487,7 +487,7 @@ INSERT INTO `temas` (`id_tema`, `id_materia`, `nombre`, `descripcion`, `contenid
 (16, 2, 'Pensamiento Crítico', 'Evaluación crítica de contenidos', NULL, '11'),
 (17, 2, 'Interpretación Avanzada', 'Análisis complejo de textos', NULL, '11'),
 (18, 2, 'Competencias ICFES', 'Estrategias para preguntas Saber 11', NULL, '11'),
-(19, 3, 'Biología Básica', 'Seres vivos y ecosistemas', '<p><span style=\"font-family: &quot;Comic Sans MS&quot;;\">﻿</span><font face=\"Comic Sans MS\"># Biología Básica</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">La biología es la ciencia que estudia los seres vivos.</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">## ¿Qué estudia la biología?</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">La biología analiza:</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">• Los organismos.</font></p><p><font face=\"Comic Sans MS\">• Sus estructuras.</font></p><p><font face=\"Comic Sans MS\">• Sus funciones.</font></p><p><font face=\"Comic Sans MS\">• Sus relaciones con el ambiente.</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">### Concepto importante</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">Los seres vivos realizan funciones vitales como nutrición, relación y reproducción.</font></p>', '9'),
+(19, 3, 'Biología Básica', 'Seres vivos y ecosistemas', '<p><a href=\"https://www.youtube.com/watch?v=6naSh-vJ6Gs\" target=\"_blank\">Hola</a><span style=\"font-family: &quot;Comic Sans MS&quot;;\">﻿</span><font face=\"Comic Sans MS\"># Biología Básica</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">La biología es la ciencia que estudia los seres vivos.</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">## ¿Qué estudia la biología?</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">La biología analiza:</font></p><p><font face=\"Comic Sans MS\">NONONO</font></p><p><font face=\"Comic Sans MS\">• Los organismos.</font></p><p><font face=\"Comic Sans MS\">• Sus estructuras.</font></p><p><font face=\"Comic Sans MS\">• Sus funciones.</font></p><p><font face=\"Comic Sans MS\">• Sus relaciones con el ambiente.</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">### Concepto importante</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><font face=\"Comic Sans MS\">Los seres vivos realizan funciones vitales como nutrición, relación y reproducción.</font></p><p><font face=\"Comic Sans MS\"><br></font></p><p><img src=\"/icfes_platform/assets/uploads/contenidos/2e71b4e863f988ad4691d478845e560e_1787901241.jpg\" style=\"max-width: 100%; width: 50%;\" alt=\"IMG_0780.JPG\"><font face=\"Comic Sans MS\"><br></font></p>', '9'),
 (20, 3, 'Física Básica', 'Movimiento y energía', '<p>Ostia sisisi</p>', '9'),
 (21, 3, 'Química Básica', 'Materia y sus propiedades', NULL, '9'),
 (22, 3, 'Genética', 'Herencia y ADN', NULL, '10'),
@@ -550,11 +550,12 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`id_usuario`, `nombres`, `apellidos`, `correo`, `password`, `grado`, `id_curso`, `avatar`, `id_avatar`, `puntos`, `nivel`, `fecha_registro`, `numero_documento`, `id_rol`, `id_institucion`, `primer_ingreso`, `estado`, `ultimo_acceso`, `fecha_cambio_password`, `ultimo_intento`) VALUES
 (1, 'Carlos', 'Perez', 'carlos.prueba@icfes.local', '$2y$10$TyBiQIb1Xe9xJk1dhf/NW.TOqaGl1.o09N8bHycS4xotoRQ3kso8m', '11', 12, 'avatar_default.png', 1, 0, 1, '2026-08-13 03:56:00', '1234567890', 2, 1, 1, 'Activo', '2026-08-13 00:12:13', NULL, NULL),
-(2, 'Administrador', 'Principal', 'admin@icfes.local', '$2y$10$WsIg1GC05G6XeRDJGfKFYOqKVZZfeb8FEH6.2LoYGscAZuDyci2Va', '11', NULL, 'avatar_default.png', 1, 0, 1, '2026-08-13 04:46:03', 'ADMIN001', 1, 1, 0, 'Activo', '2026-08-28 01:45:27', NULL, NULL),
+(2, 'Administrador', 'Principal', 'admin@icfes.local', '$2y$10$WsIg1GC05G6XeRDJGfKFYOqKVZZfeb8FEH6.2LoYGscAZuDyci2Va', '11', NULL, 'avatar_default.png', 1, 0, 1, '2026-08-13 04:46:03', 'ADMIN001', 1, 1, 0, 'Activo', '2026-08-28 02:13:07', NULL, NULL),
 (3, 'Juan', 'Pérez Gómez', 'juan.prueba@test.com', '$2y$10$ryo/zL60XLnp4Sro9ZbWOeLmMi5pqFWnxtmEbmMBVRbwmE7vJHsmu', '11', 12, 'avatar_default.png', 1, 0, 1, '2026-08-16 04:17:23', '100000001', 2, 1, 1, 'Activo', '2026-08-15 23:19:26', NULL, NULL),
 (4, 'María', 'Rodríguez López', 'maria.prueba@test.com', '$2y$10$CcD2GAaBKUiTDcY9yST6K.mVSq1y5TFkyihGWJsqDaEeQuRDrBhyK', '10', 11, 'avatar_default.png', 1, 0, 1, '2026-08-16 04:17:23', '100000002', 2, 1, 1, 'Activo', NULL, NULL, NULL),
 (5, 'Carlos', 'Martínez Díaz', 'carlos.prueba@test.com', '$2y$10$SfR4wmeBlRzl3nu3sSDiBuOZQJ94Rgc4Ivf1ZrpFrhBHyAX.tOjlm', '9', 10, 'avatar_default.png', 1, 0, 1, '2026-08-16 04:17:24', '100000003', 2, 1, 1, 'Activo', NULL, NULL, NULL),
-(7, 'Pepe', 'Pepencio', 'popis@gmail.com', '$2y$10$NWlpgDVF84RUIYiN9b5UNeHQeoor99nhpC1mzZXs4z8POosz8J3se', '9', 15, 'avatar1.png', 1, 0, 1, '2026-08-16 06:21:14', '12345', 2, 1, 0, 'Activo', '2026-08-28 01:12:52', '2026-08-26 22:31:44', NULL);
+(7, 'Pepe', 'Pepencio', 'popis@gmail.com', '$2y$10$NWlpgDVF84RUIYiN9b5UNeHQeoor99nhpC1mzZXs4z8POosz8J3se', '9', 15, 'avatar1.png', 1, 0, 1, '2026-08-16 06:21:14', '12345', 2, 1, 0, 'Activo', '2026-08-28 01:12:52', '2026-08-26 22:31:44', NULL),
+(8, 'Joel', 'Rivera', 'juan@correo.com', '$2y$10$bRyqLOPwxxDXmWMNI.VmauQf5py5FKDD2OAH5lrMTsroqBk30r4.O', '11', 13, 'avatar_default.png', 1, 0, 1, '2026-08-28 07:10:19', '1073533196', 2, 1, 0, 'Activo', '2026-08-28 02:12:42', '2026-08-28 02:12:53', NULL);
 
 -- --------------------------------------------------------
 
@@ -603,7 +604,7 @@ ALTER TABLE `configuracion`
 --
 ALTER TABLE `contenido_temas`
   ADD PRIMARY KEY (`id_contenido`),
-  ADD UNIQUE KEY `uk_contenido_tema` (`id_tema`);
+  ADD KEY `idx_contenido_tema` (`id_tema`);
 
 --
 -- Indices de la tabla `cursos`
@@ -778,7 +779,7 @@ ALTER TABLE `configuracion`
 -- AUTO_INCREMENT de la tabla `contenido_temas`
 --
 ALTER TABLE `contenido_temas`
-  MODIFY `id_contenido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_contenido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `cursos`
@@ -886,7 +887,7 @@ ALTER TABLE `temas`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Restricciones para tablas volcadas
