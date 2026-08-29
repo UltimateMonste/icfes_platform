@@ -48,21 +48,23 @@ $nombreCompleto =
         $nombresAdmin . " " . $apellidosAdmin
     );
 
-
 if ($nombreCompleto === "") {
 
     $nombreCompleto = "Administrador";
 
 }
 
-
-// Primer nombre para la bienvenida
-
 $primerNombre =
     explode(
         " ",
         $nombresAdmin
     )[0] ?? "Administrador";
+
+if ($primerNombre === "") {
+
+    $primerNombre = "Administrador";
+
+}
 
 
 // =====================================================
@@ -298,7 +300,6 @@ try {
 
 $porcentaje_contenido = 0;
 
-
 if ($total_temas > 0) {
 
     $porcentaje_contenido =
@@ -329,7 +330,6 @@ function e($valor): string
 
 ?>
 
-
 <!DOCTYPE html>
 
 <html lang="es">
@@ -345,12 +345,11 @@ function e($valor): string
 
     <meta
         name="description"
-        content="Panel de administración de ICFES Platform"
+        content="Panel de administración de Studia360"
     >
 
-
     <title>
-        Panel de administración | ICFES Platform
+        Dashboard | Studia360
     </title>
 
 
@@ -404,9 +403,7 @@ function e($valor): string
 
 
         * {
-
             box-sizing: border-box;
-
         }
 
 
@@ -439,9 +436,7 @@ function e($valor): string
             position: fixed;
 
             top: 0;
-
             left: 0;
-
             bottom: 0;
 
             width: 260px;
@@ -466,7 +461,7 @@ function e($valor): string
         .sidebar-brand {
 
             padding:
-                1.35rem 1.35rem;
+                1.35rem;
 
             border-bottom:
                 1px solid
@@ -489,7 +484,7 @@ function e($valor): string
 
             font-size: 1.15rem;
 
-            font-weight: 700;
+            font-weight: 750;
 
         }
 
@@ -497,13 +492,11 @@ function e($valor): string
         .sidebar-brand-icon {
 
             width: 40px;
-
             height: 40px;
 
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             background:
@@ -512,6 +505,10 @@ function e($valor): string
             border-radius: 11px;
 
             font-size: 1.2rem;
+
+            box-shadow:
+                0 5px 18px
+                rgba(37,99,235,.25);
 
         }
 
@@ -533,7 +530,7 @@ function e($valor): string
         .sidebar-menu {
 
             padding:
-                1.25rem .85rem;
+                1.25rem 1rem;
 
             overflow-y: auto;
 
@@ -551,9 +548,9 @@ function e($valor): string
 
             font-weight: 700;
 
-            letter-spacing: .08em;
-
             text-transform: uppercase;
+
+            letter-spacing: .08em;
 
             padding:
                 .75rem .75rem .45rem;
@@ -567,47 +564,26 @@ function e($valor): string
 
             align-items: center;
 
-            gap: .8rem;
-
-            width: 100%;
-
-            padding:
-                .72rem .8rem;
-
-            margin-bottom: .2rem;
-
-            border-radius: 9px;
+            gap: .75rem;
 
             color:
                 #d1d5db;
 
             text-decoration: none;
 
-            font-size: .9rem;
+            padding:
+                .72rem .8rem;
+
+            border-radius: 10px;
+
+            font-size: .84rem;
+
+            margin-bottom: .2rem;
 
             transition:
                 background .2s ease,
-                color .2s ease;
-
-        }
-
-
-        .sidebar-link:hover {
-
-            background:
-                var(--admin-sidebar-hover);
-
-            color: white;
-
-        }
-
-
-        .sidebar-link.active {
-
-            background:
-                var(--admin-primary);
-
-            color: white;
+                color .2s ease,
+                transform .2s ease;
 
         }
 
@@ -623,9 +599,37 @@ function e($valor): string
         }
 
 
+        .sidebar-link:hover {
+
+            color: white;
+
+            background:
+                var(--admin-sidebar-hover);
+
+            transform:
+                translateX(2px);
+
+        }
+
+
+        .sidebar-link.active {
+
+            color: white;
+
+            background:
+                var(--admin-primary);
+
+            box-shadow:
+                0 5px 15px
+                rgba(37,99,235,.2);
+
+        }
+
+
         .sidebar-footer {
 
-            padding: 1rem;
+            padding:
+                1rem;
 
             border-top:
                 1px solid
@@ -642,20 +646,12 @@ function e($valor): string
 
             gap: .7rem;
 
-            padding: .65rem;
-
-            border-radius: 10px;
-
-            background:
-                rgba(255,255,255,.05);
-
         }
 
 
         .admin-avatar {
 
             width: 38px;
-
             height: 38px;
 
             border-radius: 50%;
@@ -663,7 +659,6 @@ function e($valor): string
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             background:
@@ -672,6 +667,8 @@ function e($valor): string
             color: white;
 
             font-size: 1rem;
+
+            flex-shrink: 0;
 
         }
 
@@ -693,7 +690,8 @@ function e($valor): string
 
         .admin-mini-role {
 
-            color: #9ca3af;
+            color:
+                #9ca3af;
 
             font-size: .7rem;
 
@@ -721,8 +719,7 @@ function e($valor): string
 
             height: 72px;
 
-            background:
-                white;
+            background: white;
 
             border-bottom:
                 1px solid
@@ -750,7 +747,7 @@ function e($valor): string
 
             font-size: .95rem;
 
-            font-weight: 600;
+            font-weight: 650;
 
         }
 
@@ -779,7 +776,6 @@ function e($valor): string
         .topbar-user-icon {
 
             width: 38px;
-
             height: 38px;
 
             border-radius: 50%;
@@ -793,7 +789,6 @@ function e($valor): string
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
         }
@@ -807,6 +802,8 @@ function e($valor): string
 
             padding:
                 1.75rem;
+
+            max-width: 1600px;
 
         }
 
@@ -887,7 +884,8 @@ function e($valor): string
 
         .stat-card-body {
 
-            padding: 1.25rem;
+            padding:
+                1.25rem;
 
         }
 
@@ -920,7 +918,6 @@ function e($valor): string
         .stat-icon {
 
             width: 48px;
-
             height: 48px;
 
             border-radius: 12px;
@@ -928,7 +925,6 @@ function e($valor): string
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             font-size: 1.25rem;
@@ -1026,7 +1022,7 @@ function e($valor): string
 
 
         /* =================================================
-           SECTION TITLE
+           SECTION
         ================================================== */
 
         .section-title {
@@ -1108,7 +1104,6 @@ function e($valor): string
         .quick-action-icon {
 
             width: 44px;
-
             height: 44px;
 
             border-radius: 11px;
@@ -1116,7 +1111,6 @@ function e($valor): string
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             flex-shrink: 0;
@@ -1153,7 +1147,8 @@ function e($valor): string
 
         .content-management {
 
-            padding: 1.4rem;
+            padding:
+                1.4rem;
 
         }
 
@@ -1240,27 +1235,58 @@ function e($valor): string
 
 
         /* =================================================
-           ACTIVITY
+           MODULE CARDS
         ================================================== */
 
-        .empty-state {
+        .module-card {
 
-            text-align: center;
+            border:
+                1px solid
+                var(--admin-border);
 
-            padding:
-                2.25rem 1rem;
+            border-radius: 12px;
 
-            color:
-                var(--admin-muted);
+            padding: 1rem;
+
+            height: 100%;
 
         }
 
 
-        .empty-state i {
+        .module-icon {
 
-            font-size: 2.2rem;
+            width: 40px;
+            height: 40px;
 
-            opacity: .5;
+            border-radius: 10px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 1rem;
+
+        }
+
+
+        .module-title {
+
+            font-size: .85rem;
+
+            font-weight: 700;
+
+        }
+
+
+        .module-description {
+
+            color:
+                var(--admin-muted);
+
+            font-size: .72rem;
+
+            line-height: 1.5;
 
         }
 
@@ -1401,7 +1427,6 @@ function e($valor): string
 ></div>
 
 
-
 <!-- =====================================================
      SIDEBAR
 ====================================================== -->
@@ -1410,7 +1435,6 @@ function e($valor): string
     id="sidebar"
     class="sidebar"
 >
-
 
     <!-- BRAND -->
 
@@ -1430,7 +1454,7 @@ function e($valor): string
 
             <div>
 
-                ICFES Platform
+                Studia360
 
                 <div
                     class="sidebar-subtitle"
@@ -1447,18 +1471,12 @@ function e($valor): string
     </div>
 
 
-
     <!-- MENÚ -->
 
     <div class="sidebar-menu">
 
-
-        <div
-            class="sidebar-label"
-        >
-
+        <div class="sidebar-label">
             Principal
-
         </div>
 
 
@@ -1467,22 +1485,15 @@ function e($valor): string
             class="sidebar-link active"
         >
 
-            <i
-                class="bi bi-grid-1x2-fill"
-            ></i>
+            <i class="bi bi-grid-1x2-fill"></i>
 
             Dashboard
 
         </a>
 
 
-
-        <div
-            class="sidebar-label mt-2"
-        >
-
+        <div class="sidebar-label mt-2">
             Académico
-
         </div>
 
 
@@ -1491,11 +1502,33 @@ function e($valor): string
             class="sidebar-link"
         >
 
-            <i
-                class="bi bi-journal-richtext"
-            ></i>
+            <i class="bi bi-journal-richtext"></i>
 
             Contenidos
+
+        </a>
+
+
+        <a
+            href="contenidos/materias.php"
+            class="sidebar-link"
+        >
+
+            <i class="bi bi-book-half"></i>
+
+            Materias y temas
+
+        </a>
+
+
+        <a
+            href="contenidos/materias.php"
+            class="sidebar-link"
+        >
+
+            <i class="bi bi-diagram-3-fill"></i>
+
+            Estructura académica
 
         </a>
 
@@ -1505,29 +1538,7 @@ function e($valor): string
             class="sidebar-link"
         >
 
-            <i
-                class="bi bi-book-half"
-            ></i>
-
-            Temas
-
-        </a>
-
-
-        <a
-            href="#"
-            class="sidebar-link"
-            onclick="
-                alert(
-                    'La gestión de recursos estará disponible en la siguiente etapa.'
-                );
-                return false;
-            "
-        >
-
-            <i
-                class="bi bi-collection-play-fill"
-            ></i>
+            <i class="bi bi-collection-play-fill"></i>
 
             Recursos
 
@@ -1535,32 +1546,19 @@ function e($valor): string
 
 
         <a
-            href="#"
+            href="contenidos/index.php"
             class="sidebar-link"
-            onclick="
-                alert(
-                    'La gestión de evaluaciones estará disponible en la siguiente etapa.'
-                );
-                return false;
-            "
         >
 
-            <i
-                class="bi bi-clipboard-check-fill"
-            ></i>
+            <i class="bi bi-clipboard-check-fill"></i>
 
             Evaluaciones
 
         </a>
 
 
-
-        <div
-            class="sidebar-label mt-2"
-        >
-
+        <div class="sidebar-label mt-2">
             Usuarios
-
         </div>
 
 
@@ -1569,61 +1567,70 @@ function e($valor): string
             class="sidebar-link"
         >
 
-            <i
-                class="bi bi-people-fill"
-            ></i>
+            <i class="bi bi-people-fill"></i>
 
             Estudiantes
 
         </a>
 
 
-
-        <div
-            class="sidebar-label mt-2"
-        >
-
+        <div class="sidebar-label mt-2">
             Comunicación
-
         </div>
 
 
         <a
-            href="#"
+            href="#sugerencias"
             class="sidebar-link"
-            onclick="
-                alert(
-                    'La gestión de sugerencias estará disponible en la siguiente etapa.'
-                );
-                return false;
-            "
         >
 
-            <i
-                class="bi bi-chat-left-text-fill"
-            ></i>
+            <i class="bi bi-chat-left-text-fill"></i>
 
             Sugerencias
+
+        </a>
+
+
+        <div class="sidebar-label mt-2">
+            Personalización
+        </div>
+
+
+        <a
+            href="#niveles"
+            class="sidebar-link"
+        >
+
+            <i class="bi bi-bar-chart-fill"></i>
+
+            Niveles y progreso
+
+        </a>
+
+
+        <a
+            href="#coleccionables"
+            class="sidebar-link"
+        >
+
+            <i class="bi bi-stars"></i>
+
+            Coleccionables
 
         </a>
 
     </div>
 
 
-
     <!-- PERFIL -->
 
     <div class="sidebar-footer">
 
-        <div
-            class="admin-mini-profile"
-        >
+        <div class="admin-mini-profile">
 
             <div class="admin-avatar">
 
-                <i
-                    class="bi bi-person-fill"
-                ></i>
+                <i class="bi bi-person-fill"></i>
 
             </div>
 
@@ -1632,18 +1639,13 @@ function e($valor): string
                 class="flex-grow-1 overflow-hidden"
             >
 
-                <div
-                    class="admin-mini-name"
-                >
+                <div class="admin-mini-name">
 
                     <?= e($nombreCompleto) ?>
 
                 </div>
 
-
-                <div
-                    class="admin-mini-role"
-                >
+                <div class="admin-mini-role">
 
                     Administrador
 
@@ -1655,9 +1657,7 @@ function e($valor): string
 
     </div>
 
-
 </aside>
-
 
 
 <!-- =====================================================
@@ -1673,46 +1673,31 @@ function e($valor): string
 
     <header class="topbar">
 
-
-        <div
-            class="d-flex align-items-center gap-3"
-        >
+        <div class="d-flex align-items-center gap-3">
 
             <button
-                id="mobileMenuButton"
                 type="button"
-                class="
-                    btn
-                    btn-light
-                    border
-                    mobile-menu-button
-                "
+                id="mobileMenuButton"
+                class="btn btn-outline-secondary btn-sm mobile-menu-button"
                 aria-label="Abrir menú"
             >
 
-                <i
-                    class="bi bi-list fs-5"
-                ></i>
+                <i class="bi bi-list fs-5"></i>
 
             </button>
 
 
             <div>
 
-                <div
-                    class="topbar-title"
-                >
+                <div class="topbar-title">
 
                     Panel de administración
 
                 </div>
 
+                <div class="topbar-subtitle">
 
-                <div
-                    class="topbar-subtitle"
-                >
-
-                    Gestión general de ICFES Platform
+                    Gestión general de Studia360
 
                 </div>
 
@@ -1721,23 +1706,15 @@ function e($valor): string
         </div>
 
 
+        <div class="topbar-user">
 
-        <div
-            class="topbar-user"
-        >
+            <div class="text-end d-none d-sm-block">
 
-            <div
-                class="text-end d-none d-sm-block"
-            >
-
-                <div
-                    class="fw-semibold small"
-                >
+                <div class="fw-semibold small">
 
                     <?= e($nombreCompleto) ?>
 
                 </div>
-
 
                 <div
                     class="text-muted"
@@ -1751,46 +1728,30 @@ function e($valor): string
             </div>
 
 
-            <div
-                class="topbar-user-icon"
-            >
+            <div class="topbar-user-icon">
 
-                <i
-                    class="bi bi-person-fill"
-                ></i>
+                <i class="bi bi-person-fill"></i>
 
             </div>
 
 
             <a
                 href="../cerrar_sesion.php"
-                class="
-                    btn
-                    btn-outline-secondary
-                    btn-sm
-                "
+                class="btn btn-outline-secondary btn-sm"
                 title="Cerrar sesión"
             >
 
-                <i
-                    class="bi bi-box-arrow-right"
-                ></i>
+                <i class="bi bi-box-arrow-right"></i>
 
-                <span
-                    class="d-none d-md-inline"
-                >
-
+                <span class="d-none d-md-inline">
                     Salir
-
                 </span>
 
             </a>
 
         </div>
 
-
     </header>
-
 
 
     <!-- =================================================
@@ -1817,9 +1778,7 @@ function e($valor): string
 
             <div>
 
-                <h1
-                    class="welcome-title"
-                >
+                <h1 class="welcome-title">
 
                     Hola,
                     <?= e($primerNombre) ?> 👋
@@ -1827,12 +1786,10 @@ function e($valor): string
                 </h1>
 
 
-                <p
-                    class="welcome-text"
-                >
+                <p class="welcome-text">
 
                     Aquí puedes controlar y administrar
-                    el contenido de la plataforma.
+                    el contenido de Studia360.
 
                 </p>
 
@@ -1842,21 +1799,13 @@ function e($valor): string
             <div>
 
                 <a
-                    href="contenidos/index.php"
-                    class="
-                        btn
-                        btn-primary
-                    "
+                    href="contenidos/materias.php"
+                    class="btn btn-primary"
                 >
 
-                    <i
-                        class="
-                            bi
-                            bi-plus-lg
-                        "
-                    ></i>
+                    <i class="bi bi-plus-lg"></i>
 
-                    Administrar contenidos
+                    Administrar materias
 
                 </a>
 
@@ -1865,14 +1814,11 @@ function e($valor): string
         </div>
 
 
-
         <!-- =================================================
              ERROR
         ================================================== -->
 
-        <?php if (
-            $error_estadisticas
-        ): ?>
+        <?php if ($error_estadisticas): ?>
 
             <div
                 class="
@@ -1896,7 +1842,6 @@ function e($valor): string
             </div>
 
         <?php endif; ?>
-
 
 
         <!-- =================================================
@@ -1934,26 +1879,26 @@ function e($valor): string
                             stat-card-body
                             d-flex
                             justify-content-between
-                            align-items-start
+                            align-items-center
                         "
                     >
 
                         <div>
 
-                            <div
-                                class="stat-label"
-                            >
-
+                            <div class="stat-label">
                                 Estudiantes
-
                             </div>
 
+                            <div class="stat-number">
+                                <?= $total_estudiantes ?>
+                            </div>
 
                             <div
-                                class="stat-number"
+                                class="text-muted mt-1"
+                                style="font-size:.7rem;"
                             >
 
-                                <?= $total_estudiantes ?>
+                                Registrados
 
                             </div>
 
@@ -1967,21 +1912,14 @@ function e($valor): string
                             "
                         >
 
-                            <i
-                                class="bi bi-people-fill"
-                            ></i>
+                            <i class="bi bi-people-fill"></i>
 
                         </div>
 
                     </div>
 
 
-                    <div
-                        class="
-                            stat-footer
-                            bg-white
-                        "
-                    >
+                    <div class="stat-footer">
 
                         <a
                             href="estudiantes/index.php"
@@ -1990,9 +1928,7 @@ function e($valor): string
 
                             Gestionar estudiantes
 
-                            <i
-                                class="bi bi-arrow-right"
-                            ></i>
+                            <i class="bi bi-arrow-right"></i>
 
                         </a>
 
@@ -2001,7 +1937,6 @@ function e($valor): string
                 </div>
 
             </div>
-
 
 
             <!-- MATERIAS -->
@@ -2026,26 +1961,26 @@ function e($valor): string
                             stat-card-body
                             d-flex
                             justify-content-between
-                            align-items-start
+                            align-items-center
                         "
                     >
 
                         <div>
 
-                            <div
-                                class="stat-label"
-                            >
-
+                            <div class="stat-label">
                                 Materias
-
                             </div>
 
+                            <div class="stat-number">
+                                <?= $total_materias ?>
+                            </div>
 
                             <div
-                                class="stat-number"
+                                class="text-muted mt-1"
+                                style="font-size:.7rem;"
                             >
 
-                                <?= $total_materias ?>
+                                Registradas
 
                             </div>
 
@@ -2059,36 +1994,31 @@ function e($valor): string
                             "
                         >
 
-                            <i
-                                class="bi bi-book-fill"
-                            ></i>
+                            <i class="bi bi-book-fill"></i>
 
                         </div>
 
                     </div>
 
 
-                    <div
-                        class="
-                            stat-footer
-                            bg-white
-                        "
-                    >
+                    <div class="stat-footer">
 
-                        <span
-                            class="text-muted"
+                        <a
+                            href="contenidos/materias.php"
+                            class="text-success"
                         >
 
-                            Estructura académica
+                            Gestionar materias
 
-                        </span>
+                            <i class="bi bi-arrow-right"></i>
+
+                        </a>
 
                     </div>
 
                 </div>
 
             </div>
-
 
 
             <!-- TEMAS -->
@@ -2113,26 +2043,27 @@ function e($valor): string
                             stat-card-body
                             d-flex
                             justify-content-between
-                            align-items-start
+                            align-items-center
                         "
                     >
 
                         <div>
 
-                            <div
-                                class="stat-label"
-                            >
-
+                            <div class="stat-label">
                                 Temas
-
                             </div>
 
+                            <div class="stat-number">
+                                <?= $total_temas ?>
+                            </div>
 
                             <div
-                                class="stat-number"
+                                class="text-muted mt-1"
+                                style="font-size:.7rem;"
                             >
 
-                                <?= $total_temas ?>
+                                <?= $total_temas_contenido ?>
+                                con contenido
 
                             </div>
 
@@ -2146,32 +2077,23 @@ function e($valor): string
                             "
                         >
 
-                            <i
-                                class="bi bi-journal-text"
-                            ></i>
+                            <i class="bi bi-journal-text"></i>
 
                         </div>
 
                     </div>
 
 
-                    <div
-                        class="
-                            stat-footer
-                            bg-white
-                        "
-                    >
+                    <div class="stat-footer">
 
                         <a
-                            href="contenidos/index.php"
+                            href="contenidos/temas.php"
                             class="text-warning"
                         >
 
-                            Administrar temas
+                            Gestionar temas
 
-                            <i
-                                class="bi bi-arrow-right"
-                            ></i>
+                            <i class="bi bi-arrow-right"></i>
 
                         </a>
 
@@ -2180,7 +2102,6 @@ function e($valor): string
                 </div>
 
             </div>
-
 
 
             <!-- RECURSOS -->
@@ -2205,26 +2126,26 @@ function e($valor): string
                             stat-card-body
                             d-flex
                             justify-content-between
-                            align-items-start
+                            align-items-center
                         "
                     >
 
                         <div>
 
-                            <div
-                                class="stat-label"
-                            >
-
+                            <div class="stat-label">
                                 Recursos
-
                             </div>
 
+                            <div class="stat-number">
+                                <?= $total_recursos ?>
+                            </div>
 
                             <div
-                                class="stat-number"
+                                class="text-muted mt-1"
+                                style="font-size:.7rem;"
                             >
 
-                                <?= $total_recursos ?>
+                                Asociados a temas
 
                             </div>
 
@@ -2238,313 +2159,33 @@ function e($valor): string
                             "
                         >
 
-                            <i
-                                class="
-                                    bi
-                                    bi-collection-play-fill
-                                "
-                            ></i>
+                            <i class="bi bi-collection-play-fill"></i>
 
                         </div>
 
                     </div>
 
 
-                    <div
-                        class="
-                            stat-footer
-                            bg-white
-                        "
-                    >
+                    <div class="stat-footer">
 
-                        <span
-                            class="text-muted"
+                        <a
+                            href="contenidos/index.php"
+                            class="text-info"
                         >
 
-                            Recursos registrados
+                            Administrar recursos
 
-                        </span>
+                            <i class="bi bi-arrow-right"></i>
+
+                        </a>
 
                     </div>
 
                 </div>
 
             </div>
-
 
         </div>
-
-
-
-        <!-- =================================================
-             SEGUNDA FILA ESTADÍSTICAS
-        ================================================== -->
-
-        <div
-            class="
-                row
-                g-3
-                mb-4
-            "
-        >
-
-
-            <!-- EVALUACIONES -->
-
-            <div
-                class="
-                    col-12
-                    col-md-4
-                "
-            >
-
-                <div
-                    class="
-                        admin-card
-                        stat-card
-                    "
-                >
-
-                    <div
-                        class="
-                            stat-card-body
-                            d-flex
-                            justify-content-between
-                            align-items-center
-                        "
-                    >
-
-                        <div>
-
-                            <div
-                                class="stat-label"
-                            >
-
-                                Evaluaciones
-
-                            </div>
-
-
-                            <div
-                                class="stat-number"
-                            >
-
-                                <?= $total_evaluaciones ?>
-
-                            </div>
-
-
-                            <div
-                                class="
-                                    text-muted
-                                    mt-1
-                                "
-                                style="font-size:.7rem;"
-                            >
-
-                                Registradas en el sistema
-
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            class="
-                                stat-icon
-                                icon-red
-                            "
-                        >
-
-                            <i
-                                class="
-                                    bi
-                                    bi-clipboard-check-fill
-                                "
-                            ></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- SUGERENCIAS -->
-
-            <div
-                class="
-                    col-12
-                    col-md-4
-                "
-            >
-
-                <div
-                    class="
-                        admin-card
-                        stat-card
-                    "
-                >
-
-                    <div
-                        class="
-                            stat-card-body
-                            d-flex
-                            justify-content-between
-                            align-items-center
-                        "
-                    >
-
-                        <div>
-
-                            <div
-                                class="stat-label"
-                            >
-
-                                Sugerencias
-
-                            </div>
-
-
-                            <div
-                                class="stat-number"
-                            >
-
-                                <?= $total_sugerencias ?>
-
-                            </div>
-
-
-                            <div
-                                class="
-                                    text-muted
-                                    mt-1
-                                "
-                                style="font-size:.7rem;"
-                            >
-
-                                Recibidas
-
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            class="
-                                stat-icon
-                                icon-purple
-                            "
-                        >
-
-                            <i
-                                class="
-                                    bi
-                                    bi-chat-left-text-fill
-                                "
-                            ></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- CONTENIDO -->
-
-            <div
-                class="
-                    col-12
-                    col-md-4
-                "
-            >
-
-                <div
-                    class="
-                        admin-card
-                        stat-card
-                    "
-                >
-
-                    <div
-                        class="
-                            stat-card-body
-                            d-flex
-                            justify-content-between
-                            align-items-center
-                        "
-                    >
-
-                        <div>
-
-                            <div
-                                class="stat-label"
-                            >
-
-                                Contenido publicado
-
-                            </div>
-
-
-                            <div
-                                class="stat-number"
-                            >
-
-                                <?= $porcentaje_contenido ?>%
-
-                            </div>
-
-
-                            <div
-                                class="
-                                    text-muted
-                                    mt-1
-                                "
-                                style="font-size:.7rem;"
-                            >
-
-                                <?= $total_temas_contenido ?>
-                                de
-                                <?= $total_temas ?>
-                                temas
-
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            class="
-                                stat-icon
-                                icon-green
-                            "
-                        >
-
-                            <i
-                                class="
-                                    bi
-                                    bi-file-earmark-check-fill
-                                "
-                            ></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-        </div>
-
 
 
         <!-- =================================================
@@ -2576,11 +2217,7 @@ function e($valor): string
                     "
                 >
 
-                    <div
-                        class="
-                            content-management
-                        "
-                    >
+                    <div class="content-management">
 
 
                         <div
@@ -2594,20 +2231,18 @@ function e($valor): string
 
                             <div>
 
-                                <h2
-                                    class="section-title"
-                                >
+                                <h2 class="section-title">
 
                                     <i
                                         class="
                                             bi
-                                            bi-journal-richtext
+                                            bi-bar-chart-fill
                                             text-primary
                                             me-1
                                         "
                                     ></i>
 
-                                    Contenido académico
+                                    Estado del contenido
 
                                 </h2>
 
@@ -2619,50 +2254,17 @@ function e($valor): string
                                     "
                                 >
 
-                                    Estado general de los
-                                    contenidos de los temas.
+                                    Progreso general de construcción
+                                    de los temas.
 
                                 </p>
 
                             </div>
 
 
-                            <a
-                                href="contenidos/index.php"
-                                class="
-                                    btn
-                                    btn-sm
-                                    btn-outline-primary
-                                "
+                            <div
+                                class="text-end"
                             >
-
-                                Gestionar
-
-                                <i
-                                    class="
-                                        bi
-                                        bi-arrow-right
-                                    "
-                                ></i>
-
-                            </a>
-
-                        </div>
-
-
-
-                        <!-- PROGRESO -->
-
-                        <div
-                            class="
-                                d-flex
-                                align-items-end
-                                gap-3
-                                mb-3
-                            "
-                        >
-
-                            <div>
 
                                 <div
                                     class="
@@ -2681,62 +2283,7 @@ function e($valor): string
                                     "
                                 >
 
-                                    de los temas tienen
-                                    contenido publicado
-
-                                </div>
-
-                            </div>
-
-
-                            <div
-                                class="flex-grow-1"
-                            >
-
-                                <div
-                                    class="
-                                        progress
-                                        mb-2
-                                    "
-                                >
-
-                                    <div
-                                        class="
-                                            progress-bar
-                                            bg-primary
-                                        "
-                                        style="
-                                            width:
-                                            <?= $porcentaje_contenido ?>%;
-                                        "
-                                    ></div>
-
-                                </div>
-
-
-                                <div
-                                    class="
-                                        d-flex
-                                        justify-content-between
-                                        small
-                                        text-muted
-                                    "
-                                >
-
-                                    <span>
-
-                                        <?= $total_temas_contenido ?>
-                                        publicados
-
-                                    </span>
-
-
-                                    <span>
-
-                                        <?= $total_temas_sin_contenido ?>
-                                        pendientes
-
-                                    </span>
+                                    completado
 
                                 </div>
 
@@ -2745,70 +2292,40 @@ function e($valor): string
                         </div>
 
 
-
-                        <!-- ESTADOS -->
-
-                        <div
-                            class="
-                                row
-                                g-3
-                                mt-2
-                            "
-                        >
-
+                        <div class="progress mb-4">
 
                             <div
                                 class="
-                                    col-6
+                                    progress-bar
+                                    bg-primary
                                 "
-                            >
+                                role="progressbar"
+                                style="
+                                    width:
+                                    <?= $porcentaje_contenido ?>%;
+                                "
+                            ></div>
+
+                        </div>
+
+
+                        <div class="row g-3">
+
+
+                            <div class="col-6">
 
                                 <div
                                     class="
                                         p-3
                                         rounded-3
-                                    "
-                                    style="
-                                        background:#ecfdf5;
+                                        bg-light
                                     "
                                 >
 
                                     <div
                                         class="
-                                            d-flex
-                                            align-items-center
-                                            gap-2
-                                        "
-                                    >
-
-                                        <i
-                                            class="
-                                                bi
-                                                bi-check-circle-fill
-                                                text-success
-                                            "
-                                        ></i>
-
-
-                                        <span
-                                            class="
-                                                small
-                                                text-muted
-                                            "
-                                        >
-
-                                            Publicados
-
-                                        </span>
-
-                                    </div>
-
-
-                                    <div
-                                        class="
-                                            fs-4
                                             fw-bold
-                                            mt-1
+                                            fs-5
                                         "
                                     >
 
@@ -2816,64 +2333,36 @@ function e($valor): string
 
                                     </div>
 
+                                    <div
+                                        class="
+                                            text-muted
+                                            small
+                                        "
+                                    >
+
+                                        Temas con contenido
+
+                                    </div>
+
                                 </div>
 
                             </div>
 
 
-
-                            <div
-                                class="
-                                    col-6
-                                "
-                            >
+                            <div class="col-6">
 
                                 <div
                                     class="
                                         p-3
                                         rounded-3
-                                    "
-                                    style="
-                                        background:#fffbeb;
+                                        bg-light
                                     "
                                 >
 
                                     <div
                                         class="
-                                            d-flex
-                                            align-items-center
-                                            gap-2
-                                        "
-                                    >
-
-                                        <i
-                                            class="
-                                                bi
-                                                bi-pencil-square
-                                                text-warning
-                                            "
-                                        ></i>
-
-
-                                        <span
-                                            class="
-                                                small
-                                                text-muted
-                                            "
-                                        >
-
-                                            Pendientes
-
-                                        </span>
-
-                                    </div>
-
-
-                                    <div
-                                        class="
-                                            fs-4
                                             fw-bold
-                                            mt-1
+                                            fs-5
                                         "
                                     >
 
@@ -2881,13 +2370,22 @@ function e($valor): string
 
                                     </div>
 
+                                    <div
+                                        class="
+                                            text-muted
+                                            small
+                                        "
+                                    >
+
+                                        Pendientes
+
+                                    </div>
+
                                 </div>
 
                             </div>
 
-
                         </div>
-
 
                     </div>
 
@@ -2896,8 +2394,7 @@ function e($valor): string
             </div>
 
 
-
-            <!-- GRADOS -->
+            <!-- DISTRIBUCIÓN POR GRADO -->
 
             <div
                 class="
@@ -2914,51 +2411,36 @@ function e($valor): string
                     "
                 >
 
+                    <div class="mb-3">
 
-                    <div
-                        class="
-                            d-flex
-                            justify-content-between
-                            align-items-start
-                            mb-3
-                        "
-                    >
+                        <h2 class="section-title">
 
-                        <div>
-
-                            <h2
-                                class="section-title"
-                            >
-
-                                <i
-                                    class="
-                                        bi
-                                        bi-mortarboard-fill
-                                        text-primary
-                                        me-1
-                                    "
-                                ></i>
-
-                                Distribución académica
-
-                            </h2>
-
-
-                            <p
+                            <i
                                 class="
-                                    section-description
-                                    mt-1
+                                    bi
+                                    bi-mortarboard-fill
+                                    text-primary
+                                    me-1
                                 "
-                            >
+                            ></i>
 
-                                Temas y contenidos por grado.
+                            Distribución académica
 
-                            </p>
+                        </h2>
 
-                        </div>
+
+                        <p
+                            class="
+                                section-description
+                                mt-1
+                            "
+                        >
+
+                            Temas y contenidos por grado.
+
+                        </p>
 
                     </div>
-
 
 
                     <div
@@ -2972,9 +2454,7 @@ function e($valor): string
 
                         <!-- 9 -->
 
-                        <div
-                            class="grade-mini-card"
-                        >
+                        <div class="grade-mini-card">
 
                             <div
                                 class="
@@ -2986,20 +2466,11 @@ function e($valor): string
 
                                 <div>
 
-                                    <div
-                                        class="grade-number"
-                                    >
-
+                                    <div class="grade-number">
                                         9°
-
                                     </div>
 
-
-                                    <div
-                                        class="
-                                            grade-description
-                                        "
-                                    >
+                                    <div class="grade-description">
 
                                         <?= $temas_por_grado["9"] ?>
                                         temas ·
@@ -3012,20 +2483,13 @@ function e($valor): string
 
 
                                 <a
-                                    href="
-                                        contenidos/index.php?grado=9
-                                    "
+                                    href="contenidos/index.php?grado=9"
                                     class="grade-link text-primary"
                                 >
 
                                     Ver
 
-                                    <i
-                                        class="
-                                            bi
-                                            bi-arrow-right
-                                        "
-                                    ></i>
+                                    <i class="bi bi-arrow-right"></i>
 
                                 </a>
 
@@ -3034,12 +2498,9 @@ function e($valor): string
                         </div>
 
 
-
                         <!-- 10 -->
 
-                        <div
-                            class="grade-mini-card"
-                        >
+                        <div class="grade-mini-card">
 
                             <div
                                 class="
@@ -3051,20 +2512,11 @@ function e($valor): string
 
                                 <div>
 
-                                    <div
-                                        class="grade-number"
-                                    >
-
+                                    <div class="grade-number">
                                         10°
-
                                     </div>
 
-
-                                    <div
-                                        class="
-                                            grade-description
-                                        "
-                                    >
+                                    <div class="grade-description">
 
                                         <?= $temas_por_grado["10"] ?>
                                         temas ·
@@ -3077,20 +2529,13 @@ function e($valor): string
 
 
                                 <a
-                                    href="
-                                        contenidos/index.php?grado=10
-                                    "
+                                    href="contenidos/index.php?grado=10"
                                     class="grade-link text-primary"
                                 >
 
                                     Ver
 
-                                    <i
-                                        class="
-                                            bi
-                                            bi-arrow-right
-                                        "
-                                    ></i>
+                                    <i class="bi bi-arrow-right"></i>
 
                                 </a>
 
@@ -3099,12 +2544,9 @@ function e($valor): string
                         </div>
 
 
-
                         <!-- 11 -->
 
-                        <div
-                            class="grade-mini-card"
-                        >
+                        <div class="grade-mini-card">
 
                             <div
                                 class="
@@ -3116,20 +2558,11 @@ function e($valor): string
 
                                 <div>
 
-                                    <div
-                                        class="grade-number"
-                                    >
-
+                                    <div class="grade-number">
                                         11°
-
                                     </div>
 
-
-                                    <div
-                                        class="
-                                            grade-description
-                                        "
-                                    >
+                                    <div class="grade-description">
 
                                         <?= $temas_por_grado["11"] ?>
                                         temas ·
@@ -3142,20 +2575,13 @@ function e($valor): string
 
 
                                 <a
-                                    href="
-                                        contenidos/index.php?grado=11
-                                    "
+                                    href="contenidos/index.php?grado=11"
                                     class="grade-link text-primary"
                                 >
 
                                     Ver
 
-                                    <i
-                                        class="
-                                            bi
-                                            bi-arrow-right
-                                        "
-                                    ></i>
+                                    <i class="bi bi-arrow-right"></i>
 
                                 </a>
 
@@ -3163,16 +2589,13 @@ function e($valor): string
 
                         </div>
 
-
                     </div>
 
                 </div>
 
             </div>
 
-
         </div>
-
 
 
         <!-- =================================================
@@ -3187,14 +2610,9 @@ function e($valor): string
             "
         >
 
+            <div class="mb-3">
 
-            <div
-                class="mb-3"
-            >
-
-                <h2
-                    class="section-title"
-                >
+                <h2 class="section-title">
 
                     Acciones rápidas
 
@@ -3216,13 +2634,7 @@ function e($valor): string
             </div>
 
 
-
-            <div
-                class="
-                    row
-                    g-3
-                "
-            >
+            <div class="row g-3">
 
 
                 <!-- CONTENIDOS -->
@@ -3259,24 +2671,17 @@ function e($valor): string
 
                         <div>
 
-                            <div
-                                class="
-                                    quick-action-title
-                                "
-                            >
+                            <div class="quick-action-title">
 
                                 Contenidos
 
                             </div>
 
 
-                            <div
-                                class="
-                                    quick-action-text
-                                "
-                            >
+                            <div class="quick-action-text">
 
-                                Editar contenido de temas
+                                Administra el contenido
+                                de los temas.
 
                             </div>
 
@@ -3286,6 +2691,115 @@ function e($valor): string
 
                 </div>
 
+
+                <!-- MATERIAS -->
+
+                <div
+                    class="
+                        col-12
+                        col-md-6
+                        col-xl-3
+                    "
+                >
+
+                    <a
+                        href="contenidos/materias.php"
+                        class="quick-action"
+                    >
+
+                        <div
+                            class="
+                                quick-action-icon
+                                icon-green
+                            "
+                        >
+
+                            <i
+                                class="
+                                    bi
+                                    bi-book-fill
+                                "
+                            ></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="quick-action-title">
+
+                                Materias
+
+                            </div>
+
+
+                            <div class="quick-action-text">
+
+                                Crea y modifica materias
+                                y su estructura.
+
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                </div>
+
+
+                <!-- TEMAS -->
+
+                <div
+                    class="
+                        col-12
+                        col-md-6
+                        col-xl-3
+                    "
+                >
+
+                    <a
+                        href="contenidos/materias.php"
+                        class="quick-action"
+                    >
+
+                        <div
+                            class="
+                                quick-action-icon
+                                icon-yellow
+                            "
+                        >
+
+                            <i
+                                class="
+                                    bi
+                                    bi-journal-text
+                                "
+                            ></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="quick-action-title">
+
+                                Temas
+
+                            </div>
+
+
+                            <div class="quick-action-text">
+
+                                Crea, organiza y edita
+                                los temas.
+
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                </div>
 
 
                 <!-- ESTUDIANTES -->
@@ -3306,7 +2820,7 @@ function e($valor): string
                         <div
                             class="
                                 quick-action-icon
-                                icon-green
+                                icon-purple
                             "
                         >
 
@@ -3322,24 +2836,17 @@ function e($valor): string
 
                         <div>
 
-                            <div
-                                class="
-                                    quick-action-title
-                                "
-                            >
+                            <div class="quick-action-title">
 
                                 Estudiantes
 
                             </div>
 
 
-                            <div
-                                class="
-                                    quick-action-text
-                                "
-                            >
+                            <div class="quick-action-text">
 
-                                Gestionar usuarios
+                                Consulta y administra
+                                estudiantes.
 
                             </div>
 
@@ -3349,90 +2856,172 @@ function e($valor): string
 
                 </div>
 
+            </div>
+
+        </div>
 
 
-                <!-- TEMAS -->
+        <!-- =================================================
+             RESUMEN DEL SISTEMA
+        ================================================== -->
 
-                <div
+        <div
+            class="
+                admin-card
+                p-4
+                mb-4
+            "
+        >
+
+            <div class="mb-3">
+
+                <h2 class="section-title">
+
+                    Resumen del sistema
+
+                </h2>
+
+
+                <p
                     class="
-                        col-12
-                        col-md-6
-                        col-xl-3
+                        section-description
+                        mt-1
                     "
                 >
 
-                    <a
-                        href="contenidos/index.php"
-                        class="quick-action"
-                    >
+                    Estado actual de los módulos de Studia360.
+
+                </p>
+
+            </div>
+
+
+            <div class="row g-3">
+
+
+                <!-- CONTENIDOS -->
+
+                <div class="col-12 col-md-6 col-xl-3">
+
+                    <div class="module-card">
 
                         <div
                             class="
-                                quick-action-icon
-                                icon-yellow
+                                module-icon
+                                icon-blue
+                                mb-3
                             "
                         >
 
                             <i
                                 class="
                                     bi
-                                    bi-pencil-square
+                                    bi-journal-richtext
                                 "
                             ></i>
 
                         </div>
 
 
-                        <div>
+                        <div class="module-title mb-1">
 
-                            <div
-                                class="
-                                    quick-action-title
-                                "
-                            >
-
-                                Editar temas
-
-                            </div>
-
-
-                            <div
-                                class="
-                                    quick-action-text
-                                "
-                            >
-
-                                Descripción y contenido
-
-                            </div>
+                            Contenidos
 
                         </div>
 
-                    </a>
+
+                        <div class="module-description mb-3">
+
+                            Editor visual para crear
+                            y mantener las lecciones.
+
+                        </div>
+
+
+                        <span
+                            class="
+                                badge
+                                rounded-pill
+                                text-bg-success
+                            "
+                        >
+
+                            Conectado
+
+                        </span>
+
+                    </div>
 
                 </div>
 
 
+                <!-- MATERIAS -->
 
-                <!-- RECURSOS -->
+                <div class="col-12 col-md-6 col-xl-3">
 
-                <div
-                    class="
-                        col-12
-                        col-md-6
-                        col-xl-3
-                    "
-                >
-
-                    <a
-                        href="contenidos/index.php"
-                        class="quick-action"
-                    >
+                    <div class="module-card">
 
                         <div
                             class="
-                                quick-action-icon
+                                module-icon
+                                icon-green
+                                mb-3
+                            "
+                        >
+
+                            <i
+                                class="
+                                    bi
+                                    bi-book-fill
+                                "
+                            ></i>
+
+                        </div>
+
+
+                        <div class="module-title mb-1">
+
+                            Materias
+
+                        </div>
+
+
+                        <div class="module-description mb-3">
+
+                            Organización de materias
+                            y estructura académica.
+
+                        </div>
+
+
+                        <span
+                            class="
+                                badge
+                                rounded-pill
+                                text-bg-success
+                            "
+                        >
+
+                            Disponible
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RECURSOS -->
+
+                <div class="col-12 col-md-6 col-xl-3">
+
+                    <div class="module-card">
+
+                        <div
+                            class="
+                                module-icon
                                 icon-cyan
+                                mb-3
                             "
                         >
 
@@ -3446,102 +3035,427 @@ function e($valor): string
                         </div>
 
 
-                        <div>
+                        <div class="module-title mb-1">
 
-                            <div
-                                class="
-                                    quick-action-title
-                                "
-                            >
-
-                                Recursos
-
-                            </div>
-
-
-                            <div
-                                class="
-                                    quick-action-text
-                                "
-                            >
-
-                                Acceso desde cada tema
-
-                            </div>
+                            Recursos
 
                         </div>
 
-                    </a>
+
+                        <div class="module-description mb-3">
+
+                            PDFs, vídeos, enlaces y
+                            actividades complementarias.
+
+                        </div>
+
+
+                        <span
+                            class="
+                                badge
+                                rounded-pill
+                                text-bg-warning
+                            "
+                        >
+
+                            En desarrollo
+
+                        </span>
+
+                    </div>
 
                 </div>
 
 
-            </div>
+                <!-- EVALUACIONES -->
 
+                <div class="col-12 col-md-6 col-xl-3">
+
+                    <div class="module-card">
+
+                        <div
+                            class="
+                                module-icon
+                                icon-yellow
+                                mb-3
+                            "
+                        >
+
+                            <i
+                                class="
+                                    bi
+                                    bi-clipboard-check-fill
+                                "
+                            ></i>
+
+                        </div>
+
+
+                        <div class="module-title mb-1">
+
+                            Evaluaciones
+
+                        </div>
+
+
+                        <div class="module-description mb-3">
+
+                            Sistema de actividades y
+                            evaluación del aprendizaje.
+
+                        </div>
+
+
+                        <span
+                            class="
+                                badge
+                                rounded-pill
+                                text-bg-warning
+                            "
+                        >
+
+                            En desarrollo
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SUGERENCIAS -->
+
+                <div
+                    class="col-12 col-md-6 col-xl-3"
+                    id="sugerencias"
+                >
+
+                    <div class="module-card">
+
+                        <div
+                            class="
+                                module-icon
+                                icon-purple
+                                mb-3
+                            "
+                        >
+
+                            <i
+                                class="
+                                    bi
+                                    bi-chat-left-text-fill
+                                "
+                            ></i>
+
+                        </div>
+
+
+                        <div class="module-title mb-1">
+
+                            Sugerencias
+
+                        </div>
+
+
+                        <div class="module-description mb-3">
+
+                            Buzón para ideas, solicitudes
+                            y reclamos de estudiantes.
+
+                        </div>
+
+
+                        <span
+                            class="
+                                badge
+                                rounded-pill
+                                text-bg-warning
+                            "
+                        >
+
+                            En desarrollo
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NIVELES -->
+
+                <div
+                    class="col-12 col-md-6 col-xl-3"
+                    id="niveles"
+                >
+
+                    <div class="module-card">
+
+                        <div
+                            class="
+                                module-icon
+                                icon-blue
+                                mb-3
+                            "
+                        >
+
+                            <i
+                                class="
+                                    bi
+                                    bi-bar-chart-fill
+                                "
+                            ></i>
+
+                        </div>
+
+
+                        <div class="module-title mb-1">
+
+                            Niveles y progreso
+
+                        </div>
+
+
+                        <div class="module-description mb-3">
+
+                            Configuración de puntos,
+                            niveles y progreso.
+
+                        </div>
+
+
+                        <span
+                            class="
+                                badge
+                                rounded-pill
+                                text-bg-warning
+                            "
+                        >
+
+                            En desarrollo
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- COLECCIONABLES -->
+
+                <div
+                    class="col-12 col-md-6 col-xl-3"
+                    id="coleccionables"
+                >
+
+                    <div class="module-card">
+
+                        <div
+                            class="
+                                module-icon
+                                icon-purple
+                                mb-3
+                            "
+                        >
+
+                            <i
+                                class="
+                                    bi
+                                    bi-stars
+                                "
+                            ></i>
+
+                        </div>
+
+
+                        <div class="module-title mb-1">
+
+                            Coleccionables
+
+                        </div>
+
+
+                        <div class="module-description mb-3">
+
+                            Personalización, avatares y
+                            objetos desbloqueables.
+
+                        </div>
+
+
+                        <span
+                            class="
+                                badge
+                                rounded-pill
+                                text-bg-warning
+                            "
+                        >
+
+                            En desarrollo
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PROGRESO -->
+
+                <div class="col-12 col-md-6 col-xl-3">
+
+                    <div class="module-card">
+
+                        <div
+                            class="
+                                module-icon
+                                icon-green
+                                mb-3
+                            "
+                        >
+
+                            <i
+                                class="
+                                    bi
+                                    bi-graph-up-arrow
+                                "
+                            ></i>
+
+                        </div>
+
+
+                        <div class="module-title mb-1">
+
+                            Progreso estudiantil
+
+                        </div>
+
+
+                        <div class="module-description mb-3">
+
+                            Seguimiento del avance de cada
+                            estudiante.
+
+                        </div>
+
+
+                        <span
+                            class="
+                                badge
+                                rounded-pill
+                                text-bg-warning
+                            "
+                        >
+
+                            En desarrollo
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 
 
-
         <!-- =================================================
-             RESUMEN INFERIOR
+             BLOQUE FINAL
         ================================================== -->
 
         <div
             class="
-                row
-                g-3
+                admin-card
+                p-4
+            "
+            style="
+                background:
+                linear-gradient(
+                    145deg,
+                    #1d4ed8,
+                    #2563eb
+                );
+                color:white;
             "
         >
 
-
-            <!-- RESUMEN DE CONTENIDOS -->
-
             <div
                 class="
-                    col-12
-                    col-lg-8
+                    row
+                    align-items-center
+                    g-4
                 "
             >
 
-                <div
-                    class="
-                        admin-card
-                        p-4
-                        h-100
-                    "
-                >
-
+                <div class="col-12 col-lg-8">
 
                     <div
                         class="
                             d-flex
-                            justify-content-between
                             align-items-center
-                            mb-3
+                            gap-3
                         "
                     >
 
+                        <div
+                            class="
+                                d-flex
+                                align-items-center
+                                justify-content-center
+                            "
+                            style="
+                                width:55px;
+                                height:55px;
+                                border-radius:14px;
+                                background:
+                                rgba(255,255,255,.15);
+                            "
+                        >
+
+                            <i
+                                class="
+                                    bi
+                                    bi-magic
+                                    fs-4
+                                "
+                            ></i>
+
+                        </div>
+
+
                         <div>
 
-                            <h2
-                                class="section-title"
+                            <h3
+                                class="
+                                    mb-1
+                                    fw-bold
+                                "
+                                style="
+                                    font-size:1.2rem;
+                                "
                             >
 
-                                Estado del proyecto
+                                Construye Studia360
 
-                            </h2>
+                            </h3>
 
 
                             <p
                                 class="
-                                    section-description
-                                    mt-1
+                                    mb-0
+                                    opacity-75
+                                "
+                                style="
+                                    font-size:.82rem;
+                                    line-height:1.6;
                                 "
                             >
 
-                                Resumen de los módulos
-                                actualmente conectados.
+                                Crea materias, organiza temas y
+                                utiliza el editor visual para
+                                construir contenido de apoyo
+                                para los estudiantes.
 
                             </p>
 
@@ -3549,373 +3463,18 @@ function e($valor): string
 
                     </div>
 
-
-
-                    <div
-                        class="
-                            table-responsive
-                        "
-                    >
-
-                        <table
-                            class="
-                                table
-                                align-middle
-                                mb-0
-                            "
-                        >
-
-                            <thead>
-
-                                <tr>
-
-                                    <th
-                                        class="border-0"
-                                    >
-
-                                        Módulo
-
-                                    </th>
-
-                                    <th
-                                        class="border-0"
-                                    >
-
-                                        Registros
-
-                                    </th>
-
-                                    <th
-                                        class="border-0"
-                                    >
-
-                                        Estado
-
-                                    </th>
-
-                                </tr>
-
-                            </thead>
-
-
-                            <tbody>
-
-
-                                <tr>
-
-                                    <td>
-
-                                        <i
-                                            class="
-                                                bi
-                                                bi-people-fill
-                                                text-primary
-                                                me-2
-                                            "
-                                        ></i>
-
-                                        Estudiantes
-
-                                    </td>
-
-                                    <td>
-
-                                        <?= $total_estudiantes ?>
-
-                                    </td>
-
-                                    <td>
-
-                                        <span
-                                            class="
-                                                badge
-                                                rounded-pill
-                                                text-bg-success
-                                            "
-                                        >
-
-                                            Disponible
-
-                                        </span>
-
-                                    </td>
-
-                                </tr>
-
-
-
-                                <tr>
-
-                                    <td>
-
-                                        <i
-                                            class="
-                                                bi
-                                                bi-journal-text
-                                                text-warning
-                                                me-2
-                                            "
-                                        ></i>
-
-                                        Temas
-
-                                    </td>
-
-                                    <td>
-
-                                        <?= $total_temas ?>
-
-                                    </td>
-
-                                    <td>
-
-                                        <span
-                                            class="
-                                                badge
-                                                rounded-pill
-                                                text-bg-success
-                                            "
-                                        >
-
-                                            Disponible
-
-                                        </span>
-
-                                    </td>
-
-                                </tr>
-
-
-
-                                <tr>
-
-                                    <td>
-
-                                        <i
-                                            class="
-                                                bi
-                                                bi-file-earmark-richtext
-                                                text-primary
-                                                me-2
-                                            "
-                                        ></i>
-
-                                        Contenido educativo
-
-                                    </td>
-
-                                    <td>
-
-                                        <?= $total_temas_contenido ?>
-
-                                    </td>
-
-                                    <td>
-
-                                        <span
-                                            class="
-                                                badge
-                                                rounded-pill
-                                                text-bg-success
-                                            "
-                                        >
-
-                                            Editor activo
-
-                                        </span>
-
-                                    </td>
-
-                                </tr>
-
-
-
-                                <tr>
-
-                                    <td>
-
-                                        <i
-                                            class="
-                                                bi
-                                                bi-collection-play-fill
-                                                text-info
-                                                me-2
-                                            "
-                                        ></i>
-
-                                        Recursos
-
-                                    </td>
-
-                                    <td>
-
-                                        <?= $total_recursos ?>
-
-                                    </td>
-
-                                    <td>
-
-                                        <span
-                                            class="
-                                                badge
-                                                rounded-pill
-                                                text-bg-success
-                                            "
-                                        >
-
-                                            Disponible
-
-                                        </span>
-
-                                    </td>
-
-                                </tr>
-
-
-
-                                <tr>
-
-                                    <td>
-
-                                        <i
-                                            class="
-                                                bi
-                                                bi-clipboard-check-fill
-                                                text-danger
-                                                me-2
-                                            "
-                                        ></i>
-
-                                        Evaluaciones
-
-                                    </td>
-
-                                    <td>
-
-                                        <?= $total_evaluaciones ?>
-
-                                    </td>
-
-                                    <td>
-
-                                        <span
-                                            class="
-                                                badge
-                                                rounded-pill
-                                                text-bg-warning
-                                            "
-                                        >
-
-                                            En desarrollo
-
-                                        </span>
-
-                                    </td>
-
-                                </tr>
-
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-
                 </div>
 
-            </div>
-
-
-
-            <!-- ACCESO CONTENIDOS -->
-
-            <div
-                class="
-                    col-12
-                    col-lg-4
-                "
-            >
 
                 <div
                     class="
-                        admin-card
-                        p-4
-                        h-100
-                    "
-                    style="
-                        background:
-                        linear-gradient(
-                            145deg,
-                            #1d4ed8,
-                            #2563eb
-                        );
-                        color:white;
+                        col-12
+                        col-lg-4
                     "
                 >
 
-
-                    <div
-                        class="
-                            d-flex
-                            align-items-center
-                            justify-content-center
-                        "
-                        style="
-                            width:55px;
-                            height:55px;
-                            border-radius:14px;
-                            background:
-                            rgba(255,255,255,.15);
-                        "
-                    >
-
-                        <i
-                            class="
-                                bi
-                                bi-magic
-                                fs-4
-                            "
-                        ></i>
-
-                    </div>
-
-
-                    <h3
-                        class="
-                            mt-4
-                            mb-2
-                            fw-bold
-                        "
-                        style="font-size:1.25rem;"
-                    >
-
-                        Construye tus temas
-
-                    </h3>
-
-
-                    <p
-                        class="
-                            mb-4
-                            opacity-75
-                        "
-                        style="
-                            font-size:.82rem;
-                            line-height:1.6;
-                        "
-                    >
-
-                        Utiliza el editor visual para crear,
-                        ampliar y mantener actualizado el
-                        contenido educativo que verán los
-                        estudiantes.
-
-                    </p>
-
-
                     <a
-                        href="contenidos/index.php"
+                        href="contenidos/materias.php"
                         class="
                             btn
                             btn-light
@@ -3927,18 +3486,17 @@ function e($valor): string
                             class="
                                 bi
                                 bi-pencil-square
+                                me-1
                             "
                         ></i>
 
-                        Abrir editor de contenidos
+                        Administrar estructura
 
                     </a>
-
 
                 </div>
 
             </div>
-
 
         </div>
 
@@ -3946,7 +3504,6 @@ function e($valor): string
     </main>
 
 </div>
-
 
 
 <!-- =====================================================

@@ -1,12 +1,14 @@
 <?php
 
-require_once __DIR__ . "/../../includes/seguridad.php";
+require_once __DIR__ . "/../includes/seguridad.php";
 
-exigirAdmin();
+$usuarioActual = exigirEstudianteOAdmin();
+$rolActual = (int)($usuarioActual['id_rol'] ?? 0);
+$esAdministrador = ($rolActual === 1);
 
 
 // =========================================================
-// CONFIGURACIÓN
+// DATOS BÁSICOS
 // =========================================================
 
 $idTema = filter_input(
@@ -17,49 +19,57 @@ $idTema = filter_input(
 
 if (!$idTema || $idTema <= 0) {
 
-    header("Location: ../dashboard.php");
+    redireccionarDashboardUsuario($usuarioActual);
     exit;
 
 }
 
 
 $errores = [];
-$mensajes = [];
 
 
 // =========================================================
-// CSRF
+// USUARIO
 // =========================================================
 
-if (
-    empty($_SESSION["csrf_contenido_tema"])
-) {
+$idUsuario =
+    (int)($usuarioActual["id_usuario"] ?? 0);
 
-    $_SESSION["csrf_contenido_tema"] =
-        bin2hex(random_bytes(32));
+$nombres =
+    trim(($usuarioActual["nombres"] ?? $_SESSION["nombres"] ?? "Usuario"));
 
+if ($nombres === "") {
+    $nombres = $esAdministrador ? "Administrador" : "Estudiante";
 }
 
-$csrfToken =
-    $_SESSION["csrf_contenido_tema"];
-
 
 // =========================================================
-// OBTENER TEMA
+// TEMA
 // =========================================================
 
 $tema = null;
+$contenido = null;
+$recursos = [];
+$progreso = 0;
+
 
 try {
 
-    $sql = "
+    /*
+    |---------------------------------------------------------
+    | TEMA
+    |---------------------------------------------------------
+    */
+
+    $sqlTema = "
         SELECT
             t.id_tema,
             t.nombre AS tema_nombre,
             t.descripcion AS tema_descripcion,
             t.grado,
             m.id_materia,
-            m.nombre AS materia_nombre
+            m.nombre AS materia_nombre,
+            m.descripcion AS materia_descripcion
 
         FROM temas t
 
@@ -71,15 +81,19 @@ try {
         LIMIT 1
     ";
 
-    $stmt =
-        $conexion->prepare($sql);
+    $stmtTema =
+        $conexion->prepare(
+            $sqlTema
+        );
 
-    $stmt->execute([
+    $stmtTema->execute([
         $idTema
     ]);
 
     $tema =
-        $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmtTema->fetch(
+            PDO::FETCH_ASSOC
+        );
 
 
     if (!$tema) {
@@ -89,25 +103,14 @@ try {
 
     }
 
-} catch (PDOException $e) {
 
-    $errores[] =
-        "No fue posible cargar la información del tema.";
+    /*
+    |---------------------------------------------------------
+    | CONTENIDO
+    |---------------------------------------------------------
+    */
 
-}
-
-
-// =========================================================
-// CONTENIDO EXISTENTE
-// =========================================================
-
-$contenido = "";
-$estadoContenido = "Publicado";
-$fechaActualizacion = null;
-
-if ($tema) {
-
-    try {
+    if ($tema) {
 
         $sqlContenido = "
             SELECT
@@ -119,6 +122,8 @@ if ($tema) {
             FROM contenido_temas
 
             WHERE id_tema = ?
+
+            AND estado = 'Publicado'
 
             LIMIT 1
         ";
@@ -132,262 +137,21 @@ if ($tema) {
             $idTema
         ]);
 
-        $contenidoExistente =
+        $contenido =
             $stmtContenido->fetch(
                 PDO::FETCH_ASSOC
             );
 
-
-        if ($contenidoExistente) {
-
-            $contenido =
-                $contenidoExistente["contenido"];
-
-            $estadoContenido =
-                $contenidoExistente["estado"];
-
-            $fechaActualizacion =
-                $contenidoExistente[
-                    "fecha_actualizacion"
-                ];
-
-        }
-
-    } catch (PDOException $e) {
-
-        $errores[] =
-            "No fue posible cargar el contenido existente.";
-
-    }
-
-}
-
-
-// =========================================================
-// GUARDAR CONTENIDO
-// =========================================================
-
-if (
-    $_SERVER["REQUEST_METHOD"] === "POST"
-    && $tema
-) {
-
-    $tokenFormulario =
-        $_POST["csrf_token"] ?? "";
-
-
-    if (
-        !hash_equals(
-            $csrfToken,
-            $tokenFormulario
-        )
-    ) {
-
-        $errores[] =
-            "La sesión de seguridad ha expirado. Recarga la página e inténtalo nuevamente.";
-
-    }
-
-
-    $contenidoFormulario =
-        $_POST["contenido"] ?? "";
-
-    $estadoFormulario =
-        $_POST["estado"] ?? "Borrador";
-
-
-    if (
-        !in_array(
-            $estadoFormulario,
-            ["Publicado", "Borrador"],
-            true
-        )
-    ) {
-
-        $estadoFormulario =
-            "Borrador";
-
     }
 
 
     /*
     |---------------------------------------------------------
-    | VALIDACIÓN
+    | RECURSOS
     |---------------------------------------------------------
     */
 
-    $contenidoTexto =
-        trim(
-            strip_tags(
-                $contenidoFormulario
-            )
-        );
-
-
-    if (
-        $contenidoTexto === ""
-    ) {
-
-        $errores[] =
-            "El contenido del tema no puede estar vacío.";
-
-    }
-
-
-    /*
-    |---------------------------------------------------------
-    | GUARDAR
-    |---------------------------------------------------------
-    */
-
-    if (
-        empty($errores)
-    ) {
-
-        try {
-
-            /*
-            |-------------------------------------------------
-            | ¿YA EXISTE?
-            |-------------------------------------------------
-            */
-
-            $sqlExiste = "
-                SELECT
-                    id_contenido
-
-                FROM contenido_temas
-
-                WHERE id_tema = ?
-
-                LIMIT 1
-            ";
-
-            $stmtExiste =
-                $conexion->prepare(
-                    $sqlExiste
-                );
-
-            $stmtExiste->execute([
-                $idTema
-            ]);
-
-            $idContenido =
-                $stmtExiste->fetchColumn();
-
-
-            /*
-            |-------------------------------------------------
-            | ACTUALIZAR
-            |-------------------------------------------------
-            */
-
-            if ($idContenido) {
-
-                $sqlActualizar = "
-                    UPDATE contenido_temas
-
-                    SET
-                        contenido = ?,
-                        estado = ?,
-                        fecha_actualizacion = CURRENT_TIMESTAMP
-
-                    WHERE id_tema = ?
-                ";
-
-                $stmtActualizar =
-                    $conexion->prepare(
-                        $sqlActualizar
-                    );
-
-                $stmtActualizar->execute([
-                    $contenidoFormulario,
-                    $estadoFormulario,
-                    $idTema
-                ]);
-
-            }
-
-            /*
-            |-------------------------------------------------
-            | INSERTAR
-            |-------------------------------------------------
-            */
-
-            else {
-
-                $sqlInsertar = "
-                    INSERT INTO contenido_temas
-                    (
-                        id_tema,
-                        contenido,
-                        estado
-                    )
-
-                    VALUES
-                    (
-                        ?,
-                        ?,
-                        ?
-                    )
-                ";
-
-                $stmtInsertar =
-                    $conexion->prepare(
-                        $sqlInsertar
-                    );
-
-                $stmtInsertar->execute([
-                    $idTema,
-                    $contenidoFormulario,
-                    $estadoFormulario
-                ]);
-
-            }
-
-
-            /*
-            |-------------------------------------------------
-            | ACTUALIZAR VARIABLES
-            |-------------------------------------------------
-            */
-
-            $contenido =
-                $contenidoFormulario;
-
-            $estadoContenido =
-                $estadoFormulario;
-
-            $fechaActualizacion =
-                date("Y-m-d H:i:s");
-
-
-            $mensajes[] =
-                "El contenido del tema se guardó correctamente.";
-
-
-        } catch (PDOException $e) {
-
-            $errores[] =
-                "No fue posible guardar el contenido. " .
-                $e->getMessage();
-
-        }
-
-    }
-
-}
-
-
-// =========================================================
-// RECURSOS DEL TEMA
-// =========================================================
-
-$recursos = [];
-
-if ($tema) {
-
-    try {
+    if ($tema) {
 
         $sqlRecursos = "
             SELECT
@@ -405,6 +169,8 @@ if ($tema) {
             FROM recursos
 
             WHERE id_tema = ?
+
+            AND estado = 'Activo'
 
             ORDER BY
                 id_recurso ASC
@@ -424,14 +190,99 @@ if ($tema) {
                 PDO::FETCH_ASSOC
             );
 
-    } catch (PDOException $e) {
+    }
 
-        $errores[] =
-            "No fue posible cargar los recursos del tema.";
+
+    /*
+    |---------------------------------------------------------
+    | PROGRESO
+    |---------------------------------------------------------
+    */
+
+    if (
+        $tema &&
+        $idUsuario > 0
+    ) {
+
+        $sqlProgreso = "
+            SELECT
+                porcentaje_avance
+
+            FROM progreso
+
+            WHERE id_usuario = ?
+
+            AND id_tema = ?
+
+            LIMIT 1
+        ";
+
+        $stmtProgreso =
+            $conexion->prepare(
+                $sqlProgreso
+            );
+
+        $stmtProgreso->execute([
+            $idUsuario,
+            $idTema
+        ]);
+
+        $avance =
+            $stmtProgreso->fetchColumn();
+
+
+        if (
+            $avance !== false
+        ) {
+
+            $progreso =
+                (float)$avance;
+
+        }
 
     }
 
+
+} catch (PDOException $e) {
+
+    $errores[] =
+        "No fue posible cargar el contenido del tema.";
+
 }
+
+
+// =========================================================
+// NORMALIZAR PROGRESO
+// =========================================================
+
+if ($progreso < 0) {
+
+    $progreso = 0;
+
+}
+
+if ($progreso > 100) {
+
+    $progreso = 100;
+
+}
+
+$progreso =
+    round($progreso);
+
+
+// =========================================================
+// DETERMINAR SI EXISTE CONTENIDO
+// =========================================================
+
+$hayContenido =
+    !empty($contenido)
+    &&
+    isset($contenido["contenido"])
+    &&
+    trim(
+        $contenido["contenido"]
+    ) !== "";
 
 ?>
 
@@ -455,14 +306,12 @@ if ($tema) {
             $tema["tema_nombre"] ?? "Tema"
         ) ?>
 
-        | Administración
+        | Studia360
 
     </title>
 
 
-    <!-- =====================================================
-         BOOTSTRAP
-    ====================================================== -->
+    <!-- Bootstrap -->
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -470,23 +319,11 @@ if ($tema) {
     >
 
 
-    <!-- =====================================================
-         BOOTSTRAP ICONS
-    ====================================================== -->
+    <!-- Bootstrap Icons -->
 
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    >
-
-
-    <!-- =====================================================
-         SUMMERNOTE
-    ====================================================== -->
-
-    <link
-        rel="stylesheet"
-        href="../../assets/summernote/summernote-lite.min.css"
     >
 
 
@@ -512,7 +349,7 @@ if ($tema) {
         }
 
 
-        .encabezado {
+        .hero-tema {
 
             background:
                 linear-gradient(
@@ -537,7 +374,10 @@ if ($tema) {
         }
 
 
-        .editor-card {
+        .contenido-card {
+
+            background:
+                white;
 
             border:
                 0;
@@ -552,171 +392,53 @@ if ($tema) {
         }
 
 
-        .editor-card .card-header {
-
-            background:
-                white;
-
-            border-bottom:
-                1px solid #edf0f4;
-
-            border-radius:
-                18px 18px 0 0;
-
-        }
-
-
-        .note-editor {
-
-            border:
-                1px solid #dee2e6 !important;
-
-            border-radius:
-                0 0 10px 10px;
-
-            overflow:
-                hidden;
-
-        }
-
-
-        .note-toolbar {
-
-            background:
-                #f8f9fa !important;
-
-            border-bottom:
-                1px solid #dee2e6 !important;
-
-        }
-
-
-        .note-editable {
-
-            min-height:
-                520px;
-
-            background:
-                white;
+        .contenido-educativo {
 
             font-size:
-                16px;
+                17px;
 
             line-height:
-                1.75;
-
-            padding:
-                30px !important;
-
-        }
-
-
-        .estado-badge {
-
-            font-size:
-                .8rem;
-
-        }
-
-
-        .info-box {
-
-            border:
-                0;
-
-            border-radius:
-                14px;
-
-            background:
-                #e9f7ff;
+                1.8;
 
             color:
-                #075985;
+                #263244;
 
         }
 
 
-        .recurso-item {
+        .contenido-educativo h1,
+        .contenido-educativo h2,
+        .contenido-educativo h3,
+        .contenido-educativo h4,
+        .contenido-educativo h5,
+        .contenido-educativo h6 {
 
-            border:
-                1px solid #e8edf3;
-
-            border-radius:
-                12px;
-
-            padding:
-                14px;
-
-            background:
-                white;
-
-        }
-
-
-        .recurso-item + .recurso-item {
+            color:
+                #172033;
 
             margin-top:
-                10px;
+                1.5em;
+
+            margin-bottom:
+                .7em;
+
+            line-height:
+                1.3;
 
         }
 
 
-        .acciones {
+        .contenido-educativo h1:first-child,
+        .contenido-educativo h2:first-child,
+        .contenido-educativo h3:first-child {
 
-            position:
-                sticky;
-
-            bottom:
-                15px;
-
-            z-index:
-                10;
+            margin-top:
+                0;
 
         }
 
 
-        .acciones-inner {
-
-            background:
-                rgba(255,255,255,.96);
-
-            backdrop-filter:
-                blur(8px);
-
-            border:
-                1px solid #e3e8ef;
-
-            border-radius:
-                14px;
-
-            padding:
-                12px 16px;
-
-            box-shadow:
-                0 8px 25px
-                rgba(0,0,0,.10);
-
-        }
-
-
-        .preview-contenido {
-
-            background:
-                white;
-
-            border:
-                1px solid #e5eaf0;
-
-            border-radius:
-                14px;
-
-            padding:
-                25px;
-
-        }
-
-
-        .preview-contenido img {
+        .contenido-educativo img {
 
             max-width:
                 100%;
@@ -724,21 +446,176 @@ if ($tema) {
             height:
                 auto;
 
+            border-radius:
+                10px;
+
         }
 
 
-        .preview-contenido table {
+        .contenido-educativo table {
 
             width:
                 100%;
 
+            border-collapse:
+                collapse;
+
+            margin:
+                20px 0;
+
         }
 
 
-        .preview-contenido iframe {
+        .contenido-educativo table td,
+        .contenido-educativo table th {
+
+            border:
+                1px solid #dee2e6;
+
+            padding:
+                10px;
+
+        }
+
+
+        .contenido-educativo blockquote {
+
+            border-left:
+                4px solid #0d6efd;
+
+            padding:
+                12px 18px;
+
+            background:
+                #f0f6ff;
+
+            margin:
+                20px 0;
+
+            border-radius:
+                0 10px 10px 0;
+
+        }
+
+
+        .contenido-educativo iframe {
 
             max-width:
                 100%;
+
+            width:
+                100%;
+
+            min-height:
+                400px;
+
+            border:
+                0;
+
+            border-radius:
+                12px;
+
+        }
+
+
+        .recurso-card {
+
+            border:
+                1px solid #e8edf3;
+
+            border-radius:
+                14px;
+
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease;
+
+            height:
+                100%;
+
+        }
+
+
+        .recurso-card:hover {
+
+            transform:
+                translateY(-3px);
+
+            box-shadow:
+                0 8px 20px
+                rgba(0,0,0,.08);
+
+        }
+
+
+        .icono-recurso {
+
+            width:
+                48px;
+
+            height:
+                48px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-radius:
+                12px;
+
+            background:
+                #e9f2ff;
+
+            color:
+                #0d6efd;
+
+            font-size:
+                1.25rem;
+
+        }
+
+
+        .barra-progreso {
+
+            height:
+                9px;
+
+            border-radius:
+                20px;
+
+        }
+
+
+        .estado-vacio {
+
+            padding:
+                60px 20px;
+
+            text-align:
+                center;
+
+            color:
+                #6c757d;
+
+        }
+
+
+        .sidebar-card {
+
+            border:
+                0;
+
+            border-radius:
+                16px;
+
+            box-shadow:
+                0 6px 22px
+                rgba(0,0,0,.06);
 
         }
 
@@ -747,13 +624,18 @@ if ($tema) {
             max-width: 767px
         ) {
 
-            .note-editable {
+            .contenido-educativo {
 
-                min-height:
-                    400px;
+                font-size:
+                    16px;
 
-                padding:
-                    18px !important;
+            }
+
+
+            .hero-tema h1 {
+
+                font-size:
+                    1.6rem;
 
             }
 
@@ -771,36 +653,48 @@ if ($tema) {
      NAVBAR
 ========================================================= -->
 
-<nav class="navbar navbar-dark bg-dark">
+<nav class="navbar navbar-dark bg-primary">
 
-    <div class="container-fluid">
+    <div class="container">
 
         <a
-            href="../dashboard.php"
+            href="<?= htmlspecialchars(
+                $esAdministrador
+                    ? urlAplicacion("/admin/dashboard.php")
+                    : urlAplicacion("/estudiante/dashboard.php")
+            ) ?>"
             class="navbar-brand"
         >
 
             <i class="bi bi-mortarboard-fill"></i>
 
-            ICFES Platform
+            Studia360
 
         </a>
 
 
-        <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2">
 
-            <span class="text-white">
+            <span
+                class="text-white d-none d-md-inline"
+            >
 
-                <i class="bi bi-shield-check"></i>
+                <i class="bi bi-person-circle"></i>
 
-                Administrador
+                <?= htmlspecialchars(
+                    $nombres
+                ) ?>
+
+                <?php if ($esAdministrador): ?>
+                    <span class="badge text-bg-light text-primary ms-1">Vista previa</span>
+                <?php endif; ?>
 
             </span>
 
 
             <a
-                href="../cerrar_sesion.php"
-                class="btn btn-outline-light btn-sm"
+                href="<?= htmlspecialchars(urlAplicacion("/cerrar_sesion.php")) ?>"
+                class="btn btn-light btn-sm"
             >
 
                 <i class="bi bi-box-arrow-right"></i>
@@ -816,55 +710,40 @@ if ($tema) {
 </nav>
 
 
+
 <!-- =========================================================
      CONTENIDO
 ========================================================= -->
 
-<div class="container-fluid py-4">
+<div class="container py-4">
 
 
     <?php foreach ($errores as $error): ?>
 
         <div
-            class="alert alert-danger alert-dismissible fade show"
+            class="alert alert-danger"
         >
 
             <i class="bi bi-exclamation-triangle-fill"></i>
 
-            <?= htmlspecialchars($error) ?>
-
-
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-            ></button>
+            <?= htmlspecialchars(
+                $error
+            ) ?>
 
         </div>
 
     <?php endforeach; ?>
 
 
-    <?php foreach ($mensajes as $mensaje): ?>
+    <?php if ($esAdministrador && $tema): ?>
 
-        <div
-            class="alert alert-success alert-dismissible fade show"
-        >
-
-            <i class="bi bi-check-circle-fill"></i>
-
-            <?= htmlspecialchars($mensaje) ?>
-
-
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-            ></button>
-
+        <div class="alert alert-warning border-0 shadow-sm mb-4">
+            <i class="bi bi-eye-fill"></i>
+            <strong>Vista previa del administrador.</strong>
+            Estás viendo la versión publicada que reciben los estudiantes.
         </div>
 
-    <?php endforeach; ?>
+    <?php endif; ?>
 
 
     <?php if ($tema): ?>
@@ -874,12 +753,14 @@ if ($tema) {
              ENCABEZADO
         ================================================== -->
 
-        <div class="card encabezado mb-4">
+        <div
+            class="card hero-tema mb-4"
+        >
 
             <div class="card-body p-4">
 
                 <div
-                    class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3"
+                    class="d-flex flex-column flex-md-row justify-content-between gap-4"
                 >
 
                     <div>
@@ -887,22 +768,6 @@ if ($tema) {
                         <div
                             class="small text-uppercase opacity-75 mb-2"
                         >
-
-                            Administración de contenidos
-
-                        </div>
-
-
-                        <h1 class="h2 mb-2">
-
-                            <?= htmlspecialchars(
-                                $tema["tema_nombre"]
-                            ) ?>
-
-                        </h1>
-
-
-                        <p class="mb-0 opacity-75">
 
                             <?= htmlspecialchars(
                                 $tema["materia_nombre"]
@@ -914,75 +779,63 @@ if ($tema) {
                                 $tema["grado"]
                             ) ?>°
 
+                        </div>
+
+
+                        <h1 class="mb-2">
+
+                            <?= htmlspecialchars(
+                                $tema["tema_nombre"]
+                            ) ?>
+
+                        </h1>
+
+
+                        <p class="mb-0 opacity-75">
+
+                            <?= htmlspecialchars(
+                                $tema["tema_descripcion"]
+                                ?? ""
+                            ) ?>
+
                         </p>
 
                     </div>
 
 
                     <div
-                        class="d-flex gap-2 flex-wrap"
+                        class="text-md-end"
                     >
 
-                        <a
-                            href="../../estudiante/tema.php?id=<?= $idTema ?>"
-                            target="_blank"
-                            class="btn btn-light"
-                        >
+                        <?php if ($esAdministrador): ?>
 
-                            <i class="bi bi-eye"></i>
+                            <a
+                                href="<?= htmlspecialchars(urlAplicacion('/admin/contenidos/editar_tema.php?id=' . (int)$idTema)) ?>"
+                                class="btn btn-light"
+                            >
 
-                            Ver tema
+                                <i class="bi bi-pencil-square"></i>
 
-                        </a>
+                                Volver al editor
 
+                            </a>
 
-                        <a
-                            href="../dashboard.php"
-                            class="btn btn-outline-light"
-                        >
+                        <?php else: ?>
 
-                            <i class="bi bi-arrow-left"></i>
+                            <a
+                                href="grado.php?grado=<?= urlencode(
+                                    $tema["grado"]
+                                ) ?>"
+                                class="btn btn-light"
+                            >
 
-                            Volver
+                                <i class="bi bi-arrow-left"></i>
 
-                        </a>
+                                Volver a temas
 
-                    </div>
+                            </a>
 
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- =================================================
-             INFORMACIÓN
-        ================================================== -->
-
-        <div
-            class="alert info-box mb-4"
-        >
-
-            <div
-                class="d-flex gap-3 align-items-start"
-            >
-
-                <i class="bi bi-info-circle-fill fs-4"></i>
-
-                <div>
-
-                    <strong>
-                        Editor de contenido educativo
-                    </strong>
-
-                    <div class="small mt-1">
-
-                        Construye aquí la lección completa.
-                        Puedes utilizar títulos, imágenes,
-                        tablas, enlaces, listas, vídeos,
-                        bloques de información y mucho más.
+                        <?php endif; ?>
 
                     </div>
 
@@ -998,177 +851,28 @@ if ($tema) {
 
 
             <!-- =============================================
-                 EDITOR
+                 CONTENIDO PRINCIPAL
             ============================================== -->
 
-            <div class="col-12 col-xl-9">
+            <div class="col-12 col-lg-8 col-xl-9">
 
-                <form
-                    method="POST"
-                    id="formContenido"
-                >
 
-                    <input
-                        type="hidden"
-                        name="csrf_token"
-                        value="<?= htmlspecialchars(
-                            $csrfToken
-                        ) ?>"
+                <?php if ($hayContenido): ?>
+
+
+                    <div
+                        class="card contenido-card"
                     >
 
-
-                    <div class="card editor-card">
-
                         <div
-                            class="card-header p-3"
+                            class="card-body p-4 p-lg-5"
                         >
 
                             <div
-                                class="d-flex justify-content-between align-items-center flex-wrap gap-2"
+                                class="contenido-educativo"
                             >
 
-                                <div>
-
-                                    <h5 class="mb-1">
-
-                                        <i class="bi bi-pencil-square text-primary"></i>
-
-                                        Contenido de la lección
-
-                                    </h5>
-
-                                    <small class="text-muted">
-
-                                        Este contenido será mostrado
-                                        a los estudiantes cuando esté publicado.
-
-                                    </small>
-
-                                </div>
-
-
-                                <span
-                                    id="estadoActual"
-                                    class="badge rounded-pill estado-badge
-                                    <?= $estadoContenido === "Publicado"
-                                        ? "text-bg-success"
-                                        : "text-bg-warning" ?>"
-                                >
-
-                                    <?= htmlspecialchars(
-                                        $estadoContenido
-                                    ) ?>
-
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="card-body p-3">
-
-
-                            <textarea
-                                id="editorContenido"
-                                name="contenido"
-                            ><?= htmlspecialchars(
-                                $contenido
-                            ) ?></textarea>
-
-
-                            <div class="row mt-4 g-3">
-
-
-                                <div class="col-md-6">
-
-                                    <label
-                                        for="estado"
-                                        class="form-label fw-semibold"
-                                    >
-
-                                        Estado del contenido
-
-                                    </label>
-
-
-                                    <select
-                                        name="estado"
-                                        id="estado"
-                                        class="form-select"
-                                    >
-
-                                        <option
-                                            value="Borrador"
-                                            <?= $estadoContenido === "Borrador"
-                                                ? "selected"
-                                                : "" ?>
-                                        >
-
-                                            Borrador
-
-                                        </option>
-
-
-                                        <option
-                                            value="Publicado"
-                                            <?= $estadoContenido === "Publicado"
-                                                ? "selected"
-                                                : "" ?>
-                                        >
-
-                                            Publicado
-
-                                        </option>
-
-                                    </select>
-
-                                    <div class="form-text">
-
-                                        Los borradores no serán visibles
-                                        para los estudiantes.
-
-                                    </div>
-
-                                </div>
-
-
-                                <div class="col-md-6">
-
-                                    <label class="form-label fw-semibold">
-
-                                        Última actualización
-
-                                    </label>
-
-
-                                    <div
-                                        class="form-control bg-light"
-                                    >
-
-                                        <?php if (
-                                            $fechaActualizacion
-                                        ): ?>
-
-                                            <i class="bi bi-clock"></i>
-
-                                            <?= htmlspecialchars(
-                                                $fechaActualizacion
-                                            ) ?>
-
-                                        <?php else: ?>
-
-                                            <span class="text-muted">
-
-                                                Aún no se ha guardado contenido.
-
-                                            </span>
-
-                                        <?php endif; ?>
-
-                                    </div>
-
-                                </div>
+                                <?= $contenido["contenido"] ?>
 
                             </div>
 
@@ -1177,138 +881,42 @@ if ($tema) {
                     </div>
 
 
+                <?php else: ?>
 
-                    <!-- =====================================
-                         BOTONES
-                    ====================================== -->
 
-                    <div class="acciones mt-3">
+                    <div
+                        class="card contenido-card"
+                    >
 
                         <div
-                            class="acciones-inner d-flex justify-content-between align-items-center flex-wrap gap-2"
+                            class="estado-vacio"
                         >
 
-                            <button
-                                type="button"
-                                id="btnLimpiar"
-                                class="btn btn-outline-secondary"
-                            >
-
-                                <i class="bi bi-eraser"></i>
-
-                                Limpiar editor
-
-                            </button>
+                            <i
+                                class="bi bi-journal-x fs-1 d-block mb-3"
+                            ></i>
 
 
-                            <div class="d-flex gap-2">
+                            <h4>
 
-                                <button
-                                    type="submit"
-                                    name="estado"
-                                    value="Borrador"
-                                    class="btn btn-outline-warning"
-                                    onclick="document.getElementById('estado').value='Borrador';"
-                                >
+                                Contenido próximamente
 
-                                    <i class="bi bi-file-earmark"></i>
-
-                                    Guardar borrador
-
-                                </button>
+                            </h4>
 
 
-                                <button
-                                    type="submit"
-                                    name="estado"
-                                    value="Publicado"
-                                    class="btn btn-primary"
-                                    onclick="document.getElementById('estado').value='Publicado';"
-                                >
+                            <p class="mb-0">
 
-                                    <i class="bi bi-cloud-arrow-up"></i>
+                                Este tema todavía no tiene
+                                una lección publicada.
 
-                                    Guardar y publicar
-
-                                </button>
-
-                            </div>
+                            </p>
 
                         </div>
 
                     </div>
 
-                </form>
 
-            </div>
-
-
-
-            <!-- =============================================
-                 INFORMACIÓN LATERAL
-            ============================================== -->
-
-            <div class="col-12 col-xl-3">
-
-
-                <div class="card shadow-sm border-0 mb-4">
-
-                    <div class="card-body">
-
-                        <h5 class="mb-3">
-
-                            <i class="bi bi-journal-text text-primary"></i>
-
-                            Sobre el tema
-
-                        </h5>
-
-
-                        <p class="text-muted small">
-
-                            <?= htmlspecialchars(
-                                $tema["tema_descripcion"]
-                                ?? "Sin descripción."
-                            ) ?>
-
-                        </p>
-
-
-                        <hr>
-
-
-                        <div class="small">
-
-                            <div class="mb-2">
-
-                                <strong>Materia:</strong>
-
-                                <br>
-
-                                <?= htmlspecialchars(
-                                    $tema["materia_nombre"]
-                                ) ?>
-
-                            </div>
-
-
-                            <div>
-
-                                <strong>Grado:</strong>
-
-                                <br>
-
-                                <?= htmlspecialchars(
-                                    $tema["grado"]
-                                ) ?>°
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
+                <?php endif; ?>
 
 
 
@@ -1316,54 +924,34 @@ if ($tema) {
                      RECURSOS
                 ========================================== -->
 
-                <div class="card shadow-sm border-0">
+                <?php if (
+                    !empty($recursos)
+                ): ?>
 
-                    <div class="card-body">
+                    <div class="mt-4">
 
-                        <div
-                            class="d-flex justify-content-between align-items-center mb-3"
-                        >
+                        <div class="mb-3">
 
-                            <h5 class="mb-0">
+                            <h3 class="h4 mb-1">
 
                                 <i class="bi bi-collection-play text-primary"></i>
 
-                                Recursos
+                                Recursos complementarios
 
-                            </h5>
+                            </h3>
 
 
-                            <span class="badge text-bg-light">
+                            <p class="text-muted mb-0">
 
-                                <?= count($recursos) ?>
+                                Material adicional para profundizar
+                                en este tema.
 
-                            </span>
+                            </p>
 
                         </div>
 
 
-                        <?php if (
-                            empty($recursos)
-                        ): ?>
-
-                            <div
-                                class="text-center text-muted py-4"
-                            >
-
-                                <i
-                                    class="bi bi-folder2-open fs-2 d-block mb-2"
-                                ></i>
-
-                                <small>
-
-                                    Este tema todavía no tiene
-                                    recursos complementarios.
-
-                                </small>
-
-                            </div>
-
-                        <?php else: ?>
+                        <div class="row g-3">
 
 
                             <?php foreach (
@@ -1371,121 +959,349 @@ if ($tema) {
                                 as $recurso
                             ): ?>
 
-                                <div class="recurso-item">
+
+                                <div
+                                    class="col-12 col-md-6"
+                                >
 
                                     <div
-                                        class="fw-semibold small"
+                                        class="card recurso-card"
                                     >
 
-                                        <?= htmlspecialchars(
-                                            $recurso["titulo"]
-                                        ) ?>
+                                        <div class="card-body">
 
-                                    </div>
-
-
-                                    <div class="mt-1">
-
-                                        <span
-                                            class="badge text-bg-primary"
-                                        >
-
-                                            <?= htmlspecialchars(
-                                                ucfirst(
-                                                    $recurso["tipo"]
-                                                )
-                                            ) ?>
-
-                                        </span>
-
-
-                                        <?php if (
-                                            $recurso["estado"] === "Activo"
-                                        ): ?>
-
-                                            <span
-                                                class="badge text-bg-success"
+                                            <div
+                                                class="d-flex gap-3"
                                             >
 
-                                                Activo
+                                                <div
+                                                    class="icono-recurso flex-shrink-0"
+                                                >
 
-                                            </span>
+                                                    <?php
 
-                                        <?php endif; ?>
+                                                    $iconos = [
+
+                                                        "video" =>
+                                                            "bi-play-circle-fill",
+
+                                                        "articulo" =>
+                                                            "bi-file-text-fill",
+
+                                                        "blog" =>
+                                                            "bi-journal-text",
+
+                                                        "app" =>
+                                                            "bi-phone-fill",
+
+                                                        "pdf" =>
+                                                            "bi-file-earmark-pdf-fill",
+
+                                                        "juego" =>
+                                                            "bi-controller",
+
+                                                        "simulador" =>
+                                                            "bi-cpu-fill",
+
+                                                        "presentacion" =>
+                                                            "bi-easel-fill"
+
+                                                    ];
+
+                                                    $icono =
+                                                        $iconos[
+                                                            $recurso["tipo"]
+                                                        ]
+                                                        ??
+                                                        "bi-link-45deg";
+
+                                                    ?>
+
+
+                                                    <i
+                                                        class="bi <?= $icono ?>"
+                                                    ></i>
+
+                                                </div>
+
+
+                                                <div
+                                                    class="flex-grow-1"
+                                                >
+
+                                                    <h5 class="h6 mb-1">
+
+                                                        <?= htmlspecialchars(
+                                                            $recurso["titulo"]
+                                                        ) ?>
+
+                                                    </h5>
+
+
+                                                    <span
+                                                        class="badge text-bg-primary mb-2"
+                                                    >
+
+                                                        <?= htmlspecialchars(
+                                                            ucfirst(
+                                                                $recurso["tipo"]
+                                                            )
+                                                        ) ?>
+
+                                                    </span>
+
+
+                                                    <?php if (
+                                                        !empty(
+                                                            $recurso["descripcion"]
+                                                        )
+                                                    ): ?>
+
+                                                        <p
+                                                            class="small text-muted mb-3"
+                                                        >
+
+                                                            <?= htmlspecialchars(
+                                                                $recurso["descripcion"]
+                                                            ) ?>
+
+                                                        </p>
+
+                                                    <?php endif; ?>
+
+
+                                                    <a
+                                                        href="<?= htmlspecialchars(
+                                                            $recurso["url"]
+                                                        ) ?>"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        class="btn btn-sm btn-outline-primary"
+                                                    >
+
+                                                        Abrir recurso
+
+                                                        <i
+                                                            class="bi bi-box-arrow-up-right"
+                                                        ></i>
+
+                                                    </a>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
 
                                     </div>
 
                                 </div>
 
+
                             <?php endforeach; ?>
 
 
-                        <?php endif; ?>
+                        </div>
+
+                    </div>
+
+                <?php endif; ?>
+
+
+            </div>
+
+
+
+            <!-- =============================================
+                 SIDEBAR
+            ============================================== -->
+
+            <div class="col-12 col-lg-4 col-xl-3">
+
+
+                <div
+                    class="card sidebar-card mb-3"
+                >
+
+                    <div class="card-body">
+
+                        <h5 class="h6 mb-3">
+
+                            <i class="bi bi-graph-up-arrow text-primary"></i>
+
+                            <?= $esAdministrador ? "Vista del tema" : "Tu progreso" ?>
+
+                        </h5>
+
+
+                        <div
+                            class="d-flex justify-content-between mb-2"
+                        >
+
+                            <span
+                                class="small text-muted"
+                            >
+
+                                Avance
+
+                            </span>
+
+
+                            <strong>
+
+                                <?= $progreso ?>%
+
+                            </strong>
+
+                        </div>
+
+
+                        <div
+                            class="progress barra-progreso"
+                        >
+
+                            <div
+                                class="progress-bar"
+                                role="progressbar"
+                                style="width: <?= $progreso ?>%"
+                                aria-valuenow="<?= $progreso ?>"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                            ></div>
+
+                        </div>
+
+
+                        <div
+                            class="small text-muted mt-3"
+                        >
+
+                            <?php if (
+                                $progreso >= 100
+                            ): ?>
+
+                                <i
+                                    class="bi bi-check-circle-fill text-success"
+                                ></i>
+
+                                Tema completado.
+
+                            <?php elseif (
+                                $progreso > 0
+                            ): ?>
+
+                                <i
+                                    class="bi bi-clock-fill text-warning"
+                                ></i>
+
+                                Tema en progreso.
+
+                            <?php else: ?>
+
+                                <i
+                                    class="bi bi-circle text-secondary"
+                                ></i>
+
+                                Tema pendiente.
+
+                            <?php endif; ?>
+
+                        </div>
 
                     </div>
 
                 </div>
 
-            </div>
 
-        </div>
-
-
-
-        <!-- =================================================
-             VISTA PREVIA
-        ================================================== -->
-
-        <div class="card border-0 shadow-sm mt-4">
-
-            <div class="card-header bg-white">
-
-                <h5 class="mb-0">
-
-                    <i class="bi bi-display text-primary"></i>
-
-                    Vista previa
-
-                </h5>
-
-            </div>
-
-
-            <div class="card-body">
 
                 <div
-                    id="vistaPrevia"
-                    class="preview-contenido"
+                    class="card sidebar-card"
                 >
 
-                    <?php if (
-                        trim($contenido) !== ""
-                    ): ?>
+                    <div class="card-body">
 
-                        <?= $contenido ?>
+                        <h5 class="h6 mb-3">
 
-                    <?php else: ?>
+                            <i class="bi bi-info-circle text-primary"></i>
 
-                        <div
-                            class="text-center text-muted py-5"
-                        >
+                            Información
 
-                            <i
-                                class="bi bi-file-earmark-text fs-1 d-block mb-3"
-                            ></i>
+                        </h5>
 
-                            <p class="mb-0">
 
-                                La vista previa aparecerá
-                                cuando escribas contenido.
+                        <div class="small">
 
-                            </p>
+
+                            <div class="mb-3">
+
+                                <span
+                                    class="text-muted"
+                                >
+
+                                    Materia
+
+                                </span>
+
+                                <div class="fw-semibold">
+
+                                    <?= htmlspecialchars(
+                                        $tema["materia_nombre"]
+                                    ) ?>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="mb-3">
+
+                                <span
+                                    class="text-muted"
+                                >
+
+                                    Grado
+
+                                </span>
+
+                                <div class="fw-semibold">
+
+                                    <?= htmlspecialchars(
+                                        $tema["grado"]
+                                    ) ?>°
+
+                                </div>
+
+                            </div>
+
+
+                            <div>
+
+                                <span
+                                    class="text-muted"
+                                >
+
+                                    Recursos
+
+                                </span>
+
+                                <div class="fw-semibold">
+
+                                    <?= count(
+                                        $recursos
+                                    ) ?>
+
+                                    disponibles
+
+                                </div>
+
+                            </div>
 
                         </div>
 
-                    <?php endif; ?>
+                    </div>
 
                 </div>
+
 
             </div>
 
@@ -1498,320 +1314,7 @@ if ($tema) {
 </div>
 
 
-
-<!-- =========================================================
-     JQUERY LOCAL
-========================================================= -->
-
-<script
-    src="../../assets/js/jquery-3.7.1.min.js"
-></script>
-
-
-<!-- =========================================================
-     SUMMERNOTE LOCAL
-========================================================= -->
-
-<script
-    src="../../assets/summernote/summernote-lite.min.js"
-></script>
-
-
-<script>
-
-$(document).ready(function () {
-
-
-    /*
-    |----------------------------------------------------------
-    | INICIALIZAR SUMMERNOTE
-    |----------------------------------------------------------
-    */
-
-    $('#editorContenido').summernote({
-
-        height: 520,
-
-        minHeight: 400,
-
-        maxHeight: null,
-
-        lang: 'es-ES',
-
-        placeholder:
-            'Comienza a construir la lección...',
-
-        dialogsInBody: true,
-
-        toolbar: [
-
-            [
-                'style',
-                [
-                    'style'
-                ]
-            ],
-
-            [
-                'font',
-                [
-                    'bold',
-                    'italic',
-                    'underline',
-                    'strikethrough',
-                    'clear'
-                ]
-            ],
-
-            [
-                'fontname',
-                [
-                    'fontname'
-                ]
-            ],
-
-            [
-                'fontsize',
-                [
-                    'fontsize'
-                ]
-            ],
-
-            [
-                'color',
-                [
-                    'color'
-                ]
-            ],
-
-            [
-                'para',
-                [
-                    'ul',
-                    'ol',
-                    'paragraph'
-                ]
-            ],
-
-            [
-                'table',
-                [
-                    'table'
-                ]
-            ],
-
-            [
-                'insert',
-                [
-                    'link',
-                    'picture',
-                    'video',
-                    'hr'
-                ]
-            ],
-
-            [
-                'view',
-                [
-                    'fullscreen',
-                    'codeview',
-                    'help'
-                ]
-            ]
-
-        ],
-
-
-        callbacks: {
-
-            onChange:
-                function(contents) {
-
-                    actualizarVistaPrevia(
-                        contents
-                    );
-
-                }
-
-        }
-
-    });
-
-
-
-    /*
-    |----------------------------------------------------------
-    | VISTA PREVIA
-    |----------------------------------------------------------
-    */
-
-    function actualizarVistaPrevia(
-        contenido
-    ) {
-
-        const contenedor =
-            $('#vistaPrevia');
-
-
-        if (
-            !contenido ||
-            contenido.trim() === ''
-        ) {
-
-            contenedor.html(
-                '<div class="text-center text-muted py-5">' +
-                '<i class="bi bi-file-earmark-text fs-1 d-block mb-3"></i>' +
-                '<p class="mb-0">' +
-                'La vista previa aparecerá cuando escribas contenido.' +
-                '</p>' +
-                '</div>'
-            );
-
-            return;
-
-        }
-
-
-        contenedor.html(
-            contenido
-        );
-
-    }
-
-
-
-    /*
-    |----------------------------------------------------------
-    | LIMPIAR
-    |----------------------------------------------------------
-    */
-
-    $('#btnLimpiar').on(
-        'click',
-        function () {
-
-            const confirmar =
-                confirm(
-                    '¿Seguro que deseas limpiar todo el contenido del editor? Esta acción no se guardará hasta que pulses un botón de guardado.'
-                );
-
-
-            if (
-                confirmar
-            ) {
-
-                $('#editorContenido')
-                    .summernote(
-                        'code',
-                        ''
-                    );
-
-                actualizarVistaPrevia(
-                    ''
-                );
-
-            }
-
-        }
-    );
-
-
-
-    /*
-    |----------------------------------------------------------
-    | CAMBIO DE ESTADO
-    |----------------------------------------------------------
-    */
-
-    $('#estado').on(
-        'change',
-        function () {
-
-            const estado =
-                $(this).val();
-
-            const badge =
-                $('#estadoActual');
-
-
-            badge.removeClass(
-                'text-bg-success text-bg-warning'
-            );
-
-
-            if (
-                estado === 'Publicado'
-            ) {
-
-                badge
-                    .addClass(
-                        'text-bg-success'
-                    )
-                    .text(
-                        'Publicado'
-                    );
-
-            } else {
-
-                badge
-                    .addClass(
-                        'text-bg-warning'
-                    )
-                    .text(
-                        'Borrador'
-                    );
-
-            }
-
-        }
-    );
-
-
-
-    /*
-    |----------------------------------------------------------
-    | CONFIRMAR ENVÍO
-    |----------------------------------------------------------
-    */
-
-    $('#formContenido').on(
-        'submit',
-        function () {
-
-            const contenido =
-                $('#editorContenido')
-                    .summernote(
-                        'code'
-                    )
-                    .trim();
-
-
-            if (
-                contenido === ''
-            ) {
-
-                alert(
-                    'Debes escribir contenido antes de guardar.'
-                );
-
-                return false;
-
-            }
-
-            return true;
-
-        }
-    );
-
-
-});
-
-</script>
-
-
-<!-- =========================================================
-     BOOTSTRAP JS
-========================================================= -->
+<!-- Bootstrap JS -->
 
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
