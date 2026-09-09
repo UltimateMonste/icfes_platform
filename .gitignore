@@ -17,3 +17,7 @@ Thumbs.db
 
 # Archivos sensibles
 config/config.local.php
+
+# Archivos de prueba
+crear_admin.php
+
