@@ -15,8 +15,8 @@ $total_temas = 0;
 $total_temas_contenido = 0;
 $total_temas_sin_contenido = 0;
 $total_recursos = 0;
-$total_evaluaciones = 0;
 $total_sugerencias = 0;
+$total_recuperaciones_pendientes = 0;
 
 $temas_por_grado = [
     "9" => 0,
@@ -170,22 +170,6 @@ try {
 
 
     // -------------------------------------------------
-    // EVALUACIONES
-    // -------------------------------------------------
-
-    $consulta =
-        $conexion->query(
-            "
-            SELECT COUNT(*)
-            FROM evaluaciones
-            "
-        );
-
-    $total_evaluaciones =
-        (int)$consulta->fetchColumn();
-
-
-    // -------------------------------------------------
     // SUGERENCIAS
     // -------------------------------------------------
 
@@ -198,6 +182,23 @@ try {
         );
 
     $total_sugerencias =
+        (int)$consulta->fetchColumn();
+
+
+    // -------------------------------------------------
+    // RECUPERACIONES DE CONTRASEÑA PENDIENTES
+    // -------------------------------------------------
+
+    $consulta =
+        $conexion->query(
+            "
+            SELECT COUNT(*)
+            FROM solicitudes_recuperacion
+            WHERE estado = 'Pendiente'
+            "
+        );
+
+    $total_recuperaciones_pendientes =
         (int)$consulta->fetchColumn();
 
 
@@ -1305,6 +1306,183 @@ function e($valor): string
 
 
         /* =================================================
+           ANIMACIÓN SUTIL
+        ================================================== */
+
+        .dashboard-content > * {
+            animation: riseIn .45s ease both;
+        }
+
+        .dashboard-content > *:nth-child(2) { animation-delay:.04s; }
+        .dashboard-content > *:nth-child(3) { animation-delay:.08s; }
+        .dashboard-content > *:nth-child(4) { animation-delay:.12s; }
+        .dashboard-content > *:nth-child(5) { animation-delay:.16s; }
+
+        @keyframes riseIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sidebar-gamificacion {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-gamificacion .menu-sparkle {
+            margin-left: auto;
+            opacity: .7;
+            animation: sparkle 1.8s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%,100% { transform:scale(.9) rotate(0deg); opacity:.45; }
+            50% { transform:scale(1.15) rotate(12deg); opacity:1; }
+        }
+
+        .quick-gamification {
+            background: linear-gradient(135deg,#faf8ff,#fff);
+            border-color:#e7defd;
+        }
+
+        .quick-gamification:hover {
+            border-color:#cfc0fa;
+        }
+
+        .module-card-link {
+            display:block;
+            color:inherit;
+            text-decoration:none;
+            transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        }
+
+        .module-card-link:hover {
+            color:inherit;
+            transform:translateY(-3px);
+            border-color:#d7cafa;
+            box-shadow:0 10px 25px rgba(91,65,150,.08);
+        }
+
+        .module-card-link .module-icon {
+            transition:transform .25s ease;
+        }
+
+        .module-card-link:hover .module-icon {
+            transform:rotate(-5deg) scale(1.06);
+        }
+
+        .welcome-title {
+            letter-spacing:-.025em;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .dashboard-content > * {
+                animation:none;
+            }
+            .sidebar-gamificacion .menu-sparkle {
+                animation:none;
+            }
+        }
+
+
+        /* =================================================
+           AJUSTE VISUAL — DASHBOARD LIMPIO
+        ================================================== */
+
+        .dashboard-content {
+            padding: 2rem;
+            max-width: 1480px;
+            margin: 0 auto;
+        }
+
+        .dashboard-content > * {
+            margin-bottom: 1.75rem !important;
+        }
+
+        .dashboard-content > *:last-child {
+            margin-bottom: 0 !important;
+        }
+
+        .welcome-title {
+            font-size: clamp(1.55rem, 2vw, 2rem);
+            line-height: 1.2;
+        }
+
+        .welcome-text {
+            max-width: 650px;
+            line-height: 1.6;
+        }
+
+        .stat-card-body {
+            min-height: 132px;
+            padding: 1.35rem;
+        }
+
+        .stat-footer {
+            min-height: 43px;
+            display: flex;
+            align-items: center;
+        }
+
+        .content-management,
+        .admin-card.p-4 {
+            padding: 1.5rem !important;
+        }
+
+        .grade-mini-card {
+            padding: .9rem 1rem;
+            background: #fbfcfe;
+        }
+
+        .quick-action {
+            min-height: 94px;
+            padding: 1rem 1.1rem;
+        }
+
+        .module-card {
+            padding: 1.15rem;
+            min-height: 190px;
+            background: #fff;
+        }
+
+        .module-description {
+            min-height: 43px;
+        }
+
+        @media (min-width: 1200px) {
+            .dashboard-content {
+                padding-left: 2.25rem;
+                padding-right: 2.25rem;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .dashboard-content {
+                padding: 1.25rem;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .dashboard-content {
+                padding: 1rem;
+            }
+
+            .content-management,
+            .admin-card.p-4 {
+                padding: 1.15rem !important;
+            }
+
+            .stat-card-body {
+                min-height: 118px;
+            }
+        }
+
+        /* =================================================
            MOBILE
         ================================================== */
 
@@ -1545,18 +1723,6 @@ function e($valor): string
         </a>
 
 
-        <a
-            href="contenidos/index.php"
-            class="sidebar-link"
-        >
-
-            <i class="bi bi-clipboard-check-fill"></i>
-
-            Evaluaciones
-
-        </a>
-
-
         <div class="sidebar-label mt-2">
             Usuarios
         </div>
@@ -1580,7 +1746,7 @@ function e($valor): string
 
 
         <a
-            href="#sugerencias"
+            href="sugerencias/index.php"
             class="sidebar-link"
         >
 
@@ -1591,31 +1757,39 @@ function e($valor): string
         </a>
 
 
+        <a
+            href="recuperacion/index.php"
+            class="sidebar-link"
+        >
+
+            <i class="bi bi-key-fill"></i>
+
+            Recuperación de contraseñas
+
+            <?php if ($total_recuperaciones_pendientes > 0): ?>
+                <span class="badge rounded-pill text-bg-danger ms-auto">
+                    <?= $total_recuperaciones_pendientes ?>
+                </span>
+            <?php endif; ?>
+
+        </a>
+
+
         <div class="sidebar-label mt-2">
             Personalización
         </div>
 
 
         <a
-            href="#niveles"
-            class="sidebar-link"
-        >
-
-            <i class="bi bi-bar-chart-fill"></i>
-
-            Niveles y progreso
-
-        </a>
-
-
-        <a
-            href="#coleccionables"
-            class="sidebar-link"
+            href="gamificacion/index.php"
+            class="sidebar-link sidebar-gamificacion"
         >
 
             <i class="bi bi-stars"></i>
 
-            Coleccionables
+            Gamificación
+
+            <span class="menu-sparkle">✦</span>
 
         </a>
 
@@ -2802,6 +2976,56 @@ function e($valor): string
                 </div>
 
 
+                <!-- GAMIFICACIÓN -->
+
+                <div
+                    class="
+                        col-12
+                        col-md-6
+                        col-xl-3
+                    "
+                >
+
+                    <a
+                        href="gamificacion/index.php"
+                        class="quick-action quick-gamification"
+                    >
+
+                        <div
+                            class="
+                                quick-action-icon
+                                icon-purple
+                            "
+                        >
+
+                            <i class="bi bi-stars"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="quick-action-title">
+
+                                Gamificación
+
+                            </div>
+
+
+                            <div class="quick-action-text">
+
+                                Configura puntos, niveles,
+                                avatares e insignias.
+
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                </div>
+
+
                 <!-- ESTUDIANTES -->
 
                 <div
@@ -3054,11 +3278,11 @@ function e($valor): string
                             class="
                                 badge
                                 rounded-pill
-                                text-bg-warning
+                                text-bg-success
                             "
                         >
 
-                            En desarrollo
+                            Disponible
 
                         </span>
 
@@ -3067,58 +3291,29 @@ function e($valor): string
                 </div>
 
 
-                <!-- EVALUACIONES -->
+                <!-- GAMIFICACIÓN -->
 
                 <div class="col-12 col-md-6 col-xl-3">
 
-                    <div class="module-card">
+                    <a href="gamificacion/index.php" class="module-card module-card-link">
 
-                        <div
-                            class="
-                                module-icon
-                                icon-yellow
-                                mb-3
-                            "
-                        >
-
-                            <i
-                                class="
-                                    bi
-                                    bi-clipboard-check-fill
-                                "
-                            ></i>
-
+                        <div class="module-icon icon-purple mb-3">
+                            <i class="bi bi-stars"></i>
                         </div>
-
 
                         <div class="module-title mb-1">
-
-                            Evaluaciones
-
+                            Gamificación
                         </div>
-
 
                         <div class="module-description mb-3">
-
-                            Sistema de actividades y
-                            evaluación del aprendizaje.
-
+                            Puntos, niveles, avatares, insignias y recompensas.
                         </div>
 
-
-                        <span
-                            class="
-                                badge
-                                rounded-pill
-                                text-bg-warning
-                            "
-                        >
-
-                            En desarrollo
-
+                        <span class="badge rounded-pill text-bg-success">
+                            Disponible
                         </span>
 
-                    </div>
+                    </a>
 
                 </div>
 
@@ -3165,17 +3360,59 @@ function e($valor): string
                         </div>
 
 
-                        <span
-                            class="
-                                badge
-                                rounded-pill
-                                text-bg-warning
-                            "
-                        >
+                        <div class="d-flex align-items-center justify-content-between gap-2">
 
-                            En desarrollo
+                            <span
+                                class="
+                                    badge
+                                    rounded-pill
+                                    text-bg-success
+                                "
+                            >
+                                <?= $total_sugerencias ?> mensajes
+                            </span>
 
-                        </span>
+                            <a
+                                href="sugerencias/index.php"
+                                class="btn btn-sm btn-outline-primary"
+                            >
+                                Revisar
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RECUPERACIÓN DE CONTRASEÑAS -->
+
+                <div class="col-12 col-md-6 col-xl-3">
+
+                    <div class="module-card">
+
+                        <div class="module-icon icon-yellow mb-3">
+                            <i class="bi bi-key-fill"></i>
+                        </div>
+
+                        <div class="module-title mb-1">
+                            Recuperación
+                        </div>
+
+                        <div class="module-description mb-3">
+                            Solicitudes de cambio de contraseña enviadas por estudiantes.
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between gap-2">
+                            <span class="badge rounded-pill <?= $total_recuperaciones_pendientes > 0 ? 'text-bg-danger' : 'text-bg-success' ?>">
+                                <?= $total_recuperaciones_pendientes ?> pendientes
+                            </span>
+
+                            <a href="recuperacion/index.php" class="btn btn-sm btn-outline-primary">
+                                Gestionar
+                            </a>
+                        </div>
 
                     </div>
 
@@ -3452,10 +3689,9 @@ function e($valor): string
                                 "
                             >
 
-                                Crea materias, organiza temas y
-                                utiliza el editor visual para
-                                construir contenido de apoyo
-                                para los estudiantes.
+                                Crea contenidos y configura la experiencia
+                                de aprendizaje para que los estudiantes
+                                puedan avanzar, ganar XP y desbloquear recompensas.
 
                             </p>
 
@@ -3474,7 +3710,7 @@ function e($valor): string
                 >
 
                     <a
-                        href="contenidos/materias.php"
+                        href="gamificacion/index.php"
                         class="
                             btn
                             btn-light
@@ -3482,15 +3718,9 @@ function e($valor): string
                         "
                     >
 
-                        <i
-                            class="
-                                bi
-                                bi-pencil-square
-                                me-1
-                            "
-                        ></i>
+                        <i class="bi bi-stars me-1"></i>
 
-                        Administrar estructura
+                        Configurar gamificación
 
                     </a>
 

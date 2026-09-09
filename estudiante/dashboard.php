@@ -1,1080 +1,408 @@
 <?php
-/**
- * Studia360
- * Dashboard del estudiante
- * Fase 2 - Progreso y gamificación
- *
- * Archivo:
- * estudiante/dashboard.php
- */
-
 declare(strict_types=1);
 
-require_once __DIR__ . "/../includes/seguridad.php";
-require_once __DIR__ . "/../includes/gamificacion.php";
+require_once __DIR__ . '/../includes/seguridad.php';
+require_once __DIR__ . '/../includes/gamificacion.php';
 
 exigirEstudiante();
 
-function e($valor): string
-{
-    return htmlspecialchars((string)$valor, ENT_QUOTES, "UTF-8");
-}
-
-$idUsuario = (int)($_SESSION["id_usuario"] ?? 0);
-
+$idUsuario = (int)($_SESSION['id_usuario'] ?? 0);
 if ($idUsuario <= 0) {
-    redireccionarDashboardUsuario();
+    redireccionarLogin('Tu sesión no es válida.');
 }
 
-/*
- * Grado del estudiante.
- * Las materias del dashboard se calculan únicamente con los temas
- * correspondientes a este grado.
- */
-$gradoSesion = trim((string)($_SESSION["grado"] ?? ""));
-
-if (!in_array($gradoSesion, ["9", "10", "11"], true)) {
-    $gradoSesion = "9";
+function h($v): string {
+    return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 }
 
-$nombres = trim((string)($_SESSION["nombres"] ?? "Estudiante"));
-$apellidos = trim((string)($_SESSION["apellidos"] ?? ""));
+function fotoPerfil(?string $foto): string {
+    $foto = trim((string)$foto);
+    if ($foto === '') return '';
+    if (preg_match('#^https?://#i', $foto)) return $foto;
 
-$primerNombre = trim(explode(" ", $nombres)[0] ?? "Estudiante");
+    $foto = str_replace('\\', '/', ltrim($foto, '/'));
 
-$errores = [];
-$materias = [];
-$actividadReciente = [];
+    if (str_starts_with($foto, 'assets/')) {
+        return urlAplicacion('/' . $foto);
+    }
+    if (str_starts_with($foto, 'uploads/')) {
+        return urlAplicacion('/assets/' . $foto);
+    }
+
+    return urlAplicacion('/assets/uploads/avatares/' . basename($foto));
+}
 
 try {
+    $st = $conexion->prepare("
+        SELECT nombres, apellidos, grado, avatar
+        FROM usuarios
+        WHERE id_usuario = ?
+        LIMIT 1
+    ");
+    $st->execute([$idUsuario]);
+    $usuario = $st->fetch(PDO::FETCH_ASSOC);
 
-    /*
-     * Sincronizamos el nivel por si el usuario obtuvo puntos
-     * desde otra sección del sistema.
-     */
-    sincronizarNivel(
-        $conexion,
-        $idUsuario
-    );
+    if (!$usuario) {
+        redireccionarLogin('Usuario no encontrado.');
+    }
 
-    $gamificacion = obtenerGamificacionUsuario(
-        $conexion,
-        $idUsuario
-    );
+    sincronizarNivel($conexion, $idUsuario);
+    $gam = obtenerGamificacionUsuario($conexion, $idUsuario);
+    $progresoGeneral = obtenerProgresoGeneral($conexion, $idUsuario);
 
-    /*
-     * Progreso general.
-     */
-    $progresoGeneral = obtenerProgresoGeneral(
-        $conexion,
-        $idUsuario
-    );
-
-    /*
-     * Materias con progreso calculado directamente sobre sus temas.
-     */
-    $stmtMaterias = $conexion->prepare("
+    // No se filtra por el grado del estudiante:
+    // cualquier estudiante puede explorar 9°, 10° y 11°.
+    $st = $conexion->query("
         SELECT
             m.id_materia,
             m.nombre,
             m.descripcion,
-
-            COUNT(t.id_tema) AS total_temas,
-
-            COALESCE(
-                SUM(
-                    CASE
-                        WHEN COALESCE(
-                            p.porcentaje_avance,
-                            0
-                        ) >= 100
-                        THEN 1
-                        ELSE 0
-                    END
-                ),
-                0
-            ) AS temas_completados,
-
-            COALESCE(
-                AVG(
-                    COALESCE(
-                        p.porcentaje_avance,
-                        0
-                    )
-                ),
-                0
-            ) AS porcentaje
-
+            COUNT(t.id_tema) AS total_temas
         FROM materias m
-
-        LEFT JOIN temas t
-            ON t.id_materia = m.id_materia
-            AND t.grado = ?
-
-        LEFT JOIN progreso p
-            ON p.id_tema = t.id_tema
-            AND p.id_usuario = ?
-
-        GROUP BY
-            m.id_materia,
-            m.nombre,
-            m.descripcion
-
-        HAVING COUNT(t.id_tema) > 0
-
-        ORDER BY m.nombre ASC
+        LEFT JOIN temas t ON t.id_materia = m.id_materia
+        GROUP BY m.id_materia, m.nombre, m.descripcion
+        ORDER BY m.nombre
     ");
-
-    $stmtMaterias->execute([
-        $gradoSesion,
-        $idUsuario
-    ]);
-
-    $materias = $stmtMaterias->fetchAll(PDO::FETCH_ASSOC);
-
-    /*
-     * Últimos temas trabajados.
-     */
-    $stmtActividad = $conexion->prepare("
-        SELECT
-            p.id_tema,
-            p.porcentaje_avance,
-            p.completado,
-            p.ultima_actividad,
-            t.nombre AS tema,
-            t.grado,
-            m.nombre AS materia
-
-        FROM progreso p
-
-        INNER JOIN temas t
-            ON t.id_tema = p.id_tema
-
-        INNER JOIN materias m
-            ON m.id_materia = t.id_materia
-
-        WHERE p.id_usuario = ?
-
-        ORDER BY
-            p.ultima_actividad DESC,
-            p.id_progreso DESC
-
-        LIMIT 6
-    ");
-
-    $stmtActividad->execute([
-        $idUsuario
-    ]);
-
-    $actividadReciente =
-        $stmtActividad->fetchAll(PDO::FETCH_ASSOC);
+    $materias = $st->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (Throwable $e) {
-
-    $errores[] =
-        "No fue posible cargar todo el progreso. Algunas estadísticas pueden no estar disponibles.";
-
-    $gamificacion = [
-        "puntos" => 0,
-        "nivel" => [
-            "nombre" => "Iniciado",
-            "puntos_minimos" => 0,
-            "puntos_maximos" => 100
-        ],
-        "progreso_nivel" => 0,
-        "puntos_siguiente_nivel" => 101
-    ];
-
-    $progresoGeneral = [
-        "total_temas" => 0,
-        "temas_completados" => 0,
-        "porcentaje" => 0
-    ];
+    die('No fue posible cargar el dashboard.');
 }
 
-$urlGrado = function(string $grado, ?int $idMateria = null): string {
-    $url = "/estudiante/grado.php?grado=" . urlencode($grado);
+$foto = fotoPerfil($usuario['avatar'] ?? '');
+$nombre = trim((string)$usuario['nombres']);
+$nivel = $gam['nivel'];
+$puntos = (int)$gam['puntos'];
+$progresoNivel = (float)$gam['progreso_nivel'];
+$siguienteNivel = $gam['puntos_siguiente_nivel'];
 
-    if ($idMateria !== null && $idMateria > 0) {
-        $url .= "&id_materia=" . $idMateria;
+$iniciales = '';
+foreach (preg_split('/\s+/', trim(($usuario['nombres'] ?? '') . ' ' . ($usuario['apellidos'] ?? ''))) as $parte) {
+    if ($parte !== '') {
+        $iniciales .= mb_strtoupper(mb_substr($parte, 0, 1));
     }
-
-    return urlAplicacion($url);
-};
-
-$urlLogout = urlAplicacion("/cerrar_sesion.php");
-
-$avatar = trim((string)($_SESSION["avatar"] ?? ""));
+    if (mb_strlen($iniciales) >= 2) break;
+}
 ?>
 <!doctype html>
 <html lang="es">
-
 <head>
-
 <meta charset="utf-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
->
-
-<meta
-    name="theme-color"
-    content="#0d6efd"
->
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Inicio | Studia360</title>
-
-<link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
->
-
-<link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
 <style>
-
 :root{
-    --primary:#0d6efd;
-    --primary-dark:#084298;
-    --bg:#f4f7fb;
-    --text:#172033;
-    --muted:#667085;
-    --border:#e4e9f1;
+    --azul:#2563b8;
+    --azul-oscuro:#173f78;
+    --azul-suave:#edf5ff;
+    --morado:#7457d9;
+    --verde:#24a276;
+    --amarillo:#f5b83d;
+    --texto:#24364b;
+    --gris:#718096;
+    --fondo:#f7f9fc;
 }
-
+*{box-sizing:border-box}
 body{
     margin:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    background:var(--fondo);
+    color:var(--texto);
+    font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
 }
-
-.navbar-studia{
-    background:linear-gradient(110deg,#0b1f3a,#0d6efd);
-    box-shadow:0 5px 22px rgba(13,110,253,.20);
+.navbar{
+    background:#fff;
+    border-bottom:1px solid #e8edf4;
 }
-
-.brand{
-    font-weight:850;
-    letter-spacing:-.02em;
+.logo{
+    width:40px;height:40px;border-radius:13px;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;background:linear-gradient(135deg,#2875cf,#173f78);
 }
-
-.page{
-    width:min(1250px,calc(100% - 32px));
-    margin:auto;
-    padding:30px 0 70px;
+.profile-nav{
+    width:42px;height:42px;border-radius:50%;overflow:hidden;
+    background:var(--azul-suave);color:var(--azul);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;border:2px solid #dcecff;
 }
+.profile-nav img{width:100%;height:100%;object-fit:cover}
 
 .welcome{
-    position:relative;
-    overflow:hidden;
-    background:linear-gradient(135deg,#0d6efd,#084298);
-    color:#fff;
-    border-radius:26px;
-    padding:30px;
-    box-shadow:0 18px 45px rgba(13,110,253,.20);
+    position:relative;overflow:hidden;
+    background:linear-gradient(135deg,#2875cf 0%,#1d4f91 65%,#173f78 100%);
+    border-radius:28px;padding:30px;color:#fff;
+    box-shadow:0 18px 40px rgba(31,79,145,.18);
 }
-
 .welcome:after{
     content:"";
-    position:absolute;
-    width:270px;
-    height:270px;
-    border-radius:50%;
-    right:-90px;
-    top:-130px;
-    background:rgba(255,255,255,.09);
+    position:absolute;width:210px;height:210px;border-radius:50%;
+    right:-55px;top:-90px;background:rgba(255,255,255,.09);
 }
-
-.welcome-content{
-    position:relative;
-    z-index:1;
+.welcome-avatar{
+    width:78px;height:78px;border-radius:24px;
+    overflow:hidden;flex:none;background:#eaf3ff;color:var(--azul);
+    border:3px solid rgba(255,255,255,.75);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.65rem;font-weight:900;
 }
-
-.welcome h1{
-    font-weight:850;
-    letter-spacing:-.04em;
-    margin-bottom:7px;
+.welcome-avatar img{width:100%;height:100%;object-fit:cover}
+.xp-pill{
+    display:inline-flex;align-items:center;gap:7px;
+    background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);
+    padding:8px 13px;border-radius:999px;font-weight:700;
 }
-
-.welcome p{
-    opacity:.78;
-    margin-bottom:0;
+.quick{
+    background:#fff;border:1px solid #e6ebf2;border-radius:19px;
+    padding:17px 18px;height:100%;
 }
-
-.avatar{
-    width:70px;
-    height:70px;
-    border-radius:20px;
-    background:rgba(255,255,255,.15);
-    border:1px solid rgba(255,255,255,.25);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-    font-size:2rem;
+.quick-icon{
+    width:42px;height:42px;border-radius:13px;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--azul-suave);color:var(--azul);font-size:1.15rem;
 }
-
-.avatar img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
+.level-card{
+    background:#fff;border:1px solid #e6ebf2;border-radius:22px;padding:21px;
 }
+.progress{height:9px;background:#edf1f6;border-radius:99px}
+.progress-bar{background:linear-gradient(90deg,#2875cf,#63a3ec);border-radius:99px}
 
-.stat-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:16px;
-    margin-top:18px;
+.explore{
+    background:#fff;border:1px solid #e6ebf2;border-radius:23px;
+    padding:20px;
 }
-
-.stat-card{
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:19px;
-    padding:19px;
-    box-shadow:0 9px 25px rgba(20,35,60,.06);
+.grade-filter{
+    display:flex;gap:8px;flex-wrap:wrap;
+    background:#f1f4f8;padding:5px;border-radius:15px;
 }
-
-.stat-icon{
-    width:42px;
-    height:42px;
-    border-radius:12px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#eaf2ff;
-    color:var(--primary);
-    font-size:1.2rem;
+.grade-btn{
+    border:0;background:transparent;color:#66768a;
+    padding:9px 20px;border-radius:11px;font-weight:800;
+    transition:.18s;
 }
-
-.stat-number{
-    font-size:1.65rem;
-    font-weight:850;
-    margin-top:12px;
+.grade-btn:hover{color:var(--azul)}
+.grade-btn.active{
+    background:#fff;color:var(--azul);
+    box-shadow:0 3px 10px rgba(35,57,83,.1);
 }
-
-.stat-label{
-    color:var(--muted);
-    font-size:.84rem;
+.subject{
+    background:#fff;border:1px solid #e5ebf2;border-radius:22px;
+    padding:18px;height:100%;transition:.2s ease;
 }
-
-.section{
-    margin-top:30px;
+.subject:hover{
+    transform:translateY(-4px);
+    box-shadow:0 15px 35px rgba(30,58,92,.10);
+    border-color:#d7e6fa;
 }
-
-.section-heading{
-    display:flex;
-    justify-content:space-between;
-    align-items:end;
-    gap:15px;
-    margin-bottom:14px;
-}
-
-.section-heading h2{
-    font-size:1.25rem;
-    font-weight:850;
-    margin:0;
-}
-
-.section-heading p{
-    color:var(--muted);
-    margin:3px 0 0;
-    font-size:.9rem;
-}
-
-.progress-card{
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:19px;
-    padding:18px;
-    box-shadow:0 9px 25px rgba(20,35,60,.06);
-    height:100%;
-}
-
 .subject-icon{
-    width:48px;
-    height:48px;
-    border-radius:14px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#eaf2ff;
-    color:var(--primary);
-    font-size:1.35rem;
+    width:58px;height:58px;border-radius:17px;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:1.45rem;margin-bottom:17px;
+    background:linear-gradient(135deg,#2875cf,#4f8ed3);
 }
-
-.subject-title{
-    font-weight:800;
+.subject:nth-child(2) .subject-icon{background:linear-gradient(135deg,#7457d9,#9b83e8)}
+.subject:nth-child(3) .subject-icon{background:linear-gradient(135deg,#24a276,#49bd98)}
+.subject:nth-child(4) .subject-icon{background:linear-gradient(135deg,#ed9c37,#f4c15d)}
+.subject:nth-child(5) .subject-icon{background:linear-gradient(135deg,#d65d7d,#e98da4)}
+.subject:nth-child(6) .subject-icon{background:linear-gradient(135deg,#4d7bb5,#72a0d6)}
+.subject p{min-height:43px}
+.btn-study{
+    border:0;border-radius:13px;font-weight:800;
+    padding:10px 14px;background:#edf5ff;color:var(--azul);
 }
-
-.subject-description{
-    color:var(--muted);
-    font-size:.84rem;
-    min-height:38px;
+.btn-study:hover{background:var(--azul);color:#fff}
+.muted{color:var(--gris)}
+@media(max-width:767px){
+    .welcome{padding:22px;border-radius:22px}
+    .welcome-avatar{width:65px;height:65px;border-radius:19px}
 }
-
-.progress{
-    height:9px;
-    background:#edf1f7;
-}
-
-.progress-bar{
-    background:var(--primary);
-}
-
-.activity-card{
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:19px;
-    overflow:hidden;
-    box-shadow:0 9px 25px rgba(20,35,60,.06);
-}
-
-.activity-item{
-    padding:16px 18px;
-    border-bottom:1px solid var(--border);
-}
-
-.activity-item:last-child{
-    border-bottom:0;
-}
-
-.activity-icon{
-    width:40px;
-    height:40px;
-    border-radius:12px;
-    background:#eef5ff;
-    color:var(--primary);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex:none;
-}
-
-.xp-panel{
-    background:linear-gradient(135deg,#172033,#263b5c);
-    color:#fff;
-    border-radius:21px;
-    padding:21px;
-    box-shadow:0 10px 28px rgba(20,35,60,.12);
-}
-
-.xp-number{
-    font-size:2rem;
-    font-weight:850;
-}
-
-.xp-panel .progress{
-    background:rgba(255,255,255,.15);
-}
-
-.xp-panel .progress-bar{
-    background:#fff;
-}
-
-.grade-buttons{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-}
-
-.grade-button{
-    flex:1;
-    min-width:120px;
-    border-radius:14px;
-    padding:13px;
-    text-decoration:none;
-    background:#fff;
-    border:1px solid var(--border);
-    color:var(--text);
-    font-weight:750;
-    transition:.2s;
-}
-
-.grade-button:hover{
-    transform:translateY(-2px);
-    border-color:#b9d2ff;
-    color:var(--primary);
-    box-shadow:0 8px 22px rgba(20,35,60,.07);
-}
-
-@media(max-width:850px){
-    .stat-grid{
-        grid-template-columns:1fr;
-    }
-}
-
-@media(max-width:575px){
-    .page{
-        width:min(100% - 20px,1250px);
-        padding-top:20px;
-    }
-
-    .welcome{
-        padding:23px;
-        border-radius:20px;
-    }
-}
-
 </style>
-
 </head>
 
 <body>
 
-<nav class="navbar navbar-dark navbar-studia">
+<nav class="navbar">
+<div class="container py-2">
+    <div class="d-flex align-items-center gap-2">
+        <span class="logo"><i class="bi bi-mortarboard-fill"></i></span>
+        <span class="fw-bold fs-5">Studia360</span>
+    </div>
 
-<div class="container-fluid px-3 px-lg-4">
-
-<a
-    href="<?= e(urlAplicacion("/estudiante/dashboard.php")) ?>"
-    class="navbar-brand brand"
->
-    <i class="bi bi-mortarboard-fill me-2"></i>
-    Studia360
-</a>
-
-<div class="d-flex align-items-center gap-2">
-
-<span class="text-white small d-none d-md-inline">
-    <i class="bi bi-person-circle me-1"></i>
-    <?= e(trim($nombres . " " . $apellidos)) ?>
-</span>
-
-<a
-    href="<?= e($urlLogout) ?>"
-    class="btn btn-light btn-sm"
->
-    Cerrar sesión
-</a>
-
+    <div class="d-flex align-items-center gap-2">
+        <a class="profile-nav text-decoration-none" href="<?=h(urlAplicacion('/estudiante/perfil.php'))?>">
+            <?php if ($foto): ?>
+                <img src="<?=h($foto)?>" alt="Mi perfil">
+            <?php else: ?>
+                <?=h($iniciales)?>
+            <?php endif; ?>
+        </a>
+        <a class="btn btn-light btn-sm" href="<?=h(urlAplicacion('/estudiante/perfil.php'))?>">Mi perfil</a>
+        <a class="btn btn-outline-secondary btn-sm" href="<?=h(urlAplicacion('/cerrar_sesion.php'))?>" title="Cerrar sesión">
+            <i class="bi bi-box-arrow-right"></i>
+        </a>
+    </div>
 </div>
-
-</div>
-
 </nav>
 
+<main class="container py-4 py-lg-5">
 
-<main class="page">
+<section class="welcome mb-4">
+    <div class="d-flex align-items-center justify-content-between gap-4 position-relative" style="z-index:1">
+        <div class="d-flex align-items-center gap-3">
+            <div class="welcome-avatar">
+                <?php if ($foto): ?>
+                    <img src="<?=h($foto)?>" alt="Foto de <?=h($nombre)?>">
+                <?php else: ?>
+                    <?=h($iniciales)?>
+                <?php endif; ?>
+            </div>
 
-<?php if (!empty($errores)): ?>
-
-    <?php foreach ($errores as $error): ?>
-
-        <div class="alert alert-warning border-0 shadow-sm rounded-4">
-            <i class="bi bi-exclamation-circle-fill me-2"></i>
-            <?= e($error) ?>
+            <div>
+                <div class="small text-uppercase opacity-75 fw-semibold">Qué bueno verte</div>
+                <h1 class="h2 fw-bold mb-1">¡Hola, <?=h($nombre)?>! 👋</h1>
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                    <span class="xp-pill"><i class="bi bi-star-fill"></i><?=number_format($puntos)?> XP</span>
+                    <span class="xp-pill"><i class="bi bi-trophy-fill"></i><?=h($nivel['nombre'])?></span>
+                </div>
+            </div>
         </div>
 
-    <?php endforeach; ?>
-
-<?php endif; ?>
-
-
-<section class="welcome">
-
-<div class="welcome-content">
-
-<div class="d-flex justify-content-between align-items-center gap-4 flex-wrap">
-
-<div>
-
-<div class="small text-uppercase fw-bold opacity-75">
-    Tu espacio de aprendizaje
-</div>
-
-<h1>
-    Hola, <?= e($primerNombre) ?> 👋
-</h1>
-
-<p>
-    Sigue avanzando a tu ritmo y convierte cada tema en un nuevo logro.
-</p>
-
-</div>
-
-
-<div class="avatar">
-
-<?php if ($avatar !== ""): ?>
-
-<img
-    src="<?= e($avatar) ?>"
-    alt="Avatar"
->
-
-<?php else: ?>
-
-<i class="bi bi-person-fill"></i>
-
-<?php endif; ?>
-
-</div>
-
-</div>
-
-</div>
-
+        <div class="d-none d-md-block text-end">
+            <div class="small opacity-75">Tu progreso</div>
+            <div class="display-6 fw-bold"><?=number_format((float)($progresoGeneral['porcentaje'] ?? 0),0)?>%</div>
+        </div>
+    </div>
 </section>
 
-
-<div class="stat-grid">
-
-<div class="stat-card">
-
-<div class="stat-icon">
-    <i class="bi bi-stars"></i>
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-4">
+        <div class="quick d-flex align-items-center gap-3">
+            <div class="quick-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+            <div><div class="small muted">Experiencia</div><strong><?=number_format($puntos)?> XP</strong></div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-4">
+        <div class="quick d-flex align-items-center gap-3">
+            <div class="quick-icon"><i class="bi bi-trophy-fill"></i></div>
+            <div><div class="small muted">Nivel</div><strong><?=h($nivel['nombre'])?></strong></div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="quick d-flex align-items-center gap-3">
+            <div class="quick-icon"><i class="bi bi-graph-up-arrow"></i></div>
+            <div><div class="small muted">Progreso</div><strong><?=number_format((float)($progresoGeneral['porcentaje'] ?? 0),0)?>% completado</strong></div>
+        </div>
+    </div>
 </div>
 
-<div class="stat-number">
-    <?= number_format((int)$gamificacion["puntos"]) ?>
-    <span class="fs-6 text-secondary">XP</span>
-</div>
-
-<div class="stat-label">
-    Experiencia acumulada
-</div>
-
-</div>
-
-
-<div class="stat-card">
-
-<div class="stat-icon">
-    <i class="bi bi-trophy-fill"></i>
-</div>
-
-<div class="stat-number">
-    <?= e($gamificacion["nivel"]["nombre"]) ?>
-</div>
-
-<div class="stat-label">
-    Nivel actual
-</div>
-
-</div>
-
-
-<div class="stat-card">
-
-<div class="stat-icon">
-    <i class="bi bi-check2-circle"></i>
-</div>
-
-<div class="stat-number">
-    <?= (int)$progresoGeneral["temas_completados"] ?>
-    <span class="fs-6 text-secondary">
-        / <?= (int)$progresoGeneral["total_temas"] ?>
-    </span>
-</div>
-
-<div class="stat-label">
-    Temas completados
-</div>
-
-</div>
-
-</div>
-
-
-<section class="section">
-
-<div class="section-heading">
-
-<div>
-
-<h2>
-    Tu progreso general
-</h2>
-
-<p>
-    Avance de todos los temas disponibles.
-</p>
-
-</div>
-
-<strong class="text-primary">
-    <?= number_format((float)$progresoGeneral["porcentaje"], 0) ?>%
-</strong>
-
-</div>
-
-
-<div class="card border-0 bg-transparent">
-
-<div class="progress" style="height:12px;">
-    <div
-        class="progress-bar"
-        style="width:<?= e($progresoGeneral["porcentaje"]) ?>%"
-    ></div>
-</div>
-
-</div>
-
+<section class="level-card mb-4">
+    <div class="d-flex justify-content-between align-items-end mb-2">
+        <div>
+            <div class="small text-primary fw-bold">SIGUE AVANZANDO</div>
+            <h2 class="h5 fw-bold mb-0"><?=h($nivel['nombre'])?></h2>
+        </div>
+        <strong><?=number_format($progresoNivel,0)?>%</strong>
+    </div>
+    <div class="progress">
+        <div class="progress-bar" style="width:<?=h((string)$progresoNivel)?>%"></div>
+    </div>
+    <div class="small muted mt-2">
+        <?php if ($siguienteNivel !== null): ?>
+            Te faltan <?=number_format(max(0,(int)$siguienteNivel-$puntos))?> XP para subir de nivel.
+        <?php else: ?>
+            ¡Llegaste al nivel máximo! 🏆
+        <?php endif; ?>
+    </div>
 </section>
 
+<section class="explore mb-4">
+    <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+        <div>
+            <h2 class="h4 fw-bold mb-1">¿Qué quieres aprender hoy?</h2>
+            <div class="small muted">Elige un grado y descubre sus contenidos.</div>
+        </div>
 
-<section class="section">
-
-<div class="section-heading">
-
-<div>
-
-<h2>
-    Mis materias
-</h2>
-
-<p>
-    Consulta tu avance y continúa donde lo dejaste.
-</p>
-
-</div>
-
-</div>
-
-
-<div class="row g-3">
-
-<?php if (empty($materias)): ?>
-
-<div class="col-12">
-
-<div class="progress-card text-center py-5">
-
-<i class="bi bi-journal-x fs-1 text-secondary"></i>
-
-<h3 class="h6 fw-bold mt-3">
-    Todavía no hay materias disponibles
-</h3>
-
-<p class="text-secondary small mb-0">
-    Cuando existan temas publicados aparecerán aquí.
-</p>
-
-</div>
-
-</div>
-
-<?php else: ?>
-
-<?php foreach ($materias as $materia): ?>
-
-<?php
-    $porcentajeMateria = max(
-        0,
-        min(
-            100,
-            (float)$materia["porcentaje"]
-        )
-    );
-?>
-
-<div class="col-12 col-md-6">
-
-<div class="progress-card">
-
-<div class="d-flex gap-3 align-items-start">
-
-<div class="subject-icon">
-    <i class="bi bi-book-fill"></i>
-</div>
-
-<div class="flex-grow-1">
-
-<div class="subject-title">
-    <?= e($materia["nombre"]) ?>
-</div>
-
-<div class="subject-description mt-1">
-    <?= e($materia["descripcion"] ?? "Continúa fortaleciendo tus conocimientos.") ?>
-</div>
-
-</div>
-
-</div>
-
-
-<div class="d-flex justify-content-between small mt-3 mb-2">
-
-<span class="text-secondary">
-    <?= (int)$materia["temas_completados"] ?>
-    /
-    <?= (int)$materia["total_temas"] ?>
-    temas
-</span>
-
-<strong>
-    <?= number_format($porcentajeMateria, 0) ?>%
-</strong>
-
-</div>
-
-
-<div class="progress mb-3">
-
-<div
-    class="progress-bar"
-    style="width:<?= e($porcentajeMateria) ?>%"
-></div>
-
-</div>
-
-
-<a
-    href="<?= e($urlGrado($gradoSesion, (int)$materia["id_materia"])) ?>"
-    class="btn btn-outline-primary btn-sm"
->
-    Ver contenidos
-    <i class="bi bi-arrow-right ms-1"></i>
-</a>
-
-</div>
-
-</div>
-
-<?php endforeach; ?>
-
-<?php endif; ?>
-
-</div>
-
+        <div class="grade-filter" id="selectorGrado">
+            <button type="button" class="grade-btn" data-grado="9">9°</button>
+            <button type="button" class="grade-btn" data-grado="10">10°</button>
+            <button type="button" class="grade-btn" data-grado="11">11°</button>
+        </div>
+    </div>
 </section>
 
-
-<section class="section">
+<div class="d-flex justify-content-between align-items-end mb-3">
+    <div>
+        <h2 class="h4 fw-bold mb-1">Tus materias</h2>
+        <div class="small muted" id="textoGrado">Contenidos de grado <?=h($usuario['grado'])?>°</div>
+    </div>
+</div>
 
 <div class="row g-4">
+<?php foreach ($materias as $m): ?>
+    <div class="col-12 col-md-6 col-lg-4">
+        <article class="subject">
+            <div class="subject-icon"><i class="bi bi-book-half"></i></div>
+            <h3 class="h5 fw-bold mb-2"><?=h($m['nombre'])?></h3>
+            <p class="small muted mb-3">
+                <?=h($m['descripcion'] ?: 'Explora, aprende y avanza a tu ritmo.')?>
+            </p>
 
-<div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="small muted">
+                    <i class="bi bi-journal-text me-1"></i>
+                    <?=number_format((int)$m['total_temas'])?> temas
+                </span>
+            </div>
 
-<div class="section-heading">
-
-<div>
-
-<h2>
-    Continúa aprendiendo
-</h2>
-
-<p>
-    Tus temas trabajados recientemente.
-</p>
-
-</div>
-
-</div>
-
-
-<div class="activity-card">
-
-<?php if (empty($actividadReciente)): ?>
-
-<div class="text-center py-5 px-3">
-
-<i class="bi bi-clock-history fs-1 text-secondary"></i>
-
-<h3 class="h6 fw-bold mt-3">
-    Aún no has comenzado un tema
-</h3>
-
-<p class="text-secondary small mb-0">
-    Elige un grado y empieza a construir tu progreso.
-</p>
-
-</div>
-
-<?php else: ?>
-
-<?php foreach ($actividadReciente as $actividad): ?>
-
-<div class="activity-item">
-
-<div class="d-flex gap-3 align-items-center">
-
-<div class="activity-icon">
-    <i class="bi bi-journal-text"></i>
-</div>
-
-<div class="flex-grow-1">
-
-<div class="fw-bold">
-    <?= e($actividad["tema"]) ?>
-</div>
-
-<div class="small text-secondary">
-
-<?= e($actividad["materia"]) ?>
-·
-<?= e($actividad["grado"]) ?>°
-
-</div>
-
-</div>
-
-<div class="text-end">
-
-<div class="fw-bold text-primary">
-    <?= number_format((float)$actividad["porcentaje_avance"], 0) ?>%
-</div>
-
-<a
-    href="<?= e(
-        urlAplicacion(
-            "/estudiante/tema.php?id=" .
-            (int)$actividad["id_tema"]
-        )
-    ) ?>"
-    class="btn btn-sm btn-outline-primary mt-1"
->
-    Continuar
-</a>
-
-</div>
-
-</div>
-
-</div>
-
+            <a class="btn-study w-100 d-block text-center text-decoration-none"
+               href="#"
+               data-materia="<?=h((string)$m['id_materia'])?>">
+                Explorar <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </article>
+    </div>
 <?php endforeach; ?>
 
+<?php if (!$materias): ?>
+    <div class="col-12">
+        <div class="alert alert-light border">Aún no hay materias disponibles.</div>
+    </div>
 <?php endif; ?>
-
 </div>
-
-</div>
-
-
-<div class="col-lg-4">
-
-<div class="section-heading">
-
-<div>
-
-<h2>
-    Tu nivel
-</h2>
-
-</div>
-
-</div>
-
-
-<div class="xp-panel">
-
-<div class="small text-uppercase opacity-75 fw-bold">
-    Nivel actual
-</div>
-
-<div class="fs-4 fw-bold mt-1">
-    <?= e($gamificacion["nivel"]["nombre"]) ?>
-</div>
-
-<div class="xp-number mt-3">
-    <?= number_format((int)$gamificacion["puntos"]) ?>
-    <span class="fs-6 fw-normal opacity-75">
-        XP
-    </span>
-</div>
-
-<div class="progress mt-3">
-
-<div
-    class="progress-bar"
-    style="width:<?= e($gamificacion["progreso_nivel"]) ?>%"
-></div>
-
-</div>
-
-<div class="small opacity-75 mt-2">
-
-<?php if ($gamificacion["puntos_siguiente_nivel"] !== null): ?>
-
-Te faltan aproximadamente
-<strong>
-<?= max(
-    0,
-    (int)$gamificacion["puntos_siguiente_nivel"] -
-    (int)$gamificacion["puntos"]
-) ?>
-</strong>
-XP para el siguiente nivel.
-
-<?php else: ?>
-
-Has alcanzado el nivel máximo configurado.
-
-<?php endif; ?>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-
-<section class="section">
-
-<div class="section-heading">
-
-<div>
-
-<h2>
-    Explora por grado
-</h2>
-
-<p>
-    Accede directamente a los contenidos de tu curso.
-</p>
-
-</div>
-
-</div>
-
-
-<div class="grade-buttons">
-
-<a
-    href="<?= e($urlGrado("9")) ?>"
-    class="grade-button"
->
-    <i class="bi bi-1-circle-fill text-primary me-2"></i>
-    Noveno
-    <i class="bi bi-arrow-right float-end"></i>
-</a>
-
-
-<a
-    href="<?= e($urlGrado("10")) ?>"
-    class="grade-button"
->
-    <i class="bi bi-2-circle-fill text-success me-2"></i>
-    Décimo
-    <i class="bi bi-arrow-right float-end"></i>
-</a>
-
-
-<a
-    href="<?= e($urlGrado("11")) ?>"
-    class="grade-button"
->
-    <i class="bi bi-3-circle-fill text-warning me-2"></i>
-    Undécimo
-    <i class="bi bi-arrow-right float-end"></i>
-</a>
-
-</div>
-
-</section>
 
 </main>
+
+<script>
+(function(){
+    const base = <?=json_encode(urlAplicacion('/estudiante/grado.php?grado='))?>;
+    const botones = document.querySelectorAll('#selectorGrado .grade-btn');
+    const enlaces = document.querySelectorAll('[data-materia]');
+    const texto = document.getElementById('textoGrado');
+
+    let gradoActual = <?=json_encode((string)$usuario['grado'])?>;
+
+    function actualizar(){
+        enlaces.forEach(function(enlace){
+            enlace.href = base + gradoActual + '&id_materia=' + enlace.dataset.materia;
+        });
+        texto.textContent = 'Contenidos de grado ' + gradoActual + '°';
+    }
+
+    botones.forEach(function(btn){
+        btn.addEventListener('click', function(){
+            gradoActual = this.dataset.grado;
+            botones.forEach(function(b){ b.classList.toggle('active', b === btn); });
+            actualizar();
+        });
+    });
+
+    const inicial = document.querySelector('#selectorGrado [data-grado="' + gradoActual + '"]');
+    if(inicial) inicial.classList.add('active');
+
+    actualizar();
+})();
+</script>
 
 </body>
 </html>

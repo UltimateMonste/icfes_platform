@@ -102,14 +102,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                  */
                 $avanceActual = (float)$progresoActual["porcentaje_avance"];
 
-                if ($avanceActual < 10 && (int)$progresoActual["completado"] !== 1) {
+                if ($avanceActual < 10) {
                     actualizarProgresoTema(
                         $conexion,
                         $idUsuario,
                         (int)$idTema,
-                        [
-                            "porcentaje_avance" => 10
-                        ]
+                        null,
+                        null
                     );
                 }
 
@@ -235,42 +234,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $conexion,
                     $idUsuario,
                     (int)$idTema,
-                    [
-                        "recursos_vistos" => $vistos,
-                        "porcentaje_avance" => $avance
-                    ]
+                    $vistos,
+                    $evaluacionesRealizadas
                 );
 
                 $mensaje = "Recurso registrado en tu progreso.";
 
             } elseif ($accion === "completar") {
 
-                $resultado = completarTema(
-                    $conexion,
-                    $idUsuario,
-                    (int)$idTema
-                );
-
-                $recompensa = $resultado["recompensa"] ?? null;
-
-                if (
-                    is_array($recompensa) &&
-                    !empty($recompensa["subio_nivel"])
-                ) {
-                    $mensaje =
-                        "¡Tema completado! Ganaste " .
-                        (int)$recompensa["puntos_otorgados"] .
-                        " XP y subiste de nivel.";
-                } else {
-                    $mensaje =
-                        "¡Tema completado! Ganaste " .
-                        (
-                            is_array($recompensa)
-                                ? (int)($recompensa["puntos_otorgados"] ?? 0)
-                                : 0
-                        ) .
-                        " XP.";
-                }
+                $puntosAntes = (int)obtenerGamificacionUsuario($conexion, $idUsuario)["puntos"];
+                $progresoCompletado = completarTema($conexion, $idUsuario, (int)$idTema);
+                $gamDespues = obtenerGamificacionUsuario($conexion, $idUsuario);
+                $ganados = max(0, (int)$gamDespues["puntos"] - $puntosAntes);
+                $mensaje = "¡Tema completado! Ganaste " . $ganados . " XP.";
 
             } else {
                 throw new RuntimeException("La acción solicitada no es válida.");
@@ -391,19 +367,15 @@ try {
      * el cambio inmediatamente en la misma visita al tema.
      */
     if (
-        (float)$progreso["porcentaje_avance"] < 10 &&
-        (int)$progreso["completado"] !== 1
+        (float)$progreso["porcentaje_avance"] < 10
     ) {
-        $resultadoInicio = actualizarProgresoTema(
+        $progreso = actualizarProgresoTema(
             $conexion,
             $idUsuario,
             (int)$idTema,
-            [
-                "porcentaje_avance" => 10
-            ]
+            null,
+            null
         );
-
-        $progreso = $resultadoInicio["progreso"];
     }
 
     /*
@@ -425,7 +397,6 @@ try {
         "porcentaje_avance" => 0,
         "recursos_vistos" => 0,
         "evaluaciones_realizadas" => 0,
-        "completado" => 0
     ];
     $gamificacion = [
         "puntos" => 0,
@@ -448,7 +419,7 @@ $avance = max(
     min(100, (float)($progreso["porcentaje_avance"] ?? 0))
 );
 
-$completado = (int)($progreso["completado"] ?? 0) === 1;
+$completado = (float)($progreso["porcentaje_avance"] ?? 0) >= 100;
 
 $tipoIconos = [
     "video" => "bi-play-circle-fill",
