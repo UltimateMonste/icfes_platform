@@ -11,9 +11,38 @@ declare(strict_types=1);
  */
 
 if (!function_exists('evaluarCriterioInsignia')) {
-function evaluarCriterioInsignia(PDO $conexion, int $idUsuario, string $criterio): bool {
+function evaluarCriterioInsignia(PDO $conexion, int $idUsuario, string $criterio, ?int $idMateria = null): bool {
     $criterio = strtolower(trim($criterio));
     if ($criterio === '') return false;
+
+    // Criterio principal de Studia360: completar todos los temas de una materia
+    // correspondientes al grado del estudiante.
+    if ($criterio === 'materia_completa' || str_starts_with($criterio, 'materia_completa:')) {
+        if (str_contains($criterio, ':')) {
+            $idMateria = max(0, (int)substr($criterio, strpos($criterio, ':') + 1));
+        }
+        if (!$idMateria) return false;
+
+        $st = $conexion->prepare("SELECT grado FROM usuarios WHERE id_usuario=? LIMIT 1");
+        $st->execute([$idUsuario]);
+        $grado = (string)$st->fetchColumn();
+        if ($grado === '') return false;
+
+        $st = $conexion->prepare("SELECT COUNT(*) FROM temas WHERE id_materia=? AND grado=?");
+        $st->execute([$idMateria, $grado]);
+        $total = (int)$st->fetchColumn();
+        if ($total < 1) return false;
+
+        $st = $conexion->prepare("
+            SELECT COUNT(*)
+            FROM progreso p
+            INNER JOIN temas t ON t.id_tema=p.id_tema
+            WHERE p.id_usuario=? AND t.id_materia=? AND t.grado=?
+              AND p.porcentaje_avance >= 100
+        ");
+        $st->execute([$idUsuario, $idMateria, $grado]);
+        return (int)$st->fetchColumn() >= $total;
+    }
 
     $st = $conexion->prepare("SELECT puntos,nivel FROM usuarios WHERE id_usuario=? LIMIT 1");
     $st->execute([$idUsuario]);
@@ -45,17 +74,11 @@ function evaluarCriterioInsignia(PDO $conexion, int $idUsuario, string $criterio
     foreach (preg_split('/[,;]+/', $criterio) as $regla) {
         $regla = trim($regla);
         if ($regla === '') continue;
-
-        if (!preg_match('/^(puntos|nivel|temas|evaluaciones|recursos)\s*[:=]\s*(\d+)$/', $regla, $m)) {
-            return false;
-        }
-
+        if (!preg_match('/^(puntos|nivel|temas|evaluaciones|recursos)\s*[:=]\s*(\d+)$/', $regla, $m)) return false;
         if ($valores[$m[1]] < (int)$m[2]) return false;
     }
-
     return true;
 }
-
 }
 
 if (!function_exists('revisarYOtorgarInsignias')) {
@@ -63,7 +86,7 @@ function revisarYOtorgarInsignias(PDO $conexion, int $idUsuario): array {
     $otorgadas = [];
 
     $st = $conexion->query("
-        SELECT id_insignia,nombre,descripcion,criterio,puntos_otorgados
+        SELECT id_insignia,nombre,descripcion,criterio,puntos_otorgados,id_materia
         FROM insignias
         WHERE estado='Activa'
         ORDER BY id_insignia
@@ -75,7 +98,7 @@ function revisarYOtorgarInsignias(PDO $conexion, int $idUsuario): array {
         $check->execute([$idUsuario,(int)$i['id_insignia']]);
         if ($check->fetchColumn()) continue;
 
-        if (!evaluarCriterioInsignia($conexion,$idUsuario,(string)$i['criterio'])) continue;
+        if (!evaluarCriterioInsignia($conexion,$idUsuario,(string)$i['criterio'], isset($i['id_materia']) ? (int)$i['id_materia'] : null)) continue;
 
         try {
             $conexion->beginTransaction();

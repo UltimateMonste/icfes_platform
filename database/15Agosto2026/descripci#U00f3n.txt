@@ -1,0 +1,1 @@
+Se creo la importación mediante tablas de Excel, se hicieron ajustes técnicos y estecticos al dashboard de admin\estudiantes, se implementó la edición de usuarios, se añadió la selección masiva de estudiantes para habilitacion/inhabilitación o eliminación de estudiantes.

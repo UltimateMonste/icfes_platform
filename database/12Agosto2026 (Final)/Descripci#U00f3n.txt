@@ -1,0 +1,4 @@
+Se crearon dos usuarios para las pruebas del login (un usuario Admin y un usuario de Estudiante).
+Todo funcionando correctamente, el cambio de contraseña desde el usuario admin tambien ya funciona.
+Es un poco sencillo, pero como base ya sabemos que funciona y que contamos con una estructura bastante solida para continuar con las siguientes etapas y desafios que nos proponga el proyecto.
+:>

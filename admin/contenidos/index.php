@@ -320,6 +320,7 @@ try {
             .hero-actions .btn { width: 100%; }
         }
     </style>
+<link rel="stylesheet" href="<?= htmlspecialchars(urlAplicacion('/admin/assets/studia-admin.css'), ENT_QUOTES, 'UTF-8') ?>">
 </head>
 
 <body>

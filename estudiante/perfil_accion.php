@@ -46,6 +46,26 @@ try{
         volverPerfilAccion('Avatar actualizado correctamente.');
     }
 
+    if($accion==='cambiar_password'){
+        $actual=trim((string)($_POST['password_actual']??''));
+        $nueva=(string)($_POST['password_nueva']??'');
+        $confirmar=(string)($_POST['password_confirmar']??'');
+
+        if($actual==='' || $nueva==='' || $confirmar==='') throw new RuntimeException('Completa todos los campos de contraseña.');
+        if(strlen($nueva)<6) throw new RuntimeException('La nueva contraseña debe tener al menos 6 caracteres.');
+        if($nueva!==$confirmar) throw new RuntimeException('Las contraseñas nuevas no coinciden.');
+
+        $st=$conexion->prepare("SELECT password FROM usuarios WHERE id_usuario=? LIMIT 1");
+        $st->execute([$idUsuario]);
+        $hash=(string)$st->fetchColumn();
+        if($hash==='' || !password_verify($actual,$hash)) throw new RuntimeException('La contraseña actual no es correcta.');
+
+        $nuevoHash=password_hash($nueva,PASSWORD_DEFAULT);
+        $st=$conexion->prepare("UPDATE usuarios SET password=? WHERE id_usuario=?");
+        $st->execute([$nuevoHash,$idUsuario]);
+        volverPerfilAccion('Contraseña actualizada correctamente.');
+    }
+
     if($accion==='foto'){
         if(!isset($_FILES['foto']) || $_FILES['foto']['error']!==UPLOAD_ERR_OK){
             throw new RuntimeException('Selecciona una imagen.');

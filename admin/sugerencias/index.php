@@ -275,6 +275,7 @@ function estadoUi(string $estado): array
             .hero{padding:1.4rem;}
         }
     </style>
+<link rel="stylesheet" href="<?= htmlspecialchars(urlAplicacion('/admin/assets/studia-admin.css'), ENT_QUOTES, 'UTF-8') ?>">
 </head>
 
 <body>

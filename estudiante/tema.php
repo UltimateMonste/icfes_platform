@@ -346,7 +346,7 @@ try {
     ");
 
     $stmtEvaluaciones->execute([$idTema]);
-    $evaluaciones = $stmtEvaluaciones->fetchAll(PDO::FETCH_ASSOC);
+    $evaluaciones = []; // Las evaluaciones fueron retiradas del recorrido educativo de Studia360.
 
     /*
      * Progreso actualizado.
@@ -1101,37 +1101,254 @@ body{
     .resource-thumb{width:100%;height:100%}
 }
 </style>
+<style id="studia360-common-style">
+:root{
+  --sd-accent:#2563eb;
+  --sd-accent-2:#4f46e5;
+  --sd-accent-soft:#eff6ff;
+  --sd-bg:#f7f9fc;
+  --sd-card:#ffffff;
+  --sd-text:#1f2a3d;
+  --sd-muted:#7b8798;
+  --sd-line:#e6ebf2;
+  --sd-success:#10b981;
+  --sd-warning:#f59e0b;
+  --sd-danger:#ef4444;
+  --sd-shadow:0 12px 34px rgba(31,55,86,.055);
+  --sd-shadow-hover:0 18px 42px rgba(31,55,86,.09);
+  --sd-radius:20px;
+}
+html{scroll-behavior:smooth}
+body.sd-page{
+  background:
+    radial-gradient(circle at 90% 0%,color-mix(in srgb,var(--sd-accent) 8%,transparent),transparent 28rem),
+    var(--sd-bg)!important;
+  color:var(--sd-text);
+  transition:background .25s,color .25s;
+}
+.sd-navbar{
+  position:sticky;top:0;z-index:1030;
+  min-height:68px;
+  background:rgba(255,255,255,.9)!important;
+  border-bottom:1px solid var(--sd-line)!important;
+  box-shadow:0 5px 24px rgba(31,55,86,.035);
+  backdrop-filter:blur(15px);
+}
+.sd-brand{
+  display:flex;align-items:center;gap:9px;
+  color:var(--sd-text)!important;font-weight:850!important;
+  letter-spacing:-.035em;text-decoration:none;
+}
+.sd-logo{
+  width:38px;height:38px;border-radius:12px;
+  display:grid;place-items:center;color:#fff;
+  background:linear-gradient(145deg,var(--sd-accent),var(--sd-accent-2));
+  box-shadow:0 8px 18px color-mix(in srgb,var(--sd-accent) 22%,transparent);
+}
+.sd-nav-actions{display:flex;align-items:center;gap:7px}
+.sd-nav-btn{
+  height:38px;border:1px solid var(--sd-line);background:#fff!important;
+  color:#637086!important;border-radius:11px!important;
+  font-size:.73rem!important;font-weight:750!important;
+}
+.sd-nav-btn:hover{background:var(--sd-accent-soft)!important;color:var(--sd-accent)!important}
+.sd-avatar-mini{
+  width:34px;height:34px;border-radius:50%;overflow:hidden;
+  display:grid;place-items:center;
+  background:var(--sd-accent-soft);color:var(--sd-accent);
+  font-weight:850;border:2px solid #fff;
+  box-shadow:0 2px 9px rgba(20,40,70,.08);
+}
+.sd-avatar-mini img{width:100%;height:100%;object-fit:cover}
+.sd-shell{width:min(1240px,calc(100% - 30px));margin:auto;padding:27px 0 55px}
+.sd-page-title{font-size:1.65rem;font-weight:850;letter-spacing:-.04em;margin:0}
+.sd-page-sub{font-size:.78rem;color:var(--sd-muted);margin:.25rem 0 0}
+.sd-card{
+  background:var(--sd-card)!important;
+  border:1px solid var(--sd-line)!important;
+  border-radius:var(--sd-radius)!important;
+  box-shadow:var(--sd-shadow)!important;
+}
+.sd-card:hover{box-shadow:var(--sd-shadow-hover)!important}
+.sd-btn{
+  border-radius:10px!important;font-size:.74rem!important;
+  font-weight:750!important;padding:.52rem .76rem!important;
+}
+.sd-btn-primary{
+  color:#fff!important;background:var(--sd-accent)!important;border-color:var(--sd-accent)!important;
+  box-shadow:0 7px 16px color-mix(in srgb,var(--sd-accent) 14%,transparent);
+}
+.sd-btn-outline{
+  color:var(--sd-accent)!important;background:var(--sd-card)!important;border:1px solid color-mix(in srgb,var(--sd-accent) 22%,var(--sd-line))!important;
+}
+.sd-btn-outline:hover{background:var(--sd-accent-soft)!important}
+.sd-form .form-control,.sd-form .form-select{
+  border:1px solid var(--sd-line)!important;border-radius:11px!important;
+  min-height:40px;box-shadow:none!important;
+}
+.sd-form .form-control:focus,.sd-form .form-select:focus{
+  border-color:color-mix(in srgb,var(--sd-accent) 45%,#fff)!important;
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--sd-accent) 9%,transparent)!important;
+}
+.sd-muted{color:var(--sd-muted)!important}
+.sd-eyebrow{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;
+  color:var(--sd-accent);background:var(--sd-accent-soft);
+  border:1px solid color-mix(in srgb,var(--sd-accent) 12%,#fff);
+  font-size:.61rem;font-weight:850;text-transform:uppercase;letter-spacing:.08em;
+}
+.sd-hero{
+  position:relative;overflow:hidden;color:#fff;
+  border-radius:25px;padding:27px 29px;
+  background:
+    radial-gradient(circle at 90% 12%,rgba(255,255,255,.15),transparent 17rem),
+    linear-gradient(125deg,var(--sd-accent),var(--sd-accent-2));
+  box-shadow:0 18px 44px color-mix(in srgb,var(--sd-accent) 15%,transparent);
+}
+.sd-hero:after{
+  content:"";position:absolute;width:200px;height:200px;border-radius:50%;
+  right:-75px;bottom:-110px;border:27px solid rgba(255,255,255,.055);
+}
+.sd-hero>*{position:relative;z-index:1}
+.sd-fade{animation:sdFade .38s ease both}
+@keyframes sdFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.sd-theme-toggle{
+  position:fixed;right:20px;bottom:20px;z-index:1045;
+  width:48px;height:48px;border:0;border-radius:16px;
+  display:grid;place-items:center;color:#fff;
+  background:linear-gradient(145deg,var(--sd-accent),var(--sd-accent-2));
+  box-shadow:0 12px 28px color-mix(in srgb,var(--sd-accent) 25%,transparent);
+  cursor:pointer;transition:transform .2s,box-shadow .2s;
+}
+.sd-theme-toggle:hover{transform:translateY(-3px) rotate(4deg)}
+.sd-theme-panel{
+  position:fixed;right:20px;bottom:78px;z-index:1046;width:285px;
+  padding:15px;background:var(--sd-card);border:1px solid var(--sd-line);
+  border-radius:18px;box-shadow:0 20px 50px rgba(20,35,60,.15);
+  transform:translateY(8px) scale(.98);opacity:0;pointer-events:none;
+  transition:.2s;
+}
+.sd-theme-panel.open{transform:none;opacity:1;pointer-events:auto}
+.sd-theme-title{font-size:.82rem;font-weight:850;margin-bottom:3px}
+.sd-theme-sub{font-size:.65rem;color:var(--sd-muted);margin-bottom:12px}
+.sd-theme-row{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.sd-theme-option{
+  border:1px solid var(--sd-line);background:var(--sd-card);border-radius:12px;
+  padding:9px;text-align:left;cursor:pointer;color:var(--sd-text);
+}
+.sd-theme-option:hover,.sd-theme-option.active{
+  border-color:color-mix(in srgb,var(--sd-accent) 45%,#fff);
+  background:var(--sd-accent-soft);
+}
+.sd-theme-swatch{height:24px;border-radius:8px;margin-bottom:6px}
+.sd-theme-option strong{display:block;font-size:.66rem}
+.sd-theme-option small{font-size:.57rem;color:var(--sd-muted)}
+.sd-theme-mode{
+  width:100%;margin-top:8px;border:1px solid var(--sd-line);background:var(--sd-card);
+  border-radius:12px;padding:8px;color:var(--sd-text);font-size:.68rem;font-weight:750;
+  cursor:pointer;text-align:left;
+}
+
+/* Student badges/titles */
+.sd-title-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.sd-title-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 8px;border-radius:999px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.18);
+  color:#fff;font-size:.62rem;font-weight:800;
+}
+.sd-title-badge.dark{
+  color:#795f13;background:#fff8df;border-color:#efdfaa;
+}
+.sd-title-badge i{font-size:.65rem}
+
+/* Dark mode */
+body.sd-dark{
+  --sd-bg:#111827;--sd-card:#182235;--sd-text:#edf2f7;--sd-muted:#9aa7ba;--sd-line:#2a3549;
+  background:
+    radial-gradient(circle at 90% 0%,color-mix(in srgb,var(--sd-accent) 13%,transparent),transparent 28rem),
+    var(--sd-bg)!important;
+}
+body.sd-dark .sd-navbar{background:rgba(17,24,39,.88)!important}
+body.sd-dark .sd-nav-btn{background:#182235!important;color:#aab5c5!important}
+body.sd-dark .sd-card,
+body.sd-dark .card,
+body.sd-dark .cardx,
+body.sd-dark .panel,
+body.sd-dark .subject,
+body.sd-dark .quick,
+body.sd-dark .level-card,
+body.sd-dark .explore,
+body.sd-dark .resource-card,
+body.sd-dark .evaluation-card,
+body.sd-dark .stat,
+body.sd-dark .avatar-option,
+body.sd-dark .message-card{background:var(--sd-card)!important;color:var(--sd-text)!important}
+body.sd-dark .form-control,body.sd-dark .form-select{
+  background:#111827!important;color:var(--sd-text)!important;border-color:var(--sd-line)!important;
+}
+body.sd-dark .form-control::placeholder{color:#718096}
+body.sd-dark .text-dark,body.sd-dark h1,body.sd-dark h2,body.sd-dark h3,body.sd-dark h4,body.sd-dark h5,
+body.sd-dark .fw-bold,body.sd-dark .fw-semibold{color:var(--sd-text)!important}
+body.sd-dark .text-muted,body.sd-dark .muted{color:var(--sd-muted)!important}
+body.sd-dark .sd-theme-option,body.sd-dark .sd-theme-mode{background:var(--sd-card);color:var(--sd-text)}
+body.sd-dark .table{--bs-table-bg:var(--sd-card);--bs-table-color:var(--sd-text)}
+body.sd-dark .dropdown-menu{background:#182235;border-color:var(--sd-line)}
+body.sd-dark .dropdown-item{color:#dce4ee}
+body.sd-dark .dropdown-item:hover{background:#202d42}
+body.sd-dark .bg-light{background:#202d42!important}
+body.sd-dark .border{border-color:var(--sd-line)!important}
+
+/* Accent themes */
+body.sd-accent-orange{--sd-accent:#f97316;--sd-accent-2:#ea580c;--sd-accent-soft:#fff7ed}
+body.sd-accent-purple{--sd-accent:#8b5cf6;--sd-accent-2:#7c3aed;--sd-accent-soft:#f5f3ff}
+body.sd-accent-green{--sd-accent:#10b981;--sd-accent-2:#059669;--sd-accent-soft:#ecfdf5}
+
+@media(max-width:767px){
+  .sd-shell{width:min(100% - 20px,1240px);padding-top:19px}
+  .sd-page-title{font-size:1.4rem}
+  .sd-theme-toggle{right:14px;bottom:14px}
+  .sd-theme-panel{right:12px;bottom:70px;width:min(285px,calc(100vw - 24px))}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation:none!important;transition:none!important}
+}
+</style>
+<link rel="stylesheet" href="studia360-estudiante.css">
 </head>
 
-<body>
+<body class="sd-page">
 
-<nav class="navbar navbar-dark navbar-studia">
-<div class="container-fluid px-3 px-lg-4">
 
-<a href="<?= e($urlDashboard) ?>" class="navbar-brand brand">
-    <i class="bi bi-mortarboard-fill me-2"></i>
-    Studia360
-</a>
-
-<div class="d-flex align-items-center gap-2">
-
-<span class="text-white small d-none d-md-inline">
-    <i class="bi bi-person-circle me-1"></i>
-    <?= e($_SESSION["nombres"] ?? "Estudiante") ?>
-</span>
-
-<a href="<?= e($urlDashboard) ?>" class="btn btn-outline-light btn-sm">
-    <i class="bi bi-grid me-1"></i>
-    Inicio
-</a>
-
-<a href="<?= e($urlLogout) ?>" class="btn btn-light btn-sm">
-    Salir
-</a>
-
-</div>
-</div>
+<nav class="navbar sd-navbar">
+  <div class="container-fluid px-3 px-lg-4">
+    <a href="dashboard.php" class="sd-brand">
+      <span class="sd-logo"><i class="bi bi-stars"></i></span>
+      <span>Studia360</span>
+    </a>
+    <div class="sd-nav-actions">
+      <div class="dropdown">
+        <button class="btn sd-nav-btn dropdown-toggle" data-bs-toggle="dropdown" type="button">
+          <i class="bi bi-grid-3x3-gap me-1"></i><span class="d-none d-sm-inline">Explorar</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm p-2" style="border-radius:14px">
+          <li><a class="dropdown-item rounded-2 small" href="dashboard.php"><i class="bi bi-house me-2"></i>Inicio</a></li>
+          <li><a class="dropdown-item rounded-2 small" href="grado.php?grado=9"><i class="bi bi-book me-2"></i>Materias y temas</a></li>
+          <li><a class="dropdown-item rounded-2 small" href="perfil.php"><i class="bi bi-person-circle me-2"></i>Mi perfil</a></li>
+          <li><a class="dropdown-item rounded-2 small" href="sugerencias.php"><i class="bi bi-chat-left-heart me-2"></i>Quejas y recomendaciones</a></li>
+          <li><a class="dropdown-item rounded-2 small" href="recuperacion.php"><i class="bi bi-key me-2"></i>Notificaciones</a></li>
+        </ul>
+      </div>
+      <a href="perfil.php" class="sd-avatar-mini d-none d-sm-grid" title="Mi perfil">
+        <?php if (!empty($foto)): ?><img src="<?=h($foto)?>" alt="Mi perfil"><?php else: ?><i class="bi bi-person"></i><?php endif; ?>
+      </a>
+      <a href="perfil.php" class="btn sd-nav-btn d-none d-md-inline-flex"><i class="bi bi-person me-1"></i>Perfil</a>
+      <a href="../cerrar_sesion.php" class="btn sd-nav-btn" title="Cerrar sesión"><i class="bi bi-box-arrow-right"></i><span class="d-none d-sm-inline ms-1">Salir</span></a>
+    </div>
+  </div>
 </nav>
+
 
 <main class="page">
 
@@ -1555,13 +1772,6 @@ body{
             </span>
         </div>
 
-        <div class="stat-row">
-            <span class="stat-label">Evaluaciones</span>
-            <span class="stat-value">
-                <?= (int)$progreso["evaluaciones_realizadas"] ?>
-            </span>
-        </div>
-
     </div>
 
 
@@ -1672,5 +1882,61 @@ document.querySelectorAll('form[target="_blank"]').forEach(function(form){
 });
 </script>
 
+
+<button id="sdThemeToggle" class="sd-theme-toggle" type="button" aria-label="Cambiar apariencia" title="Personalizar apariencia">
+  <i class="bi bi-palette2"></i>
+</button>
+<div id="sdThemePanel" class="sd-theme-panel" aria-label="Personalizar apariencia">
+  <div class="sd-theme-title">Personaliza Studia360</div>
+  <div class="sd-theme-sub">Elige el color que te guste y decide si prefieres fondo claro u oscuro.</div>
+  <div class="sd-theme-row">
+    <button class="sd-theme-option" data-theme="blue" onclick="studiaTheme('blue')"><div class="sd-theme-swatch" style="background:linear-gradient(135deg,#2563eb,#4f46e5)"></div><strong>Azul</strong><small>Clásico</small></button>
+    <button class="sd-theme-option" data-theme="orange" onclick="studiaTheme('orange')"><div class="sd-theme-swatch" style="background:linear-gradient(135deg,#f97316,#ea580c)"></div><strong>Naranja</strong><small>Enérgico</small></button>
+    <button class="sd-theme-option" data-theme="purple" onclick="studiaTheme('purple')"><div class="sd-theme-swatch" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"></div><strong>Violeta</strong><small>Creativo</small></button>
+    <button class="sd-theme-option" data-theme="green" onclick="studiaTheme('green')"><div class="sd-theme-swatch" style="background:linear-gradient(135deg,#10b981,#059669)"></div><strong>Verde</strong><small>Calma</small></button>
+  </div>
+  <button id="sdThemeMode" class="sd-theme-mode" type="button" onclick="studiaThemeMode()"></button>
+</div>
+
+<script>
+(function(){
+  const body=document.body;
+  const key="studia360_theme";
+  const themes={
+    blue:{label:"Azul",className:""},
+    orange:{label:"Naranja",className:"sd-accent-orange"},
+    purple:{label:"Violeta",className:"sd-accent-purple"},
+    green:{label:"Verde",className:"sd-accent-green"}
+  };
+  function applyTheme(theme,mode){
+    Object.values(themes).forEach(t=>{if(t.className) body.classList.remove(t.className)});
+    if(themes[theme]?.className) body.classList.add(themes[theme].className);
+    body.classList.toggle("sd-dark",mode==="dark");
+    document.querySelectorAll(".sd-theme-option").forEach(el=>el.classList.toggle("active",el.dataset.theme===theme));
+    const modeBtn=document.getElementById("sdThemeMode");
+    if(modeBtn) modeBtn.innerHTML=(mode==="dark"?"<i class='bi bi-moon-stars me-2'></i>Modo oscuro":"<i class='bi bi-sun me-2'></i>Modo claro");
+  }
+  let saved={theme:"blue",mode:"light"};
+  try{saved=Object.assign(saved,JSON.parse(localStorage.getItem(key)||"{}"));}catch(e){}
+  applyTheme(saved.theme,saved.mode);
+  window.studiaTheme=function(theme){
+    saved.theme=theme;
+    try{localStorage.setItem(key,JSON.stringify(saved));}catch(e){}
+    applyTheme(saved.theme,saved.mode);
+  };
+  window.studiaThemeMode=function(){
+    saved.mode=saved.mode==="dark"?"light":"dark";
+    try{localStorage.setItem(key,JSON.stringify(saved));}catch(e){}
+    applyTheme(saved.theme,saved.mode);
+  };
+  const toggle=document.getElementById("sdThemeToggle");
+  const panel=document.getElementById("sdThemePanel");
+  toggle?.addEventListener("click",()=>panel?.classList.toggle("open"));
+  document.addEventListener("click",e=>{
+    if(panel && panel.classList.contains("open") && !panel.contains(e.target) && !toggle.contains(e.target)) panel.classList.remove("open");
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

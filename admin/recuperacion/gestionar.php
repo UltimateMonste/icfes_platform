@@ -1,172 +1,38 @@
 <?php
 declare(strict_types=1);
-
 require_once __DIR__ . '/../../includes/seguridad.php';
 exigirAdmin();
-
-function e(?string $valor): string {
-    return htmlspecialchars((string)$valor, ENT_QUOTES, 'UTF-8');
-}
-
-if (empty($_SESSION['csrf_recuperacion'])) {
-    $_SESSION['csrf_recuperacion'] = bin2hex(random_bytes(32));
-}
-$csrf = $_SESSION['csrf_recuperacion'];
-
-$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-if (!$id) {
-    header('Location: index.php');
-    exit;
-}
-
-function cargar(PDO $conexion, int $id): ?array {
-    $stmt=$conexion->prepare("SELECT sr.*,u.id_usuario,u.nombres,u.apellidos,u.correo,u.grado
-        FROM solicitudes_recuperacion sr
-        INNER JOIN usuarios u ON u.id_usuario=sr.id_usuario
-        WHERE sr.id_solicitud=:id LIMIT 1");
-    $stmt->execute([':id'=>$id]);
-    $x=$stmt->fetch(PDO::FETCH_ASSOC);
-    return $x?:null;
-}
-
-$solicitud=cargar($conexion,$id);
-if(!$solicitud){header('Location:index.php');exit;}
-
+function e($v):string{return htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');}
+if(empty($_SESSION['csrf_recuperacion']))$_SESSION['csrf_recuperacion']=bin2hex(random_bytes(32));$csrf=$_SESSION['csrf_recuperacion'];
+$id=filter_input(INPUT_GET,'id',FILTER_VALIDATE_INT);if(!$id){header('Location:index.php');exit;}
+function cargar(PDO $db,int $id):?array{$st=$db->prepare("SELECT sr.*,u.id_usuario,u.nombres,u.apellidos,u.correo,u.grado,u.numero_documento FROM solicitudes_recuperacion sr INNER JOIN usuarios u ON u.id_usuario=sr.id_usuario WHERE sr.id_solicitud=? LIMIT 1");$st->execute([$id]);$r=$st->fetch(PDO::FETCH_ASSOC);return $r?:null;}
+$sol=cargar($conexion,$id);if(!$sol){header('Location:index.php');exit;}
 $alerta=null;$tipo='success';
-
 if($_SERVER['REQUEST_METHOD']==='POST'){
-    if(!hash_equals($csrf,(string)($_POST['csrf']??''))){
-        $alerta='La sesión de seguridad expiró.';$tipo='danger';
-    }else{
-        $accion=$_POST['accion']??'';
-        try{
-            if($accion==='guardar'){
-                $nueva=(string)($_POST['nueva_password']??'');
-                $confirmar=(string)($_POST['confirmar_password']??'');
-                $mensaje=trim((string)($_POST['mensaje_admin']??''));
-
-                if(strlen($nueva)<6){
-                    throw new RuntimeException('La contraseña debe tener al menos 6 caracteres.');
-                }
-                if($nueva!==$confirmar){
-                    throw new RuntimeException('Las contraseñas no coinciden.');
-                }
-
-                $conexion->beginTransaction();
-
-                $hash=password_hash($nueva,PASSWORD_DEFAULT);
-
-                $stmt=$conexion->prepare("UPDATE usuarios SET password=:password WHERE id_usuario=:usuario");
-                $stmt->execute([':password'=>$hash,':usuario'=>(int)$solicitud['id_usuario']]);
-
-                $stmt=$conexion->prepare("UPDATE solicitudes_recuperacion
-                    SET estado='Gestionada', mensaje_admin=:mensaje, fecha_gestion=NOW()
-                    WHERE id_solicitud=:id");
-                $stmt->execute([':mensaje'=>$mensaje!==''?$mensaje:null,':id'=>$id]);
-
-                $conexion->commit();
-
-                $alerta='La contraseña fue actualizada y la solicitud quedó gestionada.';
-                $tipo='success';
-                $solicitud=cargar($conexion,$id)??$solicitud;
-            }
-
-            if($accion==='cancelar'){
-                $stmt=$conexion->prepare("UPDATE solicitudes_recuperacion SET estado='Cancelada' WHERE id_solicitud=:id");
-                $stmt->execute([':id'=>$id]);
-                $alerta='La solicitud fue cancelada.';$tipo='success';
-                $solicitud=cargar($conexion,$id)??$solicitud;
-            }
-        }catch(RuntimeException $e){
-            if($conexion->inTransaction())$conexion->rollBack();
-            $alerta=$e->getMessage();$tipo='danger';
-        }catch(PDOException $e){
-            if($conexion->inTransaction())$conexion->rollBack();
-            $alerta='No fue posible completar la operación.';$tipo='danger';
-        }
-    }
+ if(!hash_equals($csrf,(string)($_POST['csrf']??''))){$alerta='La sesión de seguridad expiró. Recarga la página.';$tipo='danger';}
+ else try{
+  $accion=(string)($_POST['accion']??'');
+  if($accion==='restablecer'){
+   $hash=password_hash((string)$sol['numero_documento'],PASSWORD_DEFAULT);
+   $conexion->beginTransaction();
+   $st=$conexion->prepare("UPDATE usuarios SET password=?,primer_ingreso=1,fecha_cambio_password=NULL WHERE id_usuario=? AND id_rol=2");$st->execute([$hash,$sol['id_usuario']]);
+   $mensaje=trim((string)($_POST['mensaje_admin']??''));if($mensaje==='')$mensaje='Tu contraseña fue restablecida a la contraseña predeterminada (número de documento). Al ingresar podrás cambiarla.';
+   $st=$conexion->prepare("UPDATE solicitudes_recuperacion SET estado='Gestionada',mensaje_admin=?,fecha_gestion=NOW() WHERE id_solicitud=?");$st->execute([$mensaje,$id]);
+   $conexion->commit();$sol=cargar($conexion,$id)?:$sol;$alerta='La contraseña fue restablecida a la contraseña predeterminada del estudiante.';$tipo='success';
+  }elseif($accion==='cancelar'){
+   $st=$conexion->prepare("UPDATE solicitudes_recuperacion SET estado='Cancelada',fecha_gestion=NOW() WHERE id_solicitud=?");$st->execute([$id]);$sol=cargar($conexion,$id)?:$sol;$alerta='La solicitud fue cancelada.';
+  }
+ }catch(Throwable $ex){if($conexion->inTransaction())$conexion->rollBack();$alerta='No fue posible completar la operación.';$tipo='danger';}
 }
+$urlIndex=urlAplicacion('/admin/recuperacion/index.php');$urlDash=urlAplicacion('/admin/dashboard.php');
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gestionar recuperación | Studia360</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<style>
-body{background:#f4f7fb;color:#26364a}.top{background:linear-gradient(110deg,#173f80,#2467c5)}
-.cardx{background:#fff;border:1px solid #dce5f0;border-radius:22px;box-shadow:0 10px 28px rgba(31,57,92,.06)}
-.info{padding:.8rem 0;border-bottom:1px solid #edf1f5}.form-control{border-radius:13px;padding:.75rem}.form-control:focus{box-shadow:0 0 0 .25rem rgba(36,103,197,.1)}
-</style>
-</head>
-<body>
-<nav class="navbar navbar-dark top"><div class="container">
-<a class="navbar-brand fw-bold" href="index.php"><i class="bi bi-shield-lock-fill me-2"></i>Studia360</a>
-<a class="btn btn-light btn-sm" href="index.php"><i class="bi bi-arrow-left me-1"></i>Volver</a>
-</div></nav>
-
-<main class="container py-5">
-<div class="row g-4">
-<div class="col-lg-8">
-
-<div class="cardx p-4">
-<div class="d-flex justify-content-between align-items-center mb-4">
-<div><div class="small text-uppercase text-muted">Solicitud #<?= (int)$id ?></div><h1 class="h3 fw-bold mb-0">Cambiar contraseña</h1></div>
-<span class="badge text-bg-<?= $solicitud['estado']==='Pendiente'?'warning':($solicitud['estado']==='Gestionada'?'success':'secondary') ?>"><?= e($solicitud['estado']) ?></span>
-</div>
-
-<?php if($alerta): ?><div class="alert alert-<?= e($tipo) ?>"><?= e($alerta) ?></div><?php endif; ?>
-
-<?php if($solicitud['estado']==='Pendiente'): ?>
-<form method="POST">
-<input type="hidden" name="csrf" value="<?= e($csrf) ?>">
-<input type="hidden" name="accion" value="guardar">
-
-<div class="mb-3">
-<label class="form-label fw-semibold">Nueva contraseña</label>
-<input type="password" class="form-control" name="nueva_password" minlength="6" required autocomplete="new-password">
-</div>
-
-<div class="mb-3">
-<label class="form-label fw-semibold">Confirmar contraseña</label>
-<input type="password" class="form-control" name="confirmar_password" minlength="6" required autocomplete="new-password">
-</div>
-
-<div class="mb-4">
-<label class="form-label fw-semibold">Mensaje para el estudiante <span class="text-muted fw-normal">(opcional)</span></label>
-<textarea class="form-control" name="mensaje_admin" rows="5" placeholder="Ejemplo: Tu contraseña fue actualizada. Recuerda guardarla en un lugar seguro."></textarea>
-</div>
-
-<button class="btn btn-primary px-4" type="submit"><i class="bi bi-key-fill me-1"></i>Actualizar contraseña</button>
-</form>
-
-<form method="POST" class="mt-3" onsubmit="return confirm('¿Cancelar esta solicitud?');">
-<input type="hidden" name="csrf" value="<?= e($csrf) ?>">
-<input type="hidden" name="accion" value="cancelar">
-<button class="btn btn-outline-secondary" type="submit">Cancelar solicitud</button>
-</form>
-
-<?php else: ?>
-<div class="alert alert-info mb-0">
-Esta solicitud ya fue <?= e(mb_strtolower($solicitud['estado'])) ?>.
-<?php if(!empty($solicitud['mensaje_admin'])): ?><hr><strong>Mensaje enviado:</strong><br><?= nl2br(e($solicitud['mensaje_admin'])) ?><?php endif; ?>
-</div>
-<?php endif; ?>
-</div>
-</div>
-
-<div class="col-lg-4">
-<div class="cardx p-4">
-<h2 class="h5 fw-bold mb-4"><i class="bi bi-person-circle text-primary me-2"></i>Estudiante</h2>
-<div class="info"><small class="text-muted d-block">Nombre</small><strong><?= e(trim($solicitud['nombres'].' '.$solicitud['apellidos'])) ?></strong></div>
-<div class="info"><small class="text-muted d-block">Correo</small><strong class="text-break"><?= e($solicitud['correo']) ?></strong></div>
-<div class="info"><small class="text-muted d-block">Grado</small><strong><?= e((string)$solicitud['grado']) ?>°</strong></div>
-<div class="info"><small class="text-muted d-block">Solicitada</small><strong><?= e(date('d/m/Y H:i',strtotime($solicitud['fecha_solicitud']))) ?></strong></div>
-</div>
-</div>
-</div>
-</main>
-</body>
-</html>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Restablecimiento | Studia360</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><link rel="stylesheet" href="<?=e(urlAplicacion('/admin/assets/studia-admin.css'))?>">
+<style>.security-note{background:#eff6ff;border:1px solid #d7e7ff;border-radius:17px;padding:15px}.student-card{background:#fff;border:1px solid #e4eaf2;border-radius:22px;box-shadow:0 10px 28px rgba(23,32,51,.05)}.info-line{padding:12px 0;border-bottom:1px solid #edf1f6}.info-line:last-child{border-bottom:0}</style></head><body>
+<nav class="s360-topbar"><div class="container-fluid px-3 px-lg-4 py-2 d-flex justify-content-between align-items-center"><a class="s360-brand d-flex align-items-center gap-2" href="<?=e($urlDash)?>"><span class="s360-brand-icon"><i class="bi bi-mortarboard-fill"></i></span>Studia360</a><a class="btn btn-light border s360-btn" href="<?=e($urlIndex)?>"><i class="bi bi-arrow-left me-1"></i>Solicitudes</a></div></nav>
+<main class="s360-shell"><section class="s360-hero mb-4"><div class="s360-kicker">Seguridad de cuentas</div><h1 class="h2 fw-bold mt-2 mb-2">Restablecer contraseña</h1><p class="mb-0 opacity-75">La administración no conoce ni define la contraseña personal del estudiante.</p></section>
+<?php if($alerta):?><div class="alert alert-<?=$tipo?> border-0"><?=e($alerta)?></div><?php endif;?>
+<div class="row g-4"><div class="col-lg-7"><section class="student-card p-4 p-lg-5"><div class="s360-section-title mb-1"><i class="bi bi-shield-check text-primary me-2"></i>Restablecimiento seguro</div><p class="s360-muted small mb-4">Al confirmar, el sistema genera un hash de la contraseña predeterminada: <strong>número de documento</strong>. El administrador nunca ve la contraseña almacenada.</p>
+<div class="security-note mb-4"><div class="fw-bold"><i class="bi bi-key-fill me-2"></i>¿Qué ocurrirá?</div><ul class="small mb-0 mt-2"><li>La contraseña se restablecerá al número de documento del estudiante.</li><li>Se marcará el próximo ingreso para que pueda cambiarla.</li><li>La contraseña se almacena únicamente como hash.</li></ul></div>
+<?php if($sol['estado']==='Pendiente'):?><form method="post"><input type="hidden" name="csrf" value="<?=e($csrf)?>"><input type="hidden" name="accion" value="restablecer"><label class="form-label fw-semibold">Mensaje para el estudiante <span class="text-secondary fw-normal">(opcional)</span></label><textarea class="form-control mb-3" name="mensaje_admin" rows="4" placeholder="Tu contraseña fue restablecida a tu número de documento."></textarea><button class="btn btn-primary s360-btn" type="submit" onclick="return confirm('¿Restablecer la contraseña al número de documento del estudiante?');"><i class="bi bi-arrow-counterclockwise me-1"></i>Restablecer al número de documento</button></form><form method="post" class="mt-2"><input type="hidden" name="csrf" value="<?=e($csrf)?>"><input type="hidden" name="accion" value="cancelar"><button class="btn btn-light border s360-btn" type="submit">Cancelar solicitud</button></form><?php else:?><div class="alert alert-secondary mb-0">Esta solicitud ya fue <?=e(mb_strtolower($sol['estado']))?>.</div><?php endif;?></section></div>
+<div class="col-lg-5"><aside class="student-card p-4"><div class="s360-section-title mb-3">Estudiante</div><div class="info-line"><small class="s360-muted d-block">Nombre</small><strong><?=e(trim($sol['nombres'].' '.$sol['apellidos']))?></strong></div><div class="info-line"><small class="s360-muted d-block">Correo</small><strong class="text-break"><?=e($sol['correo'])?></strong></div><div class="info-line"><small class="s360-muted d-block">Grado</small><strong><?=e($sol['grado'])?>°</strong></div><div class="info-line"><small class="s360-muted d-block">Solicitud</small><strong>#<?=$id?></strong></div><div class="info-line"><small class="s360-muted d-block">Estado</small><span class="s360-chip <?=$sol['estado']==='Pendiente'?'warning':($sol['estado']==='Gestionada'?'success':'')?>"><?=e($sol['estado'])?></span></div></aside></div></div></main></body></html>

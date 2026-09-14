@@ -348,6 +348,7 @@ $error = $_GET["error"] ?? "";
             }
         }
     </style>
+<link rel="stylesheet" href="<?= htmlspecialchars(urlAplicacion('/admin/assets/studia-admin.css'), ENT_QUOTES, 'UTF-8') ?>">
 </head>
 
 <body>

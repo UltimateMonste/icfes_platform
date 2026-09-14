@@ -277,7 +277,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     >
 
     <title>
-        Editar estudiante | ICFES Platform
+        Editar estudiante | Studia360
     </title>
 
     <link
@@ -290,34 +290,35 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     >
 
+<link rel="stylesheet" href="<?= htmlspecialchars(urlAplicacion('/admin/assets/studia-admin.css'), ENT_QUOTES, 'UTF-8') ?>">
+    <link rel="stylesheet" href="estudiantes.css">
 </head>
 
 
 <body class="bg-light">
 
 
-<nav class="navbar navbar-dark bg-dark">
-
-    <div class="container-fluid">
-
-        <a
-            href="../dashboard.php"
-            class="navbar-brand"
-        >
-            <i class="bi bi-mortarboard-fill"></i>
-            ICFES Platform
+<nav class="navbar navbar-studia">
+    <div class="container-fluid px-3 px-lg-4">
+        <a href="../dashboard.php" class="navbar-brand d-flex align-items-center">
+            <span class="brand-mark"><i class="bi bi-stars"></i></span>
+            Studia360
         </a>
-
-        <a
-            href="../../cerrar_sesion.php"
-            class="btn btn-outline-light btn-sm"
-        >
-            <i class="bi bi-box-arrow-right"></i>
-            Cerrar sesión
-        </a>
-
+        <div class="d-flex align-items-center gap-2">
+            <div class="dropdown">
+                <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-grid-3x3-gap me-1"></i> Gestión
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 p-2" style="border-radius:14px">
+                    <li><a class="dropdown-item rounded-2 small" href="index.php"><i class="bi bi-people me-2"></i>Estudiantes</a></li>
+                    <li><a class="dropdown-item rounded-2 small" href="crear.php"><i class="bi bi-person-plus me-2"></i>Nuevo estudiante</a></li>
+                    <li><a class="dropdown-item rounded-2 small" href="importar.php"><i class="bi bi-file-earmark-spreadsheet me-2"></i>Importar</a></li>
+                    <li><a class="dropdown-item rounded-2 small" href="plantilla.php"><i class="bi bi-download me-2"></i>Plantilla</a></li>
+                </ul>
+            </div>
+            <a href="../../cerrar_sesion.php" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right me-1"></i><span class="d-none d-sm-inline">Salir</span></a>
+        </div>
     </div>
-
 </nav>
 
 
@@ -667,6 +668,7 @@ filtrarCursos();
 </script>
 
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

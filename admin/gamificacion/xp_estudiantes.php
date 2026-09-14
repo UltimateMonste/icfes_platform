@@ -57,7 +57,8 @@ catch(Throwable $e){$estudiantes=[];}
 <title>XP de estudiantes | Studia360</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<style>body{background:#f4f7fb;color:#26364a}.navbar{background:linear-gradient(100deg,#173f80,#2467c5)}.cardx{background:#fff;border:1px solid #dce5f0;border-radius:20px;box-shadow:0 8px 25px #1f395c0c}.table>:not(caption)>*>*{padding:1rem}.badge-xp{font-size:.9rem}</style></head>
+<style>body{background:#f4f7fb;color:#26364a}.navbar{background:linear-gradient(100deg,#173f80,#2467c5)}.cardx{background:#fff;border:1px solid #dce5f0;border-radius:20px;box-shadow:0 8px 25px #1f395c0c}.table>:not(caption)>*>*{padding:1rem}.badge-xp{font-size:.9rem}</style><link rel="stylesheet" href="<?= htmlspecialchars(urlAplicacion('/admin/assets/studia-admin.css'), ENT_QUOTES, 'UTF-8') ?>">
+</head>
 <body><nav class="navbar navbar-dark"><div class="container py-2"><a class="navbar-brand fw-bold" href="<?=h(urlAplicacion('/admin/dashboard.php'))?>">Studia360</a><a class="btn btn-light btn-sm" href="<?=h(urlAplicacion('/admin/gamificacion/index.php'))?>">Gamificación</a></div></nav>
 <main class="container py-4"><div class="cardx p-4 mb-4"><h1 class="h3 fw-bold">Puntos de estudiantes</h1><p class="text-muted">Herramienta administrativa para revisar y corregir XP durante las pruebas del sistema.</p>
 <form class="row g-2"><div class="col-md-10"><input class="form-control" name="buscar" value="<?=h($buscar)?>" placeholder="Buscar por nombre, apellido o documento"></div><div class="col-md-2"><button class="btn btn-primary w-100">Buscar</button></div></form></div>

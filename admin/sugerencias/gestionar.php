@@ -264,6 +264,7 @@ foreach (preg_split('/\s+/', $nombreCompleto) as $parte) {
             flex:none;
         }
     </style>
+<link rel="stylesheet" href="<?= htmlspecialchars(urlAplicacion('/admin/assets/studia-admin.css'), ENT_QUOTES, 'UTF-8') ?>">
 </head>
 
 <body>

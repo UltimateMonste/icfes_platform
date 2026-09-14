@@ -109,6 +109,11 @@ function limpiarContenidoHTML(string $html): string
         libxml_use_internal_errors($prev);
     }
 
+    // Quitar etiquetas de formato que suelen traer contenido pegado desde Word/web
+    // y que pueden romper la apariencia responsive de la lección.
+    $html = preg_replace('#<font\\b[^>]*>(.*?)</font>#is', '$1', $html);
+    $html = preg_replace('/\\s+(style)\\s*=\\s*("|\\\').*?\\2/iu', '', $html);
+
     return trim($html);
 }
 
@@ -297,7 +302,7 @@ body{background:var(--fondo);color:var(--texto)}
 .note-editor{border:1px solid #dce3ec!important;border-radius:14px!important;overflow:hidden}
 .note-toolbar{background:#f8fafc!important;border-bottom:1px solid #e1e7ef!important;padding:8px!important}
 .note-btn{border-radius:7px!important}
-.note-editable{min-height:680px!important;padding:36px!important;background:#fff;font-size:16px;line-height:1.75}
+.note-editable{min-height:680px!important;padding:36px!important;background:#fff;font-size:16px;line-height:1.75;overflow-wrap:anywhere;word-break:break-word}.note-editable table{max-width:100%;display:block;overflow-x:auto}.note-editable img{max-width:100%!important;height:auto!important}.note-editable iframe,.note-editable video{max-width:100%;width:100%;border:0;border-radius:12px}
 .note-editable img{max-width:100%;height:auto}
 .note-editable iframe{max-width:100%;width:100%;min-height:360px;border:0;border-radius:12px}
 .bloque-label{font-weight:800;margin-bottom:8px}
@@ -311,6 +316,7 @@ body{background:var(--fondo);color:var(--texto)}
 .url-help{font-size:.86rem;color:#667085}
 @media(max-width:767px){.note-editable{min-height:500px!important;padding:20px!important}.actions-bar .btn{width:100%}}
 </style>
+<link rel="stylesheet" href="<?= htmlspecialchars(urlAplicacion('/admin/assets/studia-admin.css'), ENT_QUOTES, 'UTF-8') ?>">
 </head>
 <body>
 <nav class="navbar navbar-dark bg-dark py-3">
@@ -332,6 +338,7 @@ body{background:var(--fondo);color:var(--texto)}
       <div class="text-muted"><?= htmlspecialchars($tema['materia'] ?? '') ?> · <?= htmlspecialchars($tema['grado'] ?? '') ?>°</div>
     </div>
     <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-outline-secondary" href="<?= htmlspecialchars(urlAplicacion('/admin/contenidos/informacion_tema.php?id='.(int)$tema['id_tema'])) ?>"><i class="bi bi-pencil-square"></i> Editar datos</a>
       <a
     href="vista_previa_tema.php?id=<?= (int)$tema['id_tema'] ?>"
     target="_blank"
@@ -478,10 +485,7 @@ $(function () {
     toolbar: [
       ['style', ['style']],
       ['font', ['bold','italic','underline','strikethrough','clear']],
-      ['fontname', ['fontname']],
-      ['fontsize', ['fontsize']],
-      ['color', ['color']],
-      ['para', ['ul','ol','paragraph']],
+            ['para', ['ul','ol','paragraph']],
       ['height', ['height']],
       ['table', ['table']],
       ['insert', ['link','picture','video','hr']],

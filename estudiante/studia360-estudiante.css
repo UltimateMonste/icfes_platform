@@ -1,0 +1,35 @@
+
+/* ===== Final visual correction ===== */
+body.sd-page{overflow-x:hidden}
+body.sd-page .btn-primary, body.sd-page .sd-btn-primary{background:var(--sd-accent)!important;border-color:var(--sd-accent)!important;color:#fff!important}
+body.sd-page .text-primary{color:var(--sd-accent)!important}
+body.sd-page .bg-primary{background:var(--sd-accent)!important}
+body.sd-page .border-primary{border-color:var(--sd-accent)!important}
+body.sd-page .badge-card.locked{opacity:1!important;filter:none!important;background:var(--sd-card)!important}
+body.sd-page .badge-card.locked .sd-title-emblem{opacity:.72;filter:grayscale(.65)}
+body.sd-page .badge-card.locked p,body.sd-page .badge-card.locked .small{color:var(--sd-muted)!important}
+body.sd-page .type-option{color:var(--sd-text)!important;background:var(--sd-card)!important}
+body.sd-page .type-option .small{color:var(--sd-text)!important}
+body.sd-page .type-option:has(input:checked){border-color:var(--sd-accent)!important;background:var(--sd-accent-soft)!important}
+body.sd-page .type-option:has(input:checked) .small{color:var(--sd-accent)!important}
+body.sd-page .type-icon{color:var(--sd-accent)!important;background:var(--sd-accent-soft)!important}
+body.sd-page .message-card{background:var(--sd-card)!important;color:var(--sd-text)!important}
+body.sd-page .message-card h3,body.sd-page .message-card .fw-bold{color:var(--sd-text)!important}
+body.sd-page .message-icon{background:var(--sd-accent-soft)!important;color:var(--sd-accent)!important}
+body.sd-page .response-box{background:color-mix(in srgb,var(--sd-success) 9%,var(--sd-card))!important;border-color:color-mix(in srgb,var(--sd-success) 18%,var(--sd-line))!important}
+body.sd-page .response-box .text-success{color:var(--sd-success)!important}
+body.sd-page .sd-theme-option strong{color:var(--sd-text)!important}
+body.sd-page .dropdown-menu{background:var(--sd-card)!important;border:1px solid var(--sd-line)!important}
+body.sd-page .dropdown-item{color:var(--sd-text)!important}
+body.sd-page .dropdown-item:hover{background:var(--sd-accent-soft)!important;color:var(--sd-accent)!important}
+body.sd-page .sd-logo{color:#fff!important}
+body.sd-page .sd-theme-swatch{opacity:1!important}
+/* Make every older fixed blue/pale component follow the selected theme. */
+body.sd-page .hero,body.sd-page .topbar{background:linear-gradient(125deg,var(--sd-accent),var(--sd-accent-2))!important}
+body.sd-page .stat,body.sd-page .avatar-option,body.sd-page .card-soft,body.sd-page .cardx{background:var(--sd-card)!important;border-color:var(--sd-line)!important;color:var(--sd-text)!important}
+body.sd-page .avatar-option.selected{border-color:var(--sd-accent)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--sd-accent) 8%,transparent)!important}
+body.sd-page .avatar-img,body.sd-page .stat i{background:var(--sd-accent-soft)!important;color:var(--sd-accent)!important}
+body.sd-page .progress{background:color-mix(in srgb,var(--sd-line) 70%,var(--sd-card))!important}
+body.sd-page .progress-bar{background:linear-gradient(90deg,var(--sd-accent),color-mix(in srgb,var(--sd-accent) 62%,#fff))!important}
+body.sd-page .form-control,body.sd-page .form-select{background:var(--sd-card)!important;color:var(--sd-text)!important}
+body.sd-dark.sd-accent-orange .sd-hero,body.sd-dark.sd-accent-purple .sd-hero,body.sd-dark.sd-accent-green .sd-hero{color:#fff}

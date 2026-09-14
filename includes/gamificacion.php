@@ -46,6 +46,10 @@ function sincronizarNivel(PDO $conexion, int $idUsuario): array {
 
     $up=$conexion->prepare("UPDATE usuarios SET nivel=? WHERE id_usuario=?");
     $up->execute([(int)$nivel['id_nivel'],$idUsuario]);
+
+    // Cada nivel tiene un avatar de perfil asociado. El avatar se desbloquea
+    // al alcanzar el nivel y queda disponible para seleccionarlo desde el perfil.
+    // No reemplazamos una foto personalizada del estudiante automáticamente.
     return $nivel;
 }
 
@@ -123,7 +127,10 @@ function actualizarProgresoTema(PDO $conexion,int $idUsuario,int $idTema,?int $r
       VALUES(?,?,?,?,?,NOW())
       ON DUPLICATE KEY UPDATE recursos_vistos=VALUES(recursos_vistos),
       evaluaciones_realizadas=VALUES(evaluaciones_realizadas),
-      porcentaje_avance=VALUES(porcentaje_avance),ultima_actividad=NOW()
+      porcentaje_avance=VALUES(porcentaje_avance),
+      completado=IF(VALUES(porcentaje_avance)>=100,1,completado),
+      fecha_completado=IF(VALUES(porcentaje_avance)>=100,COALESCE(fecha_completado,NOW()),fecha_completado),
+      ultima_actividad=NOW()
     ");
     $st->execute([$idUsuario,$idTema,$rv,$ev,$avance]);
 
@@ -142,6 +149,8 @@ function completarTema(PDO $conexion,int $idUsuario,int $idTema): array {
         VALUES(?,?,?,?,100,NOW())
         ON DUPLICATE KEY UPDATE
           porcentaje_avance=100,
+          completado=1,
+          fecha_completado=COALESCE(fecha_completado,NOW()),
           ultima_actividad=NOW()
     ");
     $st->execute([
