@@ -1,0 +1,358 @@
+
+/* Studia360 · Contenidos · capa visual adicional
+   Se añade sin sustituir los estilos originales de cada pantalla. */
+:root{
+  --ct-accent:#2563eb;
+  --ct-accent-2:#4f46e5;
+  --ct-soft:#eff6ff;
+  --ct-bg:#f6f8fc;
+  --ct-card:#fff;
+  --ct-text:#1f2937;
+  --ct-muted:#718096;
+  --ct-line:#e5eaf1;
+  --ct-input:#fff;
+  --ct-track:#e9eef5;
+  --ct-shadow:0 10px 28px rgba(31,45,70,.055);
+  --ct-shadow-hover:0 16px 36px rgba(31,45,70,.09);
+}
+body{
+  color:var(--ct-text);
+  background:
+    radial-gradient(circle at 92% 0%,color-mix(in srgb,var(--ct-accent) 7%,transparent),transparent 27rem),
+    var(--ct-bg)!important;
+  transition:background .25s ease,color .25s ease;
+}
+body.s360-content-theme *{box-sizing:border-box}
+body.s360-content-theme .navbar{
+  background:rgba(255,255,255,.9)!important;
+  border-bottom:1px solid var(--ct-line)!important;
+  box-shadow:0 5px 24px rgba(20,35,60,.045)!important;
+  backdrop-filter:blur(15px);
+}
+body.s360-content-theme .navbar-brand{
+  color:var(--ct-text)!important;
+  font-weight:850!important;
+  letter-spacing:-.035em;
+}
+body.s360-content-theme .navbar .btn-light,
+body.s360-content-theme .navbar .btn-outline-light{
+  background:var(--ct-card)!important;
+  color:var(--ct-text)!important;
+  border:1px solid var(--ct-line)!important;
+  border-radius:10px!important;
+}
+body.s360-content-theme .navbar .btn-light:hover,
+body.s360-content-theme .navbar .btn-outline-light:hover{
+  color:var(--ct-accent)!important;background:var(--ct-soft)!important;
+}
+body.s360-content-theme h1,body.s360-content-theme h2,body.s360-content-theme h3,
+body.s360-content-theme h4,body.s360-content-theme h5,body.s360-content-theme h6{
+  color:var(--ct-text);
+}
+body.s360-content-theme .card,
+body.s360-content-theme .card-soft,
+body.s360-content-theme .editor-card,
+body.s360-content-theme .info-card,
+body.s360-content-theme .content-card,
+body.s360-content-theme .preview-header,
+body.s360-content-theme .resource,
+body.s360-content-theme .resource-card,
+body.s360-content-theme .recurso-card,
+body.s360-content-theme .sidebar-card,
+body.s360-content-theme .panel,
+body.s360-content-theme .stat,
+body.s360-content-theme .theme-info,
+body.s360-content-theme .delete-card{
+  background:var(--ct-card)!important;
+  color:var(--ct-text)!important;
+  border-color:var(--ct-line)!important;
+  box-shadow:var(--ct-shadow)!important;
+}
+body.s360-content-theme .card:hover,
+body.s360-content-theme .resource:hover,
+body.s360-content-theme .recurso-card:hover{
+  box-shadow:var(--ct-shadow-hover)!important;
+}
+body.s360-content-theme .form-control,
+body.s360-content-theme .form-select,
+body.s360-content-theme textarea{
+  background:var(--ct-input)!important;
+  color:var(--ct-text)!important;
+  border:1px solid var(--ct-line)!important;
+  border-radius:11px!important;
+  box-shadow:none!important;
+}
+body.s360-content-theme .form-control:focus,
+body.s360-content-theme .form-select:focus,
+body.s360-content-theme textarea:focus{
+  border-color:color-mix(in srgb,var(--ct-accent) 48%,#fff)!important;
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--ct-accent) 10%,transparent)!important;
+}
+body.s360-content-theme .text-muted,
+body.s360-content-theme .muted,
+body.s360-content-theme .url-help{
+  color:var(--ct-muted)!important;
+}
+body.s360-content-theme .text-primary{color:var(--ct-accent)!important}
+body.s360-content-theme .btn-primary{
+  background:var(--ct-accent)!important;border-color:var(--ct-accent)!important;
+  border-radius:10px!important;font-weight:750;
+}
+body.s360-content-theme .btn-outline-primary{
+  color:var(--ct-accent)!important;border-color:color-mix(in srgb,var(--ct-accent) 32%,var(--ct-line))!important;
+  background:var(--ct-card)!important;border-radius:10px!important;
+}
+body.s360-content-theme .btn-outline-primary:hover{
+  color:#fff!important;background:var(--ct-accent)!important;border-color:var(--ct-accent)!important;
+}
+body.s360-content-theme .btn-secondary,
+body.s360-content-theme .btn-outline-secondary{
+  border-radius:10px!important;
+}
+body.s360-content-theme .badge-type{
+  background:var(--ct-soft)!important;color:var(--ct-accent)!important;
+}
+body.s360-content-theme .icon,
+body.s360-content-theme .resource-icon,
+body.s360-content-theme .icono-recurso{
+  background:var(--ct-soft)!important;color:var(--ct-accent)!important;
+}
+body.s360-content-theme .hero,
+body.s360-content-theme .preview-hero{
+  background:
+    radial-gradient(circle at 90% 10%,rgba(255,255,255,.15),transparent 16rem),
+    linear-gradient(125deg,var(--ct-accent),var(--ct-accent-2))!important;
+  box-shadow:0 18px 42px color-mix(in srgb,var(--ct-accent) 16%,transparent)!important;
+}
+body.s360-content-theme .progress{
+  background:var(--ct-track)!important;
+}
+body.s360-content-theme .progress-bar{
+  background:linear-gradient(90deg,var(--ct-accent),var(--ct-accent-2))!important;
+}
+body.s360-content-theme .table{
+  --bs-table-bg:var(--ct-card);
+  --bs-table-color:var(--ct-text);
+  --bs-table-border-color:var(--ct-line);
+}
+body.s360-content-theme .table thead th{
+  background:var(--ct-soft)!important;color:var(--ct-text)!important;border-color:var(--ct-line)!important;
+}
+body.s360-content-theme .dropdown-menu{
+  background:var(--ct-card)!important;border:1px solid var(--ct-line)!important;border-radius:13px!important;
+  box-shadow:0 16px 35px rgba(20,35,60,.12)!important;
+}
+body.s360-content-theme .dropdown-item{color:var(--ct-text)!important;border-radius:8px}
+body.s360-content-theme .dropdown-item:hover{background:var(--ct-soft)!important;color:var(--ct-accent)!important}
+body.s360-content-theme .actions-bar{
+  background:color-mix(in srgb,var(--ct-card) 94%,transparent)!important;
+  border-color:var(--ct-line)!important;
+}
+body.s360-content-theme .url{background:color-mix(in srgb,var(--ct-soft) 48%,var(--ct-card))!important}
+body.s360-content-theme .empty-preview{
+  background:color-mix(in srgb,var(--ct-soft) 48%,var(--ct-card))!important;
+  border-color:var(--ct-line)!important;color:var(--ct-muted)!important;
+}
+
+/* Editor enriquecido: no modifica su funcionamiento, solo su acabado. */
+body.s360-content-theme .note-editor{
+  border-color:var(--ct-line)!important;border-radius:14px!important;overflow:hidden;
+  box-shadow:none!important;
+}
+body.s360-content-theme .note-toolbar{
+  background:var(--ct-soft)!important;border-color:var(--ct-line)!important;
+}
+body.s360-content-theme .note-btn{
+  border-radius:7px!important;
+}
+body.s360-content-theme .note-editable{
+  background:var(--ct-input)!important;color:var(--ct-text)!important;
+}
+body.s360-content-theme .note-statusbar{
+  background:var(--ct-card)!important;border-color:var(--ct-line)!important;
+}
+
+/* Botones de acción: compactos y proporcionales, sin quitar funcionalidad. */
+body.s360-content-theme a.btn.btn-sm,
+body.s360-content-theme button.btn.btn-sm{
+  min-height:34px;
+  border-radius:10px!important;
+  font-size:.72rem!important;
+  font-weight:750!important;
+}
+body.s360-content-theme .action-icon-btn{
+  width:36px!important;height:36px!important;min-width:36px!important;
+  padding:0!important;display:inline-grid!important;place-items:center!important;
+  border-radius:10px!important;
+}
+body.s360-content-theme .action-icon-btn i{margin:0!important}
+body.s360-content-theme .action-icon-btn .action-label{display:none!important}
+
+/* Personalizador, inspirado en el dashboard del estudiante. */
+body.s360-content-theme .adm-theme-toggle{
+  position:fixed!important;right:20px!important;bottom:20px!important;z-index:1090!important;
+  width:48px!important;height:48px!important;padding:0!important;
+  display:grid!important;place-items:center!important;
+  border:0!important;border-radius:15px!important;
+  color:#fff!important;
+  background:linear-gradient(145deg,var(--ct-accent),var(--ct-accent-2))!important;
+  box-shadow:0 12px 28px color-mix(in srgb,var(--ct-accent) 25%,transparent)!important;
+  cursor:pointer;
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+body.s360-content-theme .adm-theme-toggle:hover{transform:translateY(-3px) rotate(3deg)}
+body.s360-content-theme .adm-theme-panel{
+  position:fixed!important;right:20px!important;bottom:78px!important;z-index:1091!important;
+  width:285px!important;padding:15px!important;
+  background:var(--ct-card)!important;color:var(--ct-text)!important;
+  border:1px solid var(--ct-line)!important;border-radius:18px!important;
+  box-shadow:0 20px 50px rgba(20,35,60,.15)!important;
+  transform:translateY(8px) scale(.98);
+  opacity:0;pointer-events:none;
+  transition:.2s ease;
+}
+body.s360-content-theme .adm-theme-panel.open{
+  transform:none;opacity:1;pointer-events:auto;
+}
+body.s360-content-theme .adm-theme-title{
+  font-size:.82rem!important;font-weight:850!important;margin-bottom:3px!important;
+}
+body.s360-content-theme .adm-theme-sub{
+  font-size:.65rem!important;color:var(--ct-muted)!important;margin-bottom:12px!important;
+  line-height:1.45!important;
+}
+body.s360-content-theme .adm-theme-grid{
+  display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;
+}
+body.s360-content-theme .adm-theme-option{
+  min-width:0!important;
+  border:1px solid var(--ct-line)!important;
+  background:var(--ct-card)!important;
+  color:var(--ct-text)!important;
+  border-radius:12px!important;
+  padding:9px!important;text-align:left!important;
+  cursor:pointer;
+  transition:.18s ease;
+}
+body.s360-content-theme .adm-theme-option:hover,
+body.s360-content-theme .adm-theme-option.active{
+  border-color:color-mix(in srgb,var(--ct-accent) 45%,var(--ct-line))!important;
+  background:var(--ct-soft)!important;
+}
+body.s360-content-theme .adm-swatch{
+  height:24px!important;border-radius:8px!important;margin-bottom:6px!important;
+}
+body.s360-content-theme .adm-theme-option strong{
+  display:block!important;font-size:.66rem!important;line-height:1.2!important;
+}
+body.s360-content-theme .adm-theme-option small{
+  display:block!important;font-size:.57rem!important;color:var(--ct-muted)!important;margin-top:2px!important;
+}
+body.s360-content-theme .adm-mode-btn{
+  width:100%!important;margin-top:8px!important;
+  border:1px solid var(--ct-line)!important;background:var(--ct-card)!important;
+  color:var(--ct-text)!important;border-radius:12px!important;
+  padding:9px!important;font-size:.68rem!important;font-weight:750!important;
+  cursor:pointer;text-align:left!important;
+}
+body.s360-content-theme .adm-mode-btn:hover{
+  background:var(--ct-soft)!important;color:var(--ct-accent)!important;
+}
+
+/* Temas de color */
+body.s360-content-theme.adm-accent-blue{--ct-accent:#2563eb;--ct-accent-2:#4f46e5;--ct-soft:#eff6ff}
+body.s360-content-theme.adm-accent-purple{--ct-accent:#8b5cf6;--ct-accent-2:#7c3aed;--ct-soft:#f5f3ff}
+body.s360-content-theme.adm-accent-orange{--ct-accent:#f97316;--ct-accent-2:#ea580c;--ct-soft:#fff7ed}
+body.s360-content-theme.adm-accent-green{--ct-accent:#10b981;--ct-accent-2:#059669;--ct-soft:#ecfdf5}
+
+/* Oscuro: se cubren también estilos antiguos que tenían #fff/#f4f7fb. */
+body.s360-content-theme.adm-dark{
+  --ct-bg:#0d1424;--ct-card:#172236;--ct-text:#edf2f8;--ct-muted:#9ba8ba;
+  --ct-line:#2b374b;--ct-input:#111827;--ct-track:#263247;
+  background:
+    radial-gradient(circle at 92% 0%,color-mix(in srgb,var(--ct-accent) 13%,transparent),transparent 27rem),
+    var(--ct-bg)!important;
+}
+body.s360-content-theme.adm-dark .navbar{
+  background:rgba(13,20,36,.92)!important;
+  border-color:var(--ct-line)!important;
+}
+body.s360-content-theme.adm-dark .navbar-brand,
+body.s360-content-theme.adm-dark .navbar .text-dark,
+body.s360-content-theme.adm-dark h1,
+body.s360-content-theme.adm-dark h2,
+body.s360-content-theme.adm-dark h3,
+body.s360-content-theme.adm-dark h4,
+body.s360-content-theme.adm-dark h5,
+body.s360-content-theme.adm-dark h6{
+  color:var(--ct-text)!important;
+}
+body.s360-content-theme.adm-dark .card,
+body.s360-content-theme.adm-dark .card-soft,
+body.s360-content-theme.adm-dark .editor-card,
+body.s360-content-theme.adm-dark .info-card,
+body.s360-content-theme.adm-dark .content-card,
+body.s360-content-theme.adm-dark .preview-header,
+body.s360-content-theme.adm-dark .resource,
+body.s360-content-theme.adm-dark .resource-card,
+body.s360-content-theme.adm-dark .recurso-card,
+body.s360-content-theme.adm-dark .sidebar-card,
+body.s360-content-theme.adm-dark .panel,
+body.s360-content-theme.adm-dark .stat,
+body.s360-content-theme.adm-dark .theme-info,
+body.s360-content-theme.adm-dark .delete-card,
+body.s360-content-theme.adm-dark .modal-content{
+  background:var(--ct-card)!important;color:var(--ct-text)!important;border-color:var(--ct-line)!important;
+}
+body.s360-content-theme.adm-dark .form-control,
+body.s360-content-theme.adm-dark .form-select,
+body.s360-content-theme.adm-dark textarea{
+  background:var(--ct-input)!important;color:var(--ct-text)!important;border-color:var(--ct-line)!important;
+}
+body.s360-content-theme.adm-dark .form-control::placeholder,
+body.s360-content-theme.adm-dark textarea::placeholder{color:#718096!important}
+body.s360-content-theme.adm-dark .table{
+  --bs-table-bg:var(--ct-card);--bs-table-color:var(--ct-text);--bs-table-border-color:var(--ct-line);
+}
+body.s360-content-theme.adm-dark .table thead th{background:#202c41!important;color:var(--ct-text)!important}
+body.s360-content-theme.adm-dark .dropdown-menu{
+  background:var(--ct-card)!important;border-color:var(--ct-line)!important;
+}
+body.s360-content-theme.adm-dark .dropdown-item{color:#dce4ee!important}
+body.s360-content-theme.adm-dark .dropdown-item:hover{background:#202c41!important}
+body.s360-content-theme.adm-dark .btn-light,
+body.s360-content-theme.adm-dark .btn-outline-light{
+  background:var(--ct-card)!important;color:var(--ct-text)!important;border-color:var(--ct-line)!important;
+}
+body.s360-content-theme.adm-dark .bg-light{background:#202c41!important;color:var(--ct-text)!important}
+body.s360-content-theme.adm-dark .border{border-color:var(--ct-line)!important}
+body.s360-content-theme.adm-dark .note-toolbar{background:#202c41!important;border-color:var(--ct-line)!important}
+body.s360-content-theme.adm-dark .note-editable{background:var(--ct-input)!important;color:var(--ct-text)!important}
+body.s360-content-theme.adm-dark .note-statusbar{background:var(--ct-card)!important;border-color:var(--ct-line)!important}
+body.s360-content-theme.adm-dark .note-btn{
+  background:#27344a!important;color:#dce4ee!important;border-color:#354158!important;
+}
+body.s360-content-theme.adm-dark .actions-bar{
+  background:rgba(23,34,54,.94)!important;border-color:var(--ct-line)!important;
+}
+body.s360-content-theme.adm-dark .url{background:#202c41!important}
+body.s360-content-theme.adm-dark .empty-preview{background:#202c41!important;border-color:#3a465a!important}
+body.s360-content-theme.adm-dark .delete-header{
+  background:linear-gradient(135deg,#2a1d22,#172236)!important;border-color:var(--ct-line)!important;
+}
+body.s360-content-theme.adm-dark .warning{
+  background:#2a1d22!important;color:#f3b7bd!important;border-color:#5a3139!important;
+}
+body.s360-content-theme.adm-dark .theme-info{background:#202c41!important}
+body.s360-content-theme.adm-dark .content-body pre{background:#111827!important;color:#e5e7eb!important}
+body.s360-content-theme.adm-dark .content-body td,
+body.s360-content-theme.adm-dark .content-body th{border-color:var(--ct-line)!important}
+body.s360-content-theme.adm-dark .adm-theme-panel{box-shadow:0 20px 55px rgba(0,0,0,.38)!important}
+
+@media(max-width:767px){
+  body.s360-content-theme .adm-theme-toggle{right:14px!important;bottom:14px!important}
+  body.s360-content-theme .adm-theme-panel{
+    right:12px!important;bottom:70px!important;
+    width:min(285px,calc(100vw - 24px))!important;
+  }
+}

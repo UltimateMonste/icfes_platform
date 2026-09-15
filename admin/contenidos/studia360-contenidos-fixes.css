@@ -1,0 +1,205 @@
+
+/* Studia360 Contenidos — correcciones aditivas
+   No sustituye los estilos existentes: solo corrige integración de tema,
+   modo oscuro y superficies que tenían colores fijos. */
+body.s360-admin{
+  --ct-bg: var(--adm-bg, #f4f7fb);
+  --ct-surface: var(--adm-surface, #fff);
+  --ct-surface-2: var(--adm-surface-2, #f8fafc);
+  --ct-text: var(--adm-text, #172033);
+  --ct-muted: var(--adm-muted, #667085);
+  --ct-line: var(--adm-line, #e4eaf2);
+  --ct-accent: var(--adm-accent, #2563eb);
+  --ct-accent-2: var(--adm-accent-2, #4f46e5);
+  --ct-accent-soft: var(--adm-accent-soft, #eff6ff);
+}
+
+/* Color de acento, sin alterar estructura ni tamaños existentes. */
+body.s360-admin .hero,
+body.s360-admin .hero-tema,
+body.s360-admin .preview-hero{
+  background: linear-gradient(135deg,var(--ct-accent),var(--ct-accent-2)) !important;
+}
+body.s360-admin .hero{
+  box-shadow: 0 18px 40px color-mix(in srgb,var(--ct-accent) 18%,transparent) !important;
+}
+body.s360-admin .hero-actions .btn-light,
+body.s360-admin .s360-hero .btn-light{
+  color:var(--ct-accent)!important;
+}
+body.s360-admin .topic-icon,
+body.s360-admin .materia-icon,
+body.s360-admin .icon,
+body.s360-admin .resource-icon{
+  background:var(--ct-accent-soft)!important;
+  color:var(--ct-accent)!important;
+}
+body.s360-admin .grade-pill,
+body.s360-admin .badge-type{
+  color:var(--ct-accent)!important;
+  background:var(--ct-accent-soft)!important;
+}
+body.s360-admin .filter-chip.active{
+  background:var(--ct-accent)!important;
+  border-color:var(--ct-accent)!important;
+}
+body.s360-admin .topic-actions .btn-primary,
+body.s360-admin .materia-actions .btn-primary{
+  background:var(--ct-accent)!important;
+  border-color:var(--ct-accent)!important;
+}
+body.s360-admin .topic-actions .btn-outline-primary,
+body.s360-admin .materia-actions .btn-outline-secondary{
+  color:var(--ct-accent)!important;
+  border-color:color-mix(in srgb,var(--ct-accent) 35%,var(--ct-line))!important;
+}
+body.s360-admin .topic-actions .btn-outline-primary:hover,
+body.s360-admin .materia-actions .btn-outline-secondary:hover{
+  background:var(--ct-accent-soft)!important;
+}
+
+/* Superficies que tenían #fff fijo. */
+body.s360-admin .stat-card,
+body.s360-admin .module-card,
+body.s360-admin .recent-card,
+body.s360-admin .materia-card,
+body.s360-admin .topic-card,
+body.s360-admin .resource,
+body.s360-admin .preview-header,
+body.s360-admin .content-card,
+body.s360-admin .form-card,
+body.s360-admin .delete-card,
+body.s360-admin .card-soft,
+body.s360-admin .card-studia,
+body.s360-admin .filterbar{
+  background:var(--ct-surface)!important;
+  color:var(--ct-text);
+  border-color:var(--ct-line)!important;
+}
+body.s360-admin .url{
+  background:var(--ct-surface-2)!important;
+  color:var(--ct-text)!important;
+}
+body.s360-admin .topic-desc,
+body.s360-admin .help,
+body.s360-admin .url-help{
+  color:var(--ct-muted)!important;
+}
+
+/* Modo oscuro: cubrir estilos locales sin tocar el HTML existente. */
+body.s360-admin.adm-dark{
+  color:var(--ct-text)!important;
+}
+body.s360-admin.adm-dark .topic-card,
+body.s360-admin.adm-dark .materia-card,
+body.s360-admin.adm-dark .resource,
+body.s360-admin.adm-dark .preview-header,
+body.s360-admin.adm-dark .content-card,
+body.s360-admin.adm-dark .form-card,
+body.s360-admin.adm-dark .delete-card,
+body.s360-admin.adm-dark .card-soft,
+body.s360-admin.adm-dark .card-studia,
+body.s360-admin.adm-dark .filterbar,
+body.s360-admin.adm-dark .stat-card,
+body.s360-admin.adm-dark .module-card,
+body.s360-admin.adm-dark .recent-card{
+  background:var(--ct-surface)!important;
+  color:var(--ct-text)!important;
+  border-color:var(--ct-line)!important;
+}
+body.s360-admin.adm-dark .topic-card h2,
+body.s360-admin.adm-dark .materia-card h2,
+body.s360-admin.adm-dark .resource h5,
+body.s360-admin.adm-dark .content-body h1,
+body.s360-admin.adm-dark .content-body h2,
+body.s360-admin.adm-dark .content-body h3,
+body.s360-admin.adm-dark .content-body h4,
+body.s360-admin.adm-dark .delete-header h1{
+  color:var(--ct-text)!important;
+}
+body.s360-admin.adm-dark .topic-desc,
+body.s360-admin.adm-dark .help,
+body.s360-admin.adm-dark .url-help,
+body.s360-admin.adm-dark .text-secondary,
+body.s360-admin.adm-dark .text-muted{
+  color:var(--ct-muted)!important;
+}
+body.s360-admin.adm-dark .form-control,
+body.s360-admin.adm-dark .form-select,
+body.s360-admin.adm-dark textarea{
+  background:var(--ct-surface-2)!important;
+  color:var(--ct-text)!important;
+  border-color:var(--ct-line)!important;
+}
+body.s360-admin.adm-dark .form-select option{
+  background:var(--ct-surface-2)!important;
+  color:var(--ct-text)!important;
+}
+body.s360-admin.adm-dark .modal-content,
+body.s360-admin.adm-dark .modal-header,
+body.s360-admin.adm-dark .modal-body,
+body.s360-admin.adm-dark .modal-footer{
+  background:var(--ct-surface)!important;
+  color:var(--ct-text)!important;
+  border-color:var(--ct-line)!important;
+}
+body.s360-admin.adm-dark .btn-light,
+body.s360-admin.adm-dark .btn-white{
+  background:var(--ct-surface-2)!important;
+  color:var(--ct-text)!important;
+  border-color:var(--ct-line)!important;
+}
+
+/* Editor Summernote: mantener legibilidad con el tema elegido. */
+body.s360-admin .note-editor{
+  border-color:var(--ct-line)!important;
+}
+body.s360-admin.adm-dark .note-editor,
+body.s360-admin.adm-dark .note-toolbar{
+  background:var(--ct-surface)!important;
+  color:var(--ct-text)!important;
+  border-color:var(--ct-line)!important;
+}
+body.s360-admin.adm-dark .note-btn{
+  background:var(--ct-surface-2)!important;
+  color:var(--ct-text)!important;
+  border-color:var(--ct-line)!important;
+}
+body.s360-admin.adm-dark .note-editable{
+  background:var(--ct-surface)!important;
+  color:var(--ct-text)!important;
+}
+body.s360-admin.adm-dark .note-editable h1,
+body.s360-admin.adm-dark .note-editable h2,
+body.s360-admin.adm-dark .note-editable h3,
+body.s360-admin.adm-dark .note-editable h4,
+body.s360-admin.adm-dark .note-editable h5,
+body.s360-admin.adm-dark .note-editable h6{
+  color:var(--ct-text)!important;
+}
+
+/* Acciones compactas: solo icono, conservando tooltip/accesibilidad. */
+.s360-icon-action{
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  padding:0!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 38px!important;
+  border-radius:11px!important;
+}
+.s360-icon-action i{
+  margin:0!important;
+  font-size:1rem;
+}
+.s360-icon-action .s360-action-text{
+  display:none!important;
+}
+
+/* Ajuste específico para acciones en tarjetas, sin cambiar su distribución general. */
+.topic-actions .s360-icon-action,
+.materia-actions .s360-icon-action{
+  flex:0 0 38px!important;
+}
