@@ -86,6 +86,148 @@ body.s360-content-theme.s360-content-dark .bg-light{background:#202c41!important
 @media(max-width:767px){body.s360-content-theme .s360-shell{width:min(100% - 20px,1240px)!important;padding-top:20px!important}body.s360-content-theme .s360-hero{padding:22px!important;border-radius:21px!important}body.s360-content-theme .adm-theme-toggle{right:14px!important;bottom:14px!important}body.s360-content-theme .adm-theme-panel{right:12px!important;bottom:72px!important}}
 </style>
 
+
+<style id="studia360-final-theme-fix">
+/* --- Superficies --- */
+body.s360-content-theme .materia-card,
+body.s360-content-theme .topic-card,
+body.s360-content-theme .filterbar,
+body.s360-content-theme .s360-empty {
+  background: var(--s360card) !important;
+  color: var(--s360text) !important;
+  border-color: var(--s360line) !important;
+}
+
+body.s360-content-theme.s360-content-dark .materia-card,
+body.s360-content-theme.s360-content-dark .topic-card,
+body.s360-content-theme.s360-content-dark .filterbar,
+body.s360-content-theme.s360-content-dark .s360-empty {
+  background: #172236 !important;
+  color: #edf2f8 !important;
+  border-color: #2b374b !important;
+}
+
+/* --- Iconos: nunca cajas blancas en oscuro --- */
+body.s360-content-theme .materia-icon,
+body.s360-content-theme .topic-icon,
+body.s360-content-theme .s360-iconbox {
+  background: var(--s360soft) !important;
+  color: var(--s360a) !important;
+}
+body.s360-content-theme.s360-content-dark .materia-icon,
+body.s360-content-theme.s360-content-dark .topic-icon,
+body.s360-content-theme.s360-content-dark .s360-iconbox {
+  background: color-mix(in srgb, var(--s360a) 16%, #111827) !important;
+  color: #fff !important;
+}
+
+/* --- Chips y badges de temas --- */
+body.s360-content-theme .s360-chip,
+body.s360-content-theme .grade-pill,
+body.s360-content-theme .topic-pill,
+body.s360-content-theme .filter-chip {
+  background: var(--s360soft) !important;
+  color: var(--s360a) !important;
+  border-color: color-mix(in srgb, var(--s360a) 20%, var(--s360line)) !important;
+}
+body.s360-content-theme.s360-content-dark .s360-chip,
+body.s360-content-theme.s360-content-dark .grade-pill,
+body.s360-content-theme.s360-content-dark .topic-pill,
+body.s360-content-theme.s360-content-dark .filter-chip {
+  background: #202c41 !important;
+  color: #dbe5f2 !important;
+  border-color: #3a4860 !important;
+}
+body.s360-content-theme.s360-content-dark .s360-chip.success {
+  background: #123c32 !important;
+  color: #6ee7b7 !important;
+  border-color: #1d6b56 !important;
+}
+body.s360-content-theme.s360-content-dark .s360-chip.warning {
+  background: #493515 !important;
+  color: #fbbf24 !important;
+  border-color: #7a571d !important;
+}
+
+/* --- Textos que antes quedaban casi negros sobre oscuro --- */
+body.s360-content-theme.s360-content-dark .materia-card h2,
+body.s360-content-theme.s360-content-dark .topic-card h2,
+body.s360-content-theme.s360-content-dark .materia-card p,
+body.s360-content-theme.s360-content-dark .topic-desc,
+body.s360-content-theme.s360-content-dark .topic-card .text-secondary,
+body.s360-content-theme.s360-content-dark .filterbar label,
+body.s360-content-theme.s360-content-dark .filterbar .text-secondary {
+  color: #edf2f8 !important;
+}
+body.s360-content-theme.s360-content-dark .topic-desc,
+body.s360-content-theme.s360-content-dark .filterbar .text-secondary {
+  color: #9ba8ba !important;
+}
+
+/* --- Filtros e inputs --- */
+body.s360-content-theme.s360-content-dark .form-control,
+body.s360-content-theme.s360-content-dark .form-select {
+  background: #111827 !important;
+  color: #edf2f8 !important;
+  border-color: #334158 !important;
+}
+body.s360-content-theme.s360-content-dark .form-control::placeholder {
+  color: #7f8ca1 !important;
+}
+
+/* --- Botones claros de navegación: ya no parecen recuadros blancos --- */
+body.s360-content-theme.s360-content-dark .btn-light {
+  background: #172236 !important;
+  color: #edf2f8 !important;
+  border-color: #334158 !important;
+}
+body.s360-content-theme.s360-content-dark .btn-outline-secondary {
+  background: transparent !important;
+  color: #c4cfdd !important;
+  border-color: #46536a !important;
+}
+
+/* --- Modal --- */
+body.s360-content-theme.s360-content-dark .modal-content {
+  background: #172236 !important;
+  color: #edf2f8 !important;
+  border-color: #334158 !important;
+}
+body.s360-content-theme.s360-content-dark .modal-header,
+body.s360-content-theme.s360-content-dark .modal-footer {
+  border-color: #2b374b !important;
+}
+body.s360-content-theme.s360-content-dark .btn-close {
+  filter: invert(1) grayscale(1) brightness(2);
+}
+
+/* --- Personalizador: siempre por encima de todo --- */
+body.s360-content-theme .adm-theme-toggle {
+  z-index: 99999 !important;
+}
+body.s360-content-theme .adm-theme-panel {
+  z-index: 100000 !important;
+}
+
+/* --- Acciones compactas --- */
+body.s360-content-theme .topic-actions .btn:not(:first-child),
+body.s360-content-theme .materia-actions .btn:not(.flex-grow-1) {
+  min-width: 36px !important;
+  width: 36px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  font-size: 0 !important;
+  border-radius: 10px !important;
+}
+body.s360-content-theme .topic-actions .btn:not(:first-child) i,
+body.s360-content-theme .materia-actions .btn:not(.flex-grow-1) i {
+  margin: 0 !important;
+  font-size: .9rem !important;
+}
+</style>
+
 </head><body class="s360-admin s360-content-theme">
 <nav class="s360-topbar"><div class="container-fluid px-3 px-lg-4 py-2 d-flex justify-content-between align-items-center"><a class="s360-brand d-flex align-items-center gap-2" href="<?=e($urlDashboard)?>"><span class="s360-brand-icon"><i class="bi bi-mortarboard-fill"></i></span>Studia360 <span class="badge text-bg-primary">Admin</span></a><div class="d-flex gap-2"><a class="btn btn-light border s360-btn" href="<?=e($urlMaterias)?>">Materias</a><a class="btn btn-outline-secondary s360-btn" href="<?=e($urlSalir)?>">Salir</a></div></div></nav>
 <main class="s360-shell">
@@ -135,30 +277,108 @@ body.s360-content-theme.s360-content-dark .bg-light{background:#202c41!important
 </div>
 <button id="admModeBtn" class="adm-mode-btn" type="button"></button>
 </div>
-<script>
-(function(){
-'use strict';
-var body=document.body,key='studia360_theme',toggle=document.getElementById('admThemeToggle'),panel=document.getElementById('admThemePanel'),mode=document.getElementById('admModeBtn'),options=document.querySelectorAll('.adm-theme-option');
-var saved={theme:'blue',mode:'light'};
-try{var raw=localStorage.getItem(key);if(raw){var p=JSON.parse(raw);if(p&&typeof p==='object'){if(typeof p.theme==='string')saved.theme=p.theme;if(p.mode==='dark'||p.mode==='light')saved.mode=p.mode;}}}catch(e){}
-var classes={blue:'',orange:'s360-accent-orange',purple:'s360-accent-purple',green:'s360-accent-green'};
-if(!classes.hasOwnProperty(saved.theme))saved.theme='blue';
-function save(){try{localStorage.setItem(key,JSON.stringify(saved));}catch(e){}}
-function apply(){
-Object.keys(classes).forEach(function(k){if(classes[k])body.classList.remove(classes[k]);});
-body.classList.add('s360-content-theme');
-if(classes[saved.theme])body.classList.add(classes[saved.theme]);
-body.classList.toggle('s360-content-dark',saved.mode==='dark');
-options.forEach(function(b){b.classList.toggle('active',b.getAttribute('data-theme')===saved.theme);});
-mode.innerHTML=saved.mode==='dark'?'<i class="bi bi-moon-stars me-2"></i>Modo oscuro':'<i class="bi bi-sun me-2"></i>Modo claro';
-}
-options.forEach(function(b){b.addEventListener('click',function(){saved.theme=b.getAttribute('data-theme');save();apply();});});
-mode.addEventListener('click',function(){saved.mode=saved.mode==='dark'?'light':'dark';save();apply();});
-toggle.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();panel.classList.toggle('open');});
-panel.addEventListener('click',function(e){e.stopPropagation();});
-document.addEventListener('click',function(){panel.classList.remove('open');});
-apply();
+
+<script id="studia360-theme-controller">
+(function () {
+  "use strict";
+
+  var body = document.body;
+  var KEY = "studia360_theme";
+  var themes = {
+    blue:   { cls: "",                 a: "#2563eb", a2: "#4f46e5", soft: "#eff6ff" },
+    orange: { cls: "s360-accent-orange", a: "#f97316", a2: "#ea580c", soft: "#fff7ed" },
+    purple: { cls: "s360-accent-purple", a: "#8b5cf6", a2: "#7c3aed", soft: "#f5f3ff" },
+    green:  { cls: "s360-accent-green", a: "#10b981", a2: "#059669", soft: "#ecfdf5" }
+  };
+
+  var state = { theme: "blue", mode: "light" };
+
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) {
+      var saved = JSON.parse(raw);
+      if (saved && typeof saved === "object") {
+        if (themes[saved.theme]) state.theme = saved.theme;
+        if (saved.mode === "dark" || saved.mode === "light") state.mode = saved.mode;
+      }
+    }
+  } catch (e) {}
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  function apply() {
+    Object.keys(themes).forEach(function (name) {
+      if (themes[name].cls) body.classList.remove(themes[name].cls);
+    });
+
+    body.classList.add("s360-content-theme");
+    if (themes[state.theme].cls) body.classList.add(themes[state.theme].cls);
+    body.classList.toggle("s360-content-dark", state.mode === "dark");
+    body.classList.toggle("adm-dark", state.mode === "dark");
+
+    document.querySelectorAll(".adm-theme-option").forEach(function (button) {
+      button.classList.toggle("active", button.getAttribute("data-theme") === state.theme);
+    });
+
+    var modeButton = document.getElementById("admModeBtn");
+    if (modeButton) {
+      modeButton.innerHTML = state.mode === "dark"
+        ? '<i class="bi bi-sun me-2"></i>Modo claro'
+        : '<i class="bi bi-moon-stars me-2"></i>Modo oscuro';
+    }
+  }
+
+  window.admSetTheme = function (name) {
+    if (!themes[name]) return;
+    state.theme = name;
+    save();
+    apply();
+  };
+
+  window.admToggleMode = function () {
+    state.mode = state.mode === "dark" ? "light" : "dark";
+    save();
+    apply();
+  };
+
+  apply();
+
+  var toggle = document.getElementById("admThemeToggle");
+  var panel = document.getElementById("admThemePanel");
+  if (toggle && panel) {
+    toggle.onclick = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      panel.classList.toggle("open");
+    };
+    panel.onclick = function (event) { event.stopPropagation(); };
+    document.addEventListener("click", function (event) {
+      if (!panel.contains(event.target) && !toggle.contains(event.target)) {
+        panel.classList.remove("open");
+      }
+    });
+  }
+
+  document.querySelectorAll(".adm-theme-option").forEach(function (button) {
+    button.onclick = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      window.admSetTheme(button.getAttribute("data-theme"));
+    };
+  });
+
+  var mode = document.getElementById("admModeBtn");
+  if (mode) {
+    mode.onclick = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      window.admToggleMode();
+    };
+  }
 })();
 </script>
+
 
 </body></html>

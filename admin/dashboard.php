@@ -866,6 +866,260 @@ body.sidebar-collapsed .side-link.active:before{
 .reveal:nth-child(2){animation-delay:.03s}.reveal:nth-child(3){animation-delay:.06s}.reveal:nth-child(4){animation-delay:.09s}
 @keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* =====================================================
+   STUDIA360 — CAPA DE TEMA REAL
+   El color seleccionado debe dominar TODO el dashboard.
+   ===================================================== */
+body.s360-admin{
+    --theme:#8b5cf6;
+    --theme-2:#7c3aed;
+    --theme-soft:#f5f3ff;
+    --theme-rgb:139,92,246;
+    --theme-contrast:#fff;
+}
+body.s360-admin.adm-accent-blue{
+    --theme:#2563eb;
+    --theme-2:#4f46e5;
+    --theme-soft:#eff6ff;
+    --theme-rgb:37,99,235;
+}
+body.s360-admin.adm-accent-orange{
+    --theme:#f97316;
+    --theme-2:#ea580c;
+    --theme-soft:#fff7ed;
+    --theme-rgb:249,115,22;
+}
+body.s360-admin.adm-accent-green{
+    --theme:#10b981;
+    --theme-2:#059669;
+    --theme-soft:#ecfdf5;
+    --theme-rgb:16,185,129;
+}
+
+/* Elementos que antes estaban clavados a azul */
+.s360-admin .brand-mark{
+    background:linear-gradient(145deg,var(--theme),var(--theme-2)) !important;
+    box-shadow:0 8px 20px rgba(var(--theme-rgb),.22) !important;
+}
+.s360-admin .brand-name span{color:var(--theme) !important}
+.s360-admin .side-link:hover i,
+.s360-admin .side-link.active,
+.s360-admin .side-link.active i,
+.s360-admin .section-link,
+.s360-admin .grade-link,
+.s360-admin .stat-foot a:hover,
+.s360-admin .top-action:hover,
+.s360-admin .collapse-btn:hover{
+    color:var(--theme) !important;
+}
+.s360-admin .side-link.active{
+    background:var(--theme-soft) !important;
+}
+.s360-admin .side-link.active:before{
+    background:var(--theme) !important;
+}
+.s360-admin .nav-search:focus{
+    border-color:rgba(var(--theme-rgb),.35) !important;
+    box-shadow:0 0 0 4px rgba(var(--theme-rgb),.08) !important;
+}
+.s360-admin .hero{
+    background:
+        radial-gradient(circle at 90% 10%,rgba(255,255,255,.18),transparent 18rem),
+        linear-gradient(125deg,var(--theme-2),var(--theme)) !important;
+    box-shadow:0 16px 38px rgba(var(--theme-rgb),.18) !important;
+}
+.s360-admin .progress-fill{
+    background:linear-gradient(90deg,var(--theme-2),var(--theme)) !important;
+}
+.s360-admin .final-card{
+    background:linear-gradient(125deg,var(--theme-2),var(--theme)) !important;
+}
+.s360-admin .btn-white{
+    color:var(--theme) !important;
+}
+.s360-admin .btn-white:hover{
+    color:var(--theme-2) !important;
+}
+.s360-admin .context-dot{
+    background:#34d399 !important;
+}
+.s360-admin .context-dot > span{
+    border-color:rgba(52,211,153,.35) !important;
+}
+
+/* El color de iconos puede seguir siendo variado, pero los elementos
+   principales usan el color elegido. */
+.s360-admin .stat-icon.blue,
+.s360-admin .quick-icon.blue,
+.s360-admin .module-icon.blue{
+    background:var(--theme-soft) !important;
+    color:var(--theme) !important;
+}
+
+/* ===================== MODO OSCURO ===================== */
+body.s360-admin.adm-dark{
+    --ink:#eef2ff;
+    --muted:#aab4c8;
+    --line:#28344a;
+    --surface:#172238;
+    --canvas:#0b1220;
+    color:#eef2ff !important;
+    background:
+        radial-gradient(circle at 85% 0%,rgba(var(--theme-rgb),.12),transparent 28rem),
+        #0b1220 !important;
+}
+.s360-admin.adm-dark .sidebar{
+    background:rgba(13,22,38,.97) !important;
+    border-color:#28344a !important;
+    box-shadow:8px 0 30px rgba(0,0,0,.18) !important;
+}
+.s360-admin.adm-dark .topbar{
+    background:rgba(13,22,38,.92) !important;
+    border-color:#28344a !important;
+}
+.s360-admin.adm-dark .brand-link,
+.s360-admin.adm-dark .side-link,
+.s360-admin.adm-dark .profile-mini,
+.s360-admin.adm-dark .top-action,
+.s360-admin.adm-dark .quick,
+.s360-admin.adm-dark .module,
+.s360-admin.adm-dark .stat,
+.s360-admin.adm-dark .panel,
+.s360-admin.adm-dark .grade{
+    color:#eef2ff !important;
+}
+.s360-admin.adm-dark .side-link{color:#aeb9ca !important}
+.s360-admin.adm-dark .side-link:hover{
+    background:rgba(255,255,255,.055) !important;
+    color:#fff !important;
+}
+.s360-admin.adm-dark .side-link.active{
+    background:rgba(var(--theme-rgb),.16) !important;
+    color:#fff !important;
+}
+.s360-admin.adm-dark .side-link.active i{color:var(--theme) !important}
+.s360-admin.adm-dark .sidebar,
+.s360-admin.adm-dark .sidebar-tools,
+.s360-admin.adm-dark .sidebar-footer{
+    border-color:#28344a !important;
+}
+.s360-admin.adm-dark .nav-search{
+    background:#111b2d !important;
+    border-color:#2b3850 !important;
+    color:#eef2ff !important;
+}
+.s360-admin.adm-dark .nav-search:focus{
+    background:#142039 !important;
+}
+.s360-admin.adm-dark .nav-search::placeholder{
+    color:#77849a !important;
+}
+.s360-admin.adm-dark .top-action{
+    background:#172238 !important;
+    border-color:#2b3850 !important;
+    color:#aeb9ca !important;
+}
+.s360-admin.adm-dark .top-action:hover{
+    background:#1d2a42 !important;
+    color:var(--theme) !important;
+}
+.s360-admin.adm-dark .collapse-btn,
+.s360-admin.adm-dark .mobile-menu{
+    background:#172238 !important;
+    color:#aeb9ca !important;
+}
+.s360-admin.adm-dark .profile-mini:hover,
+.s360-admin.adm-dark .quick:hover,
+.s360-admin.adm-dark .module:hover{
+    background:#1b2941 !important;
+}
+.s360-admin.adm-dark .stat,
+.s360-admin.adm-dark .panel,
+.s360-admin.adm-dark .quick,
+.s360-admin.adm-dark .module{
+    background:#172238 !important;
+    border-color:#28344a !important;
+    box-shadow:0 8px 30px rgba(0,0,0,.15) !important;
+}
+.s360-admin.adm-dark .stat-foot{
+    border-color:#28344a !important;
+}
+.s360-admin.adm-dark .stat-foot a,
+.s360-admin.adm-dark .stat-label,
+.s360-admin.adm-dark .stat-note,
+.s360-admin.adm-dark .section-sub,
+.s360-admin.adm-dark .progress-caption,
+.s360-admin.adm-dark .mini-label,
+.s360-admin.adm-dark .grade-info,
+.s360-admin.adm-dark .quick-text,
+.s360-admin.adm-dark .module-description{
+    color:#8997ad !important;
+}
+.s360-admin.adm-dark .mini-box{
+    background:#111b2d !important;
+    border-color:#28344a !important;
+}
+.s360-admin.adm-dark .grade{
+    background:#111b2d !important;
+    border-color:#28344a !important;
+}
+.s360-admin.adm-dark .grade:hover{
+    background:#1b2941 !important;
+    border-color:rgba(var(--theme-rgb),.3) !important;
+}
+.s360-admin.adm-dark .progress-track{
+    background:#263249 !important;
+}
+.s360-admin.adm-dark .blue,
+.s360-admin.adm-dark .stat-icon.blue,
+.s360-admin.adm-dark .quick-icon.blue,
+.s360-admin.adm-dark .module-icon.blue{
+    background:rgba(var(--theme-rgb),.15) !important;
+    color:#b9c8ff !important;
+}
+.s360-admin.adm-dark .green{
+    background:rgba(16,185,129,.14) !important;
+}
+.s360-admin.adm-dark .orange{
+    background:rgba(249,115,22,.14) !important;
+}
+.s360-admin.adm-dark .cyan{
+    background:rgba(6,182,212,.14) !important;
+}
+.s360-admin.adm-dark .purple{
+    background:rgba(139,92,246,.14) !important;
+}
+.s360-admin.adm-dark .red{
+    background:rgba(239,68,68,.14) !important;
+}
+.s360-admin.adm-dark .avatar{
+    background:#263249 !important;
+    color:#aeb9ca !important;
+}
+.s360-admin.adm-dark .section-title,
+.s360-admin.adm-dark .context-title,
+.s360-admin.adm-dark .module-title,
+.s360-admin.adm-dark .quick-title,
+.s360-admin.adm-dark .grade-num,
+.s360-admin.adm-dark .mini-value{
+    color:#eef2ff !important;
+}
+.s360-admin.adm-dark .text-primary{
+    color:var(--theme) !important;
+}
+
+/* ===================== MODO CLARO ===================== */
+body.s360-admin:not(.adm-dark){
+    color:#172033;
+}
+.s360-admin:not(.adm-dark) .sidebar{
+    background:rgba(255,255,255,.96);
+}
+.s360-admin:not(.adm-dark) .topbar{
+    background:rgba(255,255,255,.88);
+}
+
 </style>
 </head>
 
@@ -1268,6 +1522,96 @@ body.sidebar-collapsed .side-link.active:before{
 <button class="adm-theme-option" data-theme="orange" type="button" onclick="admSetTheme('orange')"><div class="adm-swatch" style="background:linear-gradient(135deg,#f97316,#ea580c)"></div><strong>Naranja</strong><small>Enérgico</small></button>
 <button class="adm-theme-option" data-theme="green" type="button" onclick="admSetTheme('green')"><div class="adm-swatch" style="background:linear-gradient(135deg,#10b981,#059669)"></div><strong>Verde</strong><small>Calma</small></button>
 </div><button id="admModeBtn" class="adm-mode-btn" type="button" onclick="admToggleMode()"></button></div>
-<script>(function(){const b=document.body,k='studia360_admin_theme',t={purple:'adm-accent-purple',blue:'adm-accent-blue',orange:'adm-accent-orange',green:'adm-accent-green'};let s={theme:'purple',mode:'dark'};try{s=Object.assign(s,JSON.parse(localStorage.getItem(k)||'{}'))}catch(e){}function a(){b.classList.add('s360-admin');Object.values(t).forEach(c=>b.classList.remove(c));b.classList.add(t[s.theme]||t.purple);b.classList.toggle('adm-dark',s.mode==='dark');document.querySelectorAll('.adm-theme-option').forEach(x=>x.classList.toggle('active',x.dataset.theme===s.theme));const m=document.getElementById('admModeBtn');if(m)m.innerHTML=s.mode==='dark'?"<i class='bi bi-moon-stars me-2'></i>Modo oscuro":"<i class='bi bi-sun me-2'></i>Modo claro"}window.admSetTheme=function(x){if(!t[x])return;s.theme=x;try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};window.admToggleMode=function(){s.mode=s.mode==='dark'?'light':'dark';try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};a();const q=document.getElementById('admThemeToggle'),p=document.getElementById('admThemePanel');q?.addEventListener('click',()=>p?.classList.toggle('open'));document.addEventListener('click',e=>{if(p?.classList.contains('open')&&!p.contains(e.target)&&!q.contains(e.target))p.classList.remove('open')})})();</script>
+<script>
+(function(){
+'use strict';
+
+const body=document.body;
+const sharedKey='studia360_theme';
+const legacyKey='studia360_admin_theme';
+
+const validThemes=['purple','blue','orange','green'];
+let state={theme:'purple',mode:'dark'};
+
+function readState(){
+    try{
+        let raw=localStorage.getItem(sharedKey);
+        if(!raw) raw=localStorage.getItem(legacyKey);
+        if(raw){
+            const parsed=JSON.parse(raw);
+            if(parsed && typeof parsed==='object') state=Object.assign(state,parsed);
+        }
+    }catch(e){}
+    if(!validThemes.includes(state.theme)) state.theme='purple';
+    state.mode=state.mode==='light'?'light':'dark';
+}
+
+function writeState(){
+    try{
+        const value=JSON.stringify(state);
+        localStorage.setItem(sharedKey,value);
+        localStorage.setItem(legacyKey,value);
+    }catch(e){}
+}
+
+function applyTheme(){
+    validThemes.forEach(theme=>{
+        body.classList.remove('adm-accent-'+theme);
+    });
+
+    body.classList.add('s360-admin','adm-accent-'+state.theme);
+    body.classList.toggle('adm-dark',state.mode==='dark');
+
+    document.querySelectorAll('.adm-theme-option').forEach(btn=>{
+        btn.classList.toggle('active',btn.dataset.theme===state.theme);
+        btn.setAttribute('aria-pressed',btn.dataset.theme===state.theme?'true':'false');
+    });
+
+    const modeBtn=document.getElementById('admModeBtn');
+    if(modeBtn){
+        modeBtn.innerHTML=state.mode==='dark'
+            ? "<i class='bi bi-moon-stars me-2'></i>Modo oscuro"
+            : "<i class='bi bi-sun me-2'></i>Modo claro";
+    }
+}
+
+window.admSetTheme=function(theme){
+    if(!validThemes.includes(theme)) return;
+    state.theme=theme;
+    writeState();
+    applyTheme();
+};
+
+window.admToggleMode=function(){
+    state.mode=state.mode==='dark'?'light':'dark';
+    writeState();
+    applyTheme();
+};
+
+readState();
+applyTheme();
+
+const toggle=document.getElementById('admThemeToggle');
+const panel=document.getElementById('admThemePanel');
+
+toggle?.addEventListener('click',function(event){
+    event.preventDefault();
+    event.stopPropagation();
+    panel?.classList.toggle('open');
+});
+
+panel?.addEventListener('click',function(event){
+    event.stopPropagation();
+});
+
+document.addEventListener('click',function(event){
+    if(panel?.classList.contains('open') &&
+       !panel.contains(event.target) &&
+       !toggle?.contains(event.target)){
+        panel.classList.remove('open');
+    }
+});
+})();
+</script>
 </body>
 </html>

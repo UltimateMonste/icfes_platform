@@ -733,10 +733,166 @@ foreach (
 
 <link rel="stylesheet" href="<?= htmlspecialchars(urlAplicacion('/admin/assets/studia-admin.css'), ENT_QUOTES, 'UTF-8') ?>">
     <link rel="stylesheet" href="estudiantes.css">
+
+    <style>
+    /* Correcciones visuales puntuales: modo oscuro + menú Gestión */
+    body.adm-dark{
+        background:#0d1424!important;
+        color:#edf2f8!important;
+    }
+
+    body.adm-dark .navbar-studia{
+        background:#0d1424!important;
+        border-bottom:1px solid #27344a!important;
+    }
+
+    body.adm-dark .panel-principal{
+        background:#172236!important;
+        border-color:#2b374b!important;
+        box-shadow:0 14px 34px rgba(0,0,0,.22)!important;
+    }
+
+    body.adm-dark .barra-control{
+        background:#172236!important;
+        border-color:#2b374b!important;
+    }
+
+    body.adm-dark .barra-control .form-label,
+    body.adm-dark .page-title{
+        color:#edf2f8!important;
+    }
+
+    body.adm-dark .page-subtitle,
+    body.adm-dark .muted,
+    body.adm-dark .selection-info{
+        color:#9ba8ba!important;
+    }
+
+    body.adm-dark .form-select{
+        background-color:#111a2b!important;
+        color:#edf2f8!important;
+        border-color:#334158!important;
+    }
+
+    body.adm-dark .form-select option{
+        background:#111a2b!important;
+        color:#edf2f8!important;
+    }
+
+    body.adm-dark .stat-chip{
+        background:#111a2b!important;
+        color:#b8c3d3!important;
+        border-color:#334158!important;
+    }
+
+    body.adm-dark .stat-chip strong{
+        color:#f3f6fb!important;
+    }
+
+    body.adm-dark .acciones-masivas{
+        background:#111a2b!important;
+        border-color:#2b374b!important;
+    }
+
+    body.adm-dark .selection-count{
+        background:#263c64!important;
+        color:#bfdbfe!important;
+    }
+
+    body.adm-dark .tabla-estudiantes{
+        --bs-table-bg:#172236;
+        --bs-table-color:#edf2f8;
+        --bs-table-hover-bg:#1d2b41;
+        --bs-table-hover-color:#fff;
+    }
+
+    body.adm-dark .tabla-estudiantes tbody td{
+        background:#172236!important;
+        color:#dce4ef!important;
+        border-color:#334158!important;
+    }
+
+    body.adm-dark .tabla-estudiantes tbody tr:hover td{
+        background:#1d2b41!important;
+    }
+
+    body.adm-dark .student-name{
+        color:#f1f5f9!important;
+    }
+
+    body.adm-dark .student-id,
+    body.adm-dark .text-muted{
+        color:#8998ad!important;
+    }
+
+    body.adm-dark .empty-icon{
+        background:#1a2a43!important;
+        color:#93c5fd!important;
+    }
+
+    body.adm-dark .empty-state h5{
+        color:#edf2f8!important;
+    }
+
+    body.adm-dark .empty-state p{
+        color:#9ba8ba!important;
+    }
+
+    /* Recuadros de botones de acción: nunca blancos en oscuro */
+    body.adm-dark .btn-outline-info,
+    body.adm-dark .btn-outline-warning,
+    body.adm-dark .btn-outline-primary,
+    body.adm-dark .btn-outline-success,
+    body.adm-dark .btn-outline-danger,
+    body.adm-dark .btn-outline-secondary{
+        background:#172236!important;
+    }
+
+    /* El dropdown de Gestión se desplaza hacia la izquierda para no tapar
+       los botones "Nuevo estudiante" e "Importar" del encabezado. */
+    .navbar-studia{
+        position:relative;
+        z-index:1050!important;
+    }
+    .navbar-studia .dropdown{
+        position:relative;
+        z-index:1060!important;
+    }
+    .navbar-studia .dropdown-menu{
+        z-index:1070!important;
+    }
+
+    .navbar-studia .dropdown-menu.dropdown-menu-end{
+        right:0!important;
+        left:auto!important;
+        transform:none!important;
+        margin-top:.45rem!important;
+    }
+
+    body.adm-dark .navbar-studia .dropdown-menu{
+        background:#172236!important;
+        border:1px solid #334158!important;
+        box-shadow:0 18px 40px rgba(0,0,0,.42)!important;
+    }
+
+    body.adm-dark .navbar-studia .dropdown-item{
+        color:#dce4ef!important;
+    }
+
+    body.adm-dark .navbar-studia .dropdown-item:hover,
+    body.adm-dark .navbar-studia .dropdown-item:focus{
+        background:#22314a!important;
+        color:#fff!important;
+    }
+
+    body.adm-dark .navbar-studia .dropdown-divider{
+        border-color:#334158!important;
+    }
+    </style>
 </head>
 
 
-<body class="s360-admin class="bg-light"">
+<body class="s360-admin">
 
 
 <!-- =========================================================
@@ -2091,7 +2247,16 @@ actualizarSeleccion();
 <button class="adm-theme-option" data-theme="orange" type="button" onclick="admSetTheme('orange')"><div class="adm-swatch" style="background:linear-gradient(135deg,#f97316,#ea580c)"></div><strong>Naranja</strong><small>Enérgico</small></button>
 <button class="adm-theme-option" data-theme="green" type="button" onclick="admSetTheme('green')"><div class="adm-swatch" style="background:linear-gradient(135deg,#10b981,#059669)"></div><strong>Verde</strong><small>Calma</small></button>
 </div><button id="admModeBtn" class="adm-mode-btn" type="button" onclick="admToggleMode()"></button></div>
-<script>(function(){const b=document.body,k='studia360_admin_theme',t={purple:'adm-accent-purple',blue:'adm-accent-blue',orange:'adm-accent-orange',green:'adm-accent-green'};let s={theme:'purple',mode:'dark'};try{s=Object.assign(s,JSON.parse(localStorage.getItem(k)||'{}'))}catch(e){}function a(){b.classList.add('s360-admin');Object.values(t).forEach(c=>b.classList.remove(c));b.classList.add(t[s.theme]||t.purple);b.classList.toggle('adm-dark',s.mode==='dark');document.querySelectorAll('.adm-theme-option').forEach(x=>x.classList.toggle('active',x.dataset.theme===s.theme));const m=document.getElementById('admModeBtn');if(m)m.innerHTML=s.mode==='dark'?"<i class='bi bi-moon-stars me-2'></i>Modo oscuro":"<i class='bi bi-sun me-2'></i>Modo claro"}window.admSetTheme=function(x){if(!t[x])return;s.theme=x;try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};window.admToggleMode=function(){s.mode=s.mode==='dark'?'light':'dark';try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};a();const q=document.getElementById('admThemeToggle'),p=document.getElementById('admThemePanel');q?.addEventListener('click',()=>p?.classList.toggle('open'));document.addEventListener('click',e=>{if(p?.classList.contains('open')&&!p.contains(e.target)&&!q.contains(e.target))p.classList.remove('open')})})();</script>
+<script>(function(){const b=document.body,k='studia360_theme',t={purple:'adm-accent-purple',blue:'adm-accent-blue',orange:'adm-accent-orange',green:'adm-accent-green'};let s={theme:'purple',mode:'dark'};
+try{
+    const shared=localStorage.getItem(k);
+    const legacy=localStorage.getItem('studia360_admin_theme');
+    if(shared) s=Object.assign(s,JSON.parse(shared));
+    else if(legacy){ s=Object.assign(s,JSON.parse(legacy)); localStorage.setItem(k,JSON.stringify(s));localStorage.setItem('studia360_admin_theme',JSON.stringify(s)); }
+}catch(e){}
+if(!['purple','blue','orange','green'].includes(s.theme)) s.theme='purple';
+if(!['dark','light'].includes(s.mode)) s.mode='dark';
+function a(){b.classList.add('s360-admin');Object.values(t).forEach(c=>b.classList.remove(c));b.classList.add(t[s.theme]||t.purple);b.classList.toggle('adm-dark',s.mode==='dark');document.querySelectorAll('.adm-theme-option').forEach(x=>x.classList.toggle('active',x.dataset.theme===s.theme));const m=document.getElementById('admModeBtn');if(m)m.innerHTML=s.mode==='dark'?"<i class='bi bi-moon-stars me-2'></i>Modo oscuro":"<i class='bi bi-sun me-2'></i>Modo claro"}window.admSetTheme=function(x){if(!t[x])return;s.theme=x;try{localStorage.setItem(k,JSON.stringify(s));localStorage.setItem('studia360_admin_theme',JSON.stringify(s))}catch(e){}a()};window.admToggleMode=function(){s.mode=s.mode==='dark'?'light':'dark';try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};a();const q=document.getElementById('admThemeToggle'),p=document.getElementById('admThemePanel');q?.addEventListener('click',()=>p?.classList.toggle('open'));document.addEventListener('click',e=>{if(p?.classList.contains('open')&&!p.contains(e.target)&&!q.contains(e.target))p.classList.remove('open')})})();</script>
 </body>
 
 </html>

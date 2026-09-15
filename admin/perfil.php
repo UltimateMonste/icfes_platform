@@ -69,6 +69,25 @@ $iniciales='';foreach(preg_split('/\s+/',trim($nombreCompleto)) as $parte){if($p
 ?>
 <!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mi perfil | Studia360</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><style>
 :root{--blue:#2563eb;--navy:#173f78;--bg:#f6f8fc;--border:#e4eaf2;--text:#23344b;--muted:#718096}body{background:radial-gradient(circle at top right,#eaf2ff,transparent 28%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.top{background:linear-gradient(105deg,#173f78,#2563b8);box-shadow:0 5px 20px rgba(23,63,120,.14)}.shell{max-width:1100px;margin:auto;padding:32px 16px 60px}.hero{border-radius:26px;padding:28px;color:#fff;background:linear-gradient(125deg,#2563b8,#173f78);box-shadow:0 18px 42px rgba(23,63,120,.16)}.cardx{background:#fff;border:1px solid var(--border);border-radius:22px;box-shadow:0 10px 28px rgba(31,57,92,.055)}.profile-photo{width:150px;height:150px;border-radius:38px;object-fit:cover;border:5px solid #fff;box-shadow:0 10px 30px rgba(0,0,0,.12);background:#eaf2ff}.placeholder{width:150px;height:150px;border-radius:38px;background:#eaf2ff;color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:3rem;font-weight:900;border:5px solid #fff}.form-control{border-radius:12px;padding:.7rem .85rem}.btn{border-radius:11px}.muted{color:var(--muted)}
+
+/* Corrección puntual del selector de archivo en modo oscuro */
+body.adm-dark input[type="file"].form-control{
+    background:#111827!important;
+    color:#edf2f8!important;
+    border-color:#2b374b!important;
+}
+body.adm-dark input[type="file"].form-control::file-selector-button{
+    background:#202d43!important;
+    color:#edf2f8!important;
+    border:0!important;
+    border-right:1px solid #2b374b!important;
+    margin:-.7rem .85rem -.7rem -.85rem!important;
+    padding:.7rem 1rem!important;
+    cursor:pointer!important;
+}
+body.adm-dark input[type="file"].form-control:hover::file-selector-button{
+    background:#293951!important;
+}
 </style>
 <link rel="stylesheet" href="<?= htmlspecialchars(urlAplicacion('/admin/assets/studia-admin.css'), ENT_QUOTES, 'UTF-8') ?>">
 </head><body class="s360-admin"><nav class="navbar navbar-dark top"><div class="container-fluid px-3 px-lg-4 py-2"><a class="navbar-brand fw-bold" href="<?=h(urlAplicacion('/admin/dashboard.php'))?>"><i class="bi bi-mortarboard-fill me-2"></i>Studia360</a><div class="d-flex gap-2"><a class="btn btn-light btn-sm" href="<?=h(urlAplicacion('/admin/dashboard.php'))?>"><i class="bi bi-arrow-left me-1"></i>Dashboard</a><a class="btn btn-outline-light btn-sm" href="<?=h(urlAplicacion('/cerrar_sesion.php'))?>">Salir</a></div></div></nav>

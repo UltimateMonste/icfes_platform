@@ -112,6 +112,67 @@ body.s360-content-theme.s360-content-dark .bg-light{background:#202c41!important
 @media(max-width:767px){body.s360-content-theme .s360-shell{width:min(100% - 20px,1240px)!important;padding-top:20px!important}body.s360-content-theme .s360-hero{padding:22px!important;border-radius:21px!important}body.s360-content-theme .adm-theme-toggle{right:14px!important;bottom:14px!important}body.s360-content-theme .adm-theme-panel{right:12px!important;bottom:72px!important}}
 </style>
 
+
+<style id="studia360-local-theme-fix">
+body.adm-dark,body.s360-content-dark{background:#0d1424!important;color:#edf2f8!important}
+body.adm-dark .cardx,body.adm-dark .kv,body.s360-content-dark .cardx,body.s360-content-dark .kv,body.s360-content-dark .materia-card{background:#172236!important;color:#edf2f8!important;border-color:#2b374b!important}
+body.adm-dark .kv strong,body.adm-dark .cardx h2,body.s360-content-dark .cardx h2,body.s360-content-dark .materia-card h2,body.s360-content-dark .materia-card p{color:#edf2f8!important}
+body.adm-dark .muted,body.adm-dark .text-muted,body.s360-content-dark .muted,body.s360-content-dark .s360-muted,body.s360-content-dark .text-muted{color:#9ba8ba!important}
+body.adm-dark .progress,body.s360-content-dark .progress{background:#263449!important}
+body.adm-dark .photo,body.adm-dark .placeholder{border-color:#2b374b!important}
+body.adm-dark .placeholder{background:#202c41!important}
+body.adm-dark .alert-light{background:#111a2b!important;color:#edf2f8!important;border-color:#334158!important}
+body.s360-content-theme .materia-card{background:var(--s360card,#fff)!important;color:var(--s360text,#1f2937)!important;border-color:var(--s360line,#e5eaf1)!important}
+body.s360-content-theme .materia-card h2,body.s360-content-theme .materia-card p{color:var(--s360text,#1f2937)!important}
+body.s360-content-theme.s360-content-dark .materia-card h2,body.s360-content-theme.s360-content-dark .materia-card p{color:#edf2f8!important}
+body.s360-content-theme .materia-icon{background:var(--s360soft,#eff6ff)!important;color:var(--s360a,#2563eb)!important}
+body.s360-content-theme .topic-pill{background:var(--s360soft,#eff6ff)!important;color:var(--s360a,#2563eb)!important;border-color:var(--s360line,#e5eaf1)!important}
+body.s360-content-theme.s360-content-dark .topic-pill{background:#202c41!important;color:#cbd5e1!important;border-color:#334158!important}
+body.s360-content-theme.s360-content-dark .btn-light{background:#172236!important;color:#edf2f8!important;border-color:#334158!important}
+body.s360-content-theme.s360-content-dark .btn-outline-secondary{background:transparent!important;color:#b8c2d0!important;border-color:#46536a!important}
+body.s360-content-theme.s360-content-dark .btn-outline-danger{color:#ff8f9d!important;border-color:#a33b4b!important}
+body.s360-content-theme.s360-content-dark .modal-content{background:#172236!important;color:#edf2f8!important;border-color:#334158!important}
+body.s360-content-theme.s360-content-dark .modal-header,body.s360-content-theme.s360-content-dark .modal-footer{border-color:#2b374b!important}
+body.s360-content-theme.s360-content-dark .modal .form-control{background:#111827!important;color:#edf2f8!important;border-color:#334158!important}
+body.s360-content-theme.s360-content-dark .modal .form-control::placeholder{color:#7f8ca1!important}
+body.s360-content-theme.s360-content-dark .btn-close{filter:invert(1) grayscale(1) brightness(2)}
+body.adm-dark .adm-theme-panel,body.s360-content-theme.s360-content-dark .adm-theme-panel{background:#172236!important;color:#edf2f8!important;border-color:#334158!important}
+body.adm-dark .adm-theme-option,body.adm-dark .adm-mode-btn,body.s360-content-theme.s360-content-dark .adm-theme-option,body.s360-content-theme.s360-content-dark .adm-mode-btn{background:#111a2b!important;color:#edf2f8!important;border-color:#334158!important}
+</style>
+
+
+<style id="studia360-materias-fix">
+body.s360-content-theme .materia-card{
+  background:var(--s360card)!important;color:var(--s360text)!important;
+  border-color:var(--s360line)!important;
+}
+body.s360-content-theme .materia-card h2{
+  color:var(--s360text)!important;
+}
+body.s360-content-theme .materia-card .s360-muted{
+  color:var(--s360muted)!important;
+}
+body.s360-content-theme .materia-icon{
+  background:var(--s360soft)!important;color:var(--s360a)!important;
+}
+body.s360-content-theme.s360-content-dark .materia-icon{
+  background:color-mix(in srgb,var(--s360a) 16%,#111827)!important;
+  color:#fff!important;
+}
+body.s360-content-theme .topic-pill{
+  background:var(--s360soft)!important;
+  color:var(--s360a)!important;
+  border-color:color-mix(in srgb,var(--s360a) 20%,var(--s360line))!important;
+}
+body.s360-content-theme.s360-content-dark .topic-pill{
+  background:#202c41!important;color:#dbe5f2!important;border-color:#3a4860!important;
+}
+body.s360-content-theme .adm-theme-option.active{
+  outline:2px solid color-mix(in srgb,var(--s360a) 40%,transparent)!important;
+  outline-offset:1px!important;
+}
+</style>
+
 </head><body class="s360-admin s360-content-theme">
 <nav class="s360-topbar"><div class="container-fluid px-3 px-lg-4 py-2 d-flex align-items-center justify-content-between">
 <a class="s360-brand d-flex align-items-center gap-2" href="<?=e($urlDashboard)?>"><span class="s360-brand-icon"><i class="bi bi-mortarboard-fill"></i></span>Studia360 <span class="badge text-bg-primary">Admin</span></a>
@@ -177,30 +238,92 @@ body.s360-content-theme.s360-content-dark .bg-light{background:#202c41!important
 </div>
 <button id="admModeBtn" class="adm-mode-btn" type="button"></button>
 </div>
-<script>
+
+<script id="studia360-theme-controller">
 (function(){
 'use strict';
-var body=document.body,key='studia360_theme',toggle=document.getElementById('admThemeToggle'),panel=document.getElementById('admThemePanel'),mode=document.getElementById('admModeBtn'),options=document.querySelectorAll('.adm-theme-option');
-var saved={theme:'blue',mode:'light'};
-try{var raw=localStorage.getItem(key);if(raw){var p=JSON.parse(raw);if(p&&typeof p==='object'){if(typeof p.theme==='string')saved.theme=p.theme;if(p.mode==='dark'||p.mode==='light')saved.mode=p.mode;}}}catch(e){}
-var classes={blue:'',orange:'s360-accent-orange',purple:'s360-accent-purple',green:'s360-accent-green'};
-if(!classes.hasOwnProperty(saved.theme))saved.theme='blue';
-function save(){try{localStorage.setItem(key,JSON.stringify(saved));}catch(e){}}
-function apply(){
-Object.keys(classes).forEach(function(k){if(classes[k])body.classList.remove(classes[k]);});
-body.classList.add('s360-content-theme');
-if(classes[saved.theme])body.classList.add(classes[saved.theme]);
-body.classList.toggle('s360-content-dark',saved.mode==='dark');
-options.forEach(function(b){b.classList.toggle('active',b.getAttribute('data-theme')===saved.theme);});
-mode.innerHTML=saved.mode==='dark'?'<i class="bi bi-moon-stars me-2"></i>Modo oscuro':'<i class="bi bi-sun me-2"></i>Modo claro';
+var body=document.body, key='studia360_theme';
+var themes={
+  blue:{cls:''},
+  orange:{cls:'s360-accent-orange'},
+  purple:{cls:'s360-accent-purple'},
+  green:{cls:'s360-accent-green'}
+};
+var state={theme:'blue',mode:'light'};
+try{
+  var raw=localStorage.getItem(key);
+  if(raw){
+    var p=JSON.parse(raw);
+    if(p&&typeof p==='object'){
+      if(themes[p.theme]) state.theme=p.theme;
+      if(p.mode==='dark'||p.mode==='light') state.mode=p.mode;
+    }
+  }
+}catch(e){}
+
+function persist(){
+  try{localStorage.setItem(key,JSON.stringify(state));}catch(e){}
 }
-options.forEach(function(b){b.addEventListener('click',function(){saved.theme=b.getAttribute('data-theme');save();apply();});});
-mode.addEventListener('click',function(){saved.mode=saved.mode==='dark'?'light':'dark';save();apply();});
-toggle.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();panel.classList.toggle('open');});
-panel.addEventListener('click',function(e){e.stopPropagation();});
-document.addEventListener('click',function(){panel.classList.remove('open');});
+function apply(){
+  Object.keys(themes).forEach(function(k){
+    if(themes[k].cls) body.classList.remove(themes[k].cls);
+  });
+  body.classList.add('s360-content-theme');
+  if(themes[state.theme].cls) body.classList.add(themes[state.theme].cls);
+  body.classList.toggle('s360-content-dark',state.mode==='dark');
+  body.classList.toggle('adm-dark',state.mode==='dark');
+
+  document.querySelectorAll('.adm-theme-option').forEach(function(btn){
+    btn.classList.toggle('active',btn.getAttribute('data-theme')===state.theme);
+    btn.setAttribute('aria-pressed',btn.getAttribute('data-theme')===state.theme?'true':'false');
+  });
+  var mode=document.getElementById('admModeBtn');
+  if(mode) mode.innerHTML=state.mode==='dark'
+    ? '<i class="bi bi-sun me-2"></i>Modo claro'
+    : '<i class="bi bi-moon-stars me-2"></i>Modo oscuro';
+}
+window.admSetTheme=function(theme){
+  if(!themes[theme]) return false;
+  state.theme=theme;
+  persist();
+  apply();
+  return false;
+};
+window.admToggleMode=function(){
+  state.mode=state.mode==='dark'?'light':'dark';
+  persist();
+  apply();
+  return false;
+};
+
+var toggle=document.getElementById('admThemeToggle');
+var panel=document.getElementById('admThemePanel');
+if(toggle && panel){
+  toggle.addEventListener('click',function(e){
+    e.preventDefault(); e.stopPropagation();
+    panel.classList.toggle('open');
+  });
+  panel.addEventListener('click',function(e){
+    e.stopPropagation();
+    var option=e.target.closest('.adm-theme-option');
+    if(option){
+      e.preventDefault();
+      window.admSetTheme(option.getAttribute('data-theme'));
+      return;
+    }
+    var mode=e.target.closest('#admModeBtn');
+    if(mode){
+      e.preventDefault();
+      window.admToggleMode();
+    }
+  });
+  document.addEventListener('click',function(e){
+    if(!panel.contains(e.target) && !toggle.contains(e.target)) panel.classList.remove('open');
+  });
+}
 apply();
 })();
 </script>
+
 
 </body></html>

@@ -369,6 +369,200 @@ body.s360-content-theme.s360-content-dark .btn-close{filter:invert(1) grayscale(
 @media(max-width:767px){body.s360-content-theme .adm-theme-toggle{right:14px!important;bottom:14px!important}body.s360-content-theme .adm-theme-panel{right:12px!important;bottom:72px!important}}
 </style>
 
+
+<style id="studia360-final-editor-surface-fix">
+/* Corrección final del editor: solo estilos, sin tocar lógica ni estructura. */
+body.s360-content-theme{
+  min-height:100vh!important;
+}
+
+/* Cabecera superior */
+body.s360-content-theme .navbar{
+  background:var(--s360-card)!important;
+  color:var(--s360-text)!important;
+  border-bottom:1px solid var(--s360-line)!important;
+}
+body.s360-content-theme.s360-content-dark .navbar{
+  background:#0d1424!important;
+  border-bottom-color:#2b374b!important;
+}
+body.s360-content-theme.s360-content-dark .navbar .text-white,
+body.s360-content-theme.s360-content-dark .navbar .navbar-brand{
+  color:#edf2f8!important;
+}
+body.s360-content-theme.s360-content-dark .navbar .btn-outline-light{
+  color:#edf2f8!important;
+  border-color:#334158!important;
+  background:#172236!important;
+}
+
+/* Encabezado que estaba quedando casi negro sobre el fondo oscuro. */
+body.s360-content-theme.s360-content-dark main h1,
+body.s360-content-theme.s360-content-dark main .text-muted{
+  color:#edf2f8!important;
+}
+body.s360-content-theme.s360-content-dark main .text-muted{
+  color:#aebbd0!important;
+}
+
+/* Tarjetas y avisos */
+body.s360-content-theme.s360-content-dark .editor-card,
+body.s360-content-theme.s360-content-dark .info-card,
+body.s360-content-theme.s360-content-dark .card,
+body.s360-content-theme.s360-content-dark .alert{
+  background:#172236!important;
+  color:#edf2f8!important;
+  border-color:#2b374b!important;
+}
+body.s360-content-theme.s360-content-dark .info-card{
+  box-shadow:0 10px 30px rgba(0,0,0,.14)!important;
+}
+body.s360-content-theme.s360-content-dark .info-card .text-muted,
+body.s360-content-theme.s360-content-dark .info-card .small{
+  color:#b7c3d5!important;
+}
+
+/* Editor Summernote: ningún panel de interfaz queda blanco en oscuro. */
+body.s360-content-theme.s360-content-dark .note-editor{
+  background:#172236!important;
+  border-color:#334158!important;
+}
+body.s360-content-theme.s360-content-dark .note-toolbar{
+  background:#202c41!important;
+  border-bottom-color:#334158!important;
+}
+body.s360-content-theme.s360-content-dark .note-toolbar .btn,
+body.s360-content-theme.s360-content-dark .note-btn{
+  background:#27344a!important;
+  color:#edf2f8!important;
+  border-color:#3a4860!important;
+}
+body.s360-content-theme.s360-content-dark .note-toolbar .btn:hover,
+body.s360-content-theme.s360-content-dark .note-btn:hover{
+  background:color-mix(in srgb,var(--s360-accent) 25%,#27344a)!important;
+  color:#fff!important;
+}
+body.s360-content-theme.s360-content-dark .note-dropdown-menu,
+body.s360-content-theme.s360-content-dark .note-modal-content{
+  background:#172236!important;
+  color:#edf2f8!important;
+  border-color:#334158!important;
+}
+body.s360-content-theme.s360-content-dark .note-editable{
+  background:#111827!important;
+  color:#edf2f8!important;
+  caret-color:#fff!important;
+}
+body.s360-content-theme.s360-content-dark .note-editable p,
+body.s360-content-theme.s360-content-dark .note-editable div,
+body.s360-content-theme.s360-content-dark .note-editable span,
+body.s360-content-theme.s360-content-dark .note-editable li,
+body.s360-content-theme.s360-content-dark .note-editable h1,
+body.s360-content-theme.s360-content-dark .note-editable h2,
+body.s360-content-theme.s360-content-dark .note-editable h3,
+body.s360-content-theme.s360-content-dark .note-editable h4,
+body.s360-content-theme.s360-content-dark .note-editable h5,
+body.s360-content-theme.s360-content-dark .note-editable h6{
+  color:inherit;
+}
+body.s360-content-theme.s360-content-dark .note-statusbar{
+  background:#172236!important;
+  border-top-color:#334158!important;
+}
+
+/* Barra inferior */
+body.s360-content-theme.s360-content-dark .actions-bar{
+  background:rgba(23,34,54,.97)!important;
+  border-top-color:#334158!important;
+}
+body.s360-content-theme.s360-content-dark .actions-bar .text-muted{
+  color:#aebbd0!important;
+}
+body.s360-content-theme.s360-content-dark .actions-bar .btn-outline-secondary{
+  background:#172236!important;
+  color:#edf2f8!important;
+  border-color:#334158!important;
+}
+body.s360-content-theme.s360-content-dark .actions-bar .btn-outline-secondary:hover{
+  background:#27344a!important;
+}
+
+/* Badge de estado "Sin contenido", que Bootstrap pinta blanco. */
+body.s360-content-theme.s360-content-dark .text-bg-light{
+  background:#27344a!important;
+  color:#edf2f8!important;
+}
+
+/* Inputs/dialogs de Summernote */
+body.s360-content-theme.s360-content-dark .note-modal input,
+body.s360-content-theme.s360-content-dark .note-modal textarea,
+body.s360-content-theme.s360-content-dark .note-modal select{
+  background:#111827!important;
+  color:#edf2f8!important;
+  border-color:#334158!important;
+}
+body.s360-content-theme.s360-content-dark .note-modal .modal-footer,
+body.s360-content-theme.s360-content-dark .note-modal .modal-header{
+  border-color:#334158!important;
+}
+
+/* Personalizador */
+body.s360-content-theme.s360-content-dark .adm-theme-panel{
+  background:#172236!important;
+  color:#edf2f8!important;
+  border-color:#334158!important;
+}
+</style>
+
+
+<style id="studia360-editor-top-card-fix">
+/* El encabezado superior conserva su HTML original, pero ahora usa el mismo bloque visual que las demás pantallas. */
+body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between{
+  position:relative!important;
+  padding:24px 26px!important;
+  margin-bottom:24px!important;
+  border-radius:20px!important;
+  overflow:hidden!important;
+  background:linear-gradient(135deg,var(--s360-accent),var(--s360-accent-2))!important;
+  color:#fff!important;
+  box-shadow:0 16px 34px color-mix(in srgb,var(--s360-accent) 18%,transparent)!important;
+}
+body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between::after{
+  content:""!important;
+  position:absolute!important;
+  width:190px!important;
+  height:190px!important;
+  right:-45px!important;
+  top:-85px!important;
+  border-radius:50%!important;
+  background:rgba(255,255,255,.10)!important;
+  pointer-events:none!important;
+}
+body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between > div{
+  position:relative!important;
+  z-index:1!important;
+}
+body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between h1{
+  color:#fff!important;
+  font-size:clamp(1.8rem,3vw,2.55rem)!important;
+}
+body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between .text-muted{
+  color:rgba(255,255,255,.82)!important;
+}
+body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between .text-primary{
+  color:rgba(255,255,255,.78)!important;
+}
+body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between .btn{
+  position:relative!important;
+  z-index:2!important;
+}
+@media(max-width:767px){
+  body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between{
+    padding:20px!important;
+  }
+}
+</style>
+
 </head>
 <body class="s360-admin s360-content-theme">
 <nav class="navbar navbar-dark bg-dark py-3">

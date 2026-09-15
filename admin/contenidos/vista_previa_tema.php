@@ -253,103 +253,644 @@ body.s360-content-theme.s360-content-dark .adm-theme-panel{box-shadow:0 22px 60p
 }
 </style>
 
+
+<style id="studia360-vista-preview-fix">
+/* La tarjeta que contiene la lección se conserva clara por petición del usuario. */
+body.s360-content-theme .content-card{
+  background:#f8fafc!important;
+  color:#172033!important;
+  border-color:#dfe6ef!important;
+}
+body.s360-content-theme .content-body{
+  color:#172033!important;
+}
+body.s360-content-theme .content-body h1,
+body.s360-content-theme .content-body h2,
+body.s360-content-theme .content-body h3,
+body.s360-content-theme .content-body h4,
+body.s360-content-theme .content-body h5,
+body.s360-content-theme .content-body h6{
+  color:#172033!important;
+}
+body.s360-content-theme .content-body p,
+body.s360-content-theme .content-body li,
+body.s360-content-theme .content-body td,
+body.s360-content-theme .content-body th,
+body.s360-content-theme .content-body blockquote{
+  color:#263449!important;
+}
+body.s360-content-theme .content-body a{
+  color:var(--c-accent)!important;
+}
+body.s360-content-theme .content-body pre{
+  background:#eef2f7!important;color:#172033!important;
+}
+body.s360-content-theme .content-body td,
+body.s360-content-theme .content-body th{
+  border-color:#cfd8e5!important;
+}
+body.s360-content-theme .empty-preview{
+  background:#eef2f7!important;
+  color:#263449!important;
+  border-color:#c4cfdd!important;
+}
+body.s360-content-theme .empty-preview h2{
+  color:#172033!important;
+}
+body.s360-content-theme .empty-preview p{
+  color:#596a80!important;
+}
+
+/* En modo oscuro, solo se mantienen claros el contenido y sus elementos internos.
+   Las demás tarjetas dejan de verse blancas. */
+body.s360-content-theme.s360-content-dark .preview-header,
+body.s360-content-theme.s360-content-dark .resource,
+body.s360-content-theme.s360-content-dark .s360-card,
+body.s360-content-theme.s360-content-dark .card,
+body.s360-content-theme.s360-content-dark .sidebar-card,
+body.s360-content-theme.s360-content-dark .panel{
+  background:#172236!important;
+  color:#edf2f8!important;
+  border-color:#2b374b!important;
+}
+body.s360-content-theme.s360-content-dark .preview-header .navbar-brand,
+body.s360-content-theme.s360-content-dark .s360-card .s360-section-title,
+body.s360-content-theme.s360-content-dark .resource h3,
+body.s360-content-theme.s360-content-dark .resource .fw-bold{
+  color:#edf2f8!important;
+}
+body.s360-content-theme.s360-content-dark .preview-header .text-secondary,
+body.s360-content-theme.s360-content-dark .resource .text-secondary,
+body.s360-content-theme.s360-content-dark .s360-muted{
+  color:#aeb9c9!important;
+}
+body.s360-content-theme.s360-content-dark .resource-icon,
+body.s360-content-theme.s360-content-dark .s360-iconbox{
+  background:color-mix(in srgb,var(--c-accent) 16%,#111827)!important;
+  color:#fff!important;
+}
+body.s360-content-theme.s360-content-dark .content-card{
+  background:#f8fafc!important;
+  color:#172033!important;
+  border-color:#dfe6ef!important;
+}
+body.s360-content-theme.s360-content-dark .content-body,
+body.s360-content-theme.s360-content-dark .content-body h1,
+body.s360-content-theme.s360-content-dark .content-body h2,
+body.s360-content-theme.s360-content-dark .content-body h3,
+body.s360-content-theme.s360-content-dark .content-body h4,
+body.s360-content-theme.s360-content-dark .content-body h5,
+body.s360-content-theme.s360-content-dark .content-body h6{
+  color:#172033!important;
+}
+body.s360-content-theme.s360-content-dark .content-body p,
+body.s360-content-theme.s360-content-dark .content-body li,
+body.s360-content-theme.s360-content-dark .content-body td,
+body.s360-content-theme.s360-content-dark .content-body th,
+body.s360-content-theme.s360-content-dark .content-body blockquote{
+  color:#263449!important;
+}
+body.s360-content-theme.s360-content-dark .content-body a{color:var(--c-accent)!important}
+body.s360-content-theme.s360-content-dark .content-body pre{
+  background:#e9eef5!important;color:#172033!important;
+}
+body.s360-content-theme.s360-content-dark .content-body td,
+body.s360-content-theme.s360-content-dark .content-body th{border-color:#c8d2df!important}
+body.s360-content-theme.s360-content-dark .empty-preview{
+  background:#eef2f7!important;color:#263449!important;border-color:#c4cfdd!important;
+}
+body.s360-content-theme.s360-content-dark .empty-preview h2{color:#172033!important}
+body.s360-content-theme.s360-content-dark .empty-preview p{color:#596a80!important}
+
+/* Estado y fecha: suficiente contraste sobre fondo oscuro. */
+body.s360-content-theme.s360-content-dark .s360-chip{
+  background:#202c41!important;color:#dbe5f2!important;border-color:#3a4860!important;
+}
+body.s360-content-theme.s360-content-dark .s360-chip.success{
+  background:#123c32!important;color:#6ee7b7!important;border-color:#1d6b56!important;
+}
+body.s360-content-theme.s360-content-dark .s360-chip.warning{
+  background:#493515!important;color:#fbbf24!important;border-color:#7a571d!important;
+}
+
+/* Evitar blancos en botones de navegación en oscuro. */
+body.s360-content-theme.s360-content-dark .btn-light{
+  background:#172236!important;color:#edf2f8!important;border-color:#334158!important;
+}
+</style>
+
+
+<style id="studia360-preview-beauty">
+/* ==========================================================
+   Vista previa premium: portada + lección + recursos
+   ========================================================== */
+body.s360-content-theme .preview-shell{
+  max-width:1240px!important;
+  padding:28px 22px 90px!important;
+}
+
+/* Barra superior */
+body.s360-content-theme .s360-topbar{
+  background:color-mix(in srgb,var(--c-card) 94%,transparent)!important;
+  border-bottom:1px solid var(--c-line)!important;
+  box-shadow:0 8px 30px rgba(20,35,60,.08)!important;
+  backdrop-filter:blur(14px)!important;
+  position:sticky!important;
+  top:0!important;
+  z-index:1200!important;
+}
+body.s360-content-theme .s360-topbar .btn-light{
+  background:var(--c-card)!important;
+  color:var(--c-text)!important;
+  border-color:var(--c-line)!important;
+}
+body.s360-content-theme .s360-topbar .btn-light:hover{
+  border-color:var(--c-accent)!important;
+  color:var(--c-accent)!important;
+}
+body.s360-content-theme .s360-topbar .btn-primary{
+  background:linear-gradient(135deg,var(--c-accent),var(--c-accent2))!important;
+  border:0!important;
+}
+
+/* Portada */
+body.s360-content-theme .preview-hero{
+  position:relative!important;
+  min-height:245px!important;
+  padding:42px 42px!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+  background:
+    radial-gradient(circle at 92% 18%,rgba(255,255,255,.18),transparent 18rem),
+    linear-gradient(130deg,var(--c-accent),var(--c-accent2))!important;
+  border:1px solid color-mix(in srgb,var(--c-accent) 55%,white)!important;
+  box-shadow:0 24px 60px color-mix(in srgb,var(--c-accent) 24%,transparent)!important;
+}
+body.s360-content-theme .preview-hero:before{
+  content:"";
+  position:absolute;
+  width:300px;height:300px;
+  right:-80px;top:-150px;
+  border:1px solid rgba(255,255,255,.17);
+  border-radius:50%;
+  box-shadow:0 0 0 42px rgba(255,255,255,.045),0 0 0 84px rgba(255,255,255,.025);
+  z-index:-1;
+}
+body.s360-content-theme .preview-hero:after{
+  content:"✦  ✧  ✦";
+  position:absolute;
+  right:42px;top:34px;
+  color:rgba(255,255,255,.65);
+  letter-spacing:13px;
+  font-size:1rem;
+}
+body.s360-content-theme .preview-hero .s360-kicker{
+  color:rgba(255,255,255,.78)!important;
+  font-weight:850!important;
+  letter-spacing:.08em!important;
+}
+body.s360-content-theme .preview-hero h1{
+  color:#fff!important;
+  font-size:clamp(2rem,4vw,3.15rem)!important;
+  letter-spacing:-.045em!important;
+  max-width:800px!important;
+}
+body.s360-content-theme .preview-hero p{
+  color:rgba(255,255,255,.88)!important;
+  max-width:900px!important;
+  font-size:1rem!important;
+}
+
+/* Estado */
+body.s360-content-theme .s360-chip{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  padding:8px 12px!important;
+  border-radius:999px!important;
+  background:var(--c-card)!important;
+  color:var(--c-text)!important;
+  border:1px solid var(--c-line)!important;
+  box-shadow:0 5px 16px rgba(20,35,60,.06)!important;
+}
+body.s360-content-theme .s360-chip.success{
+  color:#059669!important;
+  background:color-mix(in srgb,#10b981 10%,var(--c-card))!important;
+  border-color:color-mix(in srgb,#10b981 28%,var(--c-line))!important;
+}
+body.s360-content-theme .s360-chip.warning{
+  color:#b45309!important;
+  background:color-mix(in srgb,#f59e0b 10%,var(--c-card))!important;
+  border-color:color-mix(in srgb,#f59e0b 28%,var(--c-line))!important;
+}
+
+/* Panel de contenido: ahora sí forma parte del tema */
+body.s360-content-theme .content-card{
+  position:relative!important;
+  background:
+    radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--c-accent) 8%,transparent),transparent 19rem),
+    var(--c-card)!important;
+  color:var(--c-text)!important;
+  border:1px solid var(--c-line)!important;
+  border-radius:26px!important;
+  padding:0!important;
+  overflow:hidden!important;
+  box-shadow:0 18px 45px rgba(20,35,60,.10)!important;
+}
+body.s360-content-theme .content-card:before{
+  content:"";
+  display:block;
+  height:6px;
+  background:linear-gradient(90deg,var(--c-accent),var(--c-accent2));
+}
+body.s360-content-theme .content-body{
+  padding:34px 38px 40px!important;
+  color:var(--c-text)!important;
+  font-size:1.04rem!important;
+  line-height:1.82!important;
+}
+body.s360-content-theme .content-body h1,
+body.s360-content-theme .content-body h2,
+body.s360-content-theme .content-body h3,
+body.s360-content-theme .content-body h4,
+body.s360-content-theme .content-body h5,
+body.s360-content-theme .content-body h6{
+  color:var(--c-text)!important;
+}
+body.s360-content-theme .content-body h2{
+  font-size:1.65rem!important;
+  padding-bottom:.55rem!important;
+  border-bottom:1px solid var(--c-line)!important;
+}
+body.s360-content-theme .content-body p,
+body.s360-content-theme .content-body li,
+body.s360-content-theme .content-body td,
+body.s360-content-theme .content-body th,
+body.s360-content-theme .content-body blockquote{
+  color:var(--c-text)!important;
+}
+body.s360-content-theme .content-body strong,
+body.s360-content-theme .content-body b{
+  color:var(--c-text)!important;
+}
+body.s360-content-theme .content-body a{
+  color:var(--c-accent)!important;
+  font-weight:700!important;
+}
+body.s360-content-theme .content-body blockquote{
+  border-left:4px solid var(--c-accent)!important;
+  background:var(--c-soft)!important;
+  padding:14px 18px!important;
+  border-radius:0 14px 14px 0!important;
+}
+body.s360-content-theme .content-body pre{
+  background:color-mix(in srgb,var(--c-accent) 7%,var(--c-card))!important;
+  color:var(--c-text)!important;
+  border:1px solid var(--c-line)!important;
+}
+body.s360-content-theme .content-body table{
+  border-radius:12px!important;
+  overflow:auto!important;
+}
+body.s360-content-theme .content-body td,
+body.s360-content-theme .content-body th{
+  border-color:var(--c-line)!important;
+}
+body.s360-content-theme .content-body img{
+  box-shadow:0 12px 30px rgba(20,35,60,.12)!important;
+}
+
+/* Ficha lateral */
+body.s360-content-theme .s360-card{
+  background:var(--c-card)!important;
+  color:var(--c-text)!important;
+  border:1px solid var(--c-line)!important;
+  border-radius:22px!important;
+  box-shadow:0 14px 35px rgba(20,35,60,.08)!important;
+}
+body.s360-content-theme .s360-card .s360-section-title{
+  color:var(--c-text)!important;
+  font-weight:850!important;
+}
+body.s360-content-theme .s360-card .fw-bold{
+  color:var(--c-text)!important;
+}
+body.s360-content-theme .s360-card small{
+  color:var(--c-muted)!important;
+}
+
+/* Recursos complementarios */
+body.s360-content-theme .preview-shell > section.mt-5{
+  margin-top:42px!important;
+  padding-top:28px!important;
+  border-top:1px solid var(--c-line)!important;
+}
+body.s360-content-theme .preview-shell > section.mt-5 .s360-section-title{
+  color:var(--c-text)!important;
+  font-size:1.45rem!important;
+  font-weight:900!important;
+}
+body.s360-content-theme .resource-card-premium{
+  padding:0!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+  background:var(--c-card)!important;
+  color:var(--c-text)!important;
+  border:1px solid var(--c-line)!important;
+  border-radius:20px!important;
+  box-shadow:0 12px 30px rgba(20,35,60,.08)!important;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease!important;
+}
+body.s360-content-theme .resource-card-premium:hover{
+  transform:translateY(-4px)!important;
+  border-color:color-mix(in srgb,var(--c-accent) 35%,var(--c-line))!important;
+  box-shadow:0 20px 42px color-mix(in srgb,var(--c-accent) 12%,transparent)!important;
+}
+body.s360-content-theme .resource-cover{
+  height:155px!important;
+  position:relative!important;
+  overflow:hidden!important;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--c-accent) 75%,#111827),var(--c-accent2))!important;
+}
+body.s360-content-theme .resource-cover img{
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+  object-fit:cover!important;
+  transition:transform .35s ease!important;
+}
+body.s360-content-theme .resource-card-premium:hover .resource-cover img{
+  transform:scale(1.045)!important;
+}
+body.s360-content-theme .resource-cover:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.02) 35%,rgba(0,0,0,.55) 100%);
+  pointer-events:none;
+}
+body.s360-content-theme .resource-cover-empty{
+  display:grid!important;
+  place-items:center!important;
+}
+body.s360-content-theme .resource-cover-icon{
+  width:62px;height:62px;
+  border-radius:18px;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.16);
+  color:#fff;
+  font-size:1.55rem;
+  border:1px solid rgba(255,255,255,.2);
+}
+body.s360-content-theme .resource-cover-type{
+  position:absolute!important;
+  left:13px!important;
+  bottom:12px!important;
+  z-index:2!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  padding:6px 9px!important;
+  border-radius:999px!important;
+  background:rgba(12,20,35,.72)!important;
+  color:#fff!important;
+  font-size:.68rem!important;
+  font-weight:800!important;
+  backdrop-filter:blur(8px)!important;
+}
+body.s360-content-theme .resource-card-body{
+  padding:18px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  flex:1!important;
+}
+body.s360-content-theme .resource-card-title-row{
+  display:flex!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  align-items:flex-start!important;
+}
+body.s360-content-theme .resource-card-title-row h3{
+  color:var(--c-text)!important;
+}
+body.s360-content-theme .resource-mini-icon{
+  flex:0 0 34px!important;
+  width:34px!important;height:34px!important;
+  border-radius:10px!important;
+  display:grid!important;place-items:center!important;
+  background:var(--c-soft)!important;
+  color:var(--c-accent)!important;
+}
+body.s360-content-theme .resource-meta,
+body.s360-content-theme .resource-source{
+  color:var(--c-muted)!important;
+  font-size:.72rem!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+}
+body.s360-content-theme .resource-description{
+  color:var(--c-muted)!important;
+  font-size:.82rem!important;
+  line-height:1.55!important;
+  margin:14px 0!important;
+}
+body.s360-content-theme .resource-source{
+  margin-top:auto!important;
+  padding-top:10px!important;
+  border-top:1px solid var(--c-line)!important;
+}
+body.s360-content-theme .resource-link-premium{
+  margin-top:14px!important;
+  min-height:40px!important;
+  padding:9px 12px!important;
+  border-radius:11px!important;
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:center!important;
+  text-decoration:none!important;
+  color:#fff!important;
+  background:linear-gradient(135deg,var(--c-accent),var(--c-accent2))!important;
+  font-size:.78rem!important;
+  font-weight:800!important;
+  box-shadow:0 8px 18px color-mix(in srgb,var(--c-accent) 18%,transparent)!important;
+}
+body.s360-content-theme .resource-link-premium:hover{
+  color:#fff!important;
+  filter:brightness(1.05)!important;
+}
+body.s360-content-theme.s360-content-dark .resource-card-premium,
+body.s360-content-theme.s360-content-dark .s360-card{
+  background:#172236!important;
+  color:#edf2f8!important;
+  border-color:#2b374b!important;
+}
+body.s360-content-theme.s360-content-dark .resource-description,
+body.s360-content-theme.s360-content-dark .resource-meta,
+body.s360-content-theme.s360-content-dark .resource-source,
+body.s360-content-theme.s360-content-dark .preview-shell > section.mt-5 .small{
+  color:#aeb9c9!important;
+}
+body.s360-content-theme.s360-content-dark .resource-source{
+  border-color:#2b374b!important;
+}
+body.s360-content-theme.s360-content-dark .resource-mini-icon{
+  background:color-mix(in srgb,var(--c-accent) 15%,#111827)!important;
+  color:#fff!important;
+}
+body.s360-content-theme.s360-content-dark .content-card{
+  background:
+    radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--c-accent) 12%,transparent),transparent 19rem),
+    #172236!important;
+  border-color:#2b374b!important;
+}
+body.s360-content-theme.s360-content-dark .content-body{
+  color:#edf2f8!important;
+}
+body.s360-content-theme.s360-content-dark .content-body h1,
+body.s360-content-theme.s360-content-dark .content-body h2,
+body.s360-content-theme.s360-content-dark .content-body h3,
+body.s360-content-theme.s360-content-dark .content-body h4,
+body.s360-content-theme.s360-content-dark .content-body h5,
+body.s360-content-theme.s360-content-dark .content-body h6,
+body.s360-content-theme.s360-content-dark .content-body p,
+body.s360-content-theme.s360-content-dark .content-body li,
+body.s360-content-theme.s360-content-dark .content-body td,
+body.s360-content-theme.s360-content-dark .content-body th,
+body.s360-content-theme.s360-content-dark .content-body blockquote,
+body.s360-content-theme.s360-content-dark .content-body strong,
+body.s360-content-theme.s360-content-dark .content-body b{
+  color:#edf2f8!important;
+}
+body.s360-content-theme.s360-content-dark .content-body h2{
+  border-color:#2b374b!important;
+}
+body.s360-content-theme.s360-content-dark .content-body blockquote{
+  background:color-mix(in srgb,var(--c-accent) 12%,#111827)!important;
+}
+body.s360-content-theme.s360-content-dark .content-body pre{
+  background:#111827!important;
+  border-color:#334158!important;
+  color:#edf2f8!important;
+}
+body.s360-content-theme.s360-content-dark .content-body td,
+body.s360-content-theme.s360-content-dark .content-body th{
+  border-color:#334158!important;
+}
+body.s360-content-theme.s360-content-dark .preview-shell > section.mt-5{
+  border-color:#2b374b!important;
+}
+@media(max-width:767px){
+  body.s360-content-theme .preview-shell{padding:18px 12px 80px!important}
+  body.s360-content-theme .preview-hero{padding:30px 24px!important;min-height:215px!important}
+  body.s360-content-theme .preview-hero:after{right:22px;top:24px}
+  body.s360-content-theme .content-body{padding:25px 20px 30px!important}
+  body.s360-content-theme .resource-cover{height:145px!important}
+}
+</style>
+
 </head><body class="s360-admin">
 <nav class="s360-topbar"><div class="container-fluid px-3 px-lg-4 py-2 d-flex justify-content-between align-items-center"><a class="s360-brand d-flex align-items-center gap-2" href="<?=e($urlTemas)?>"><span class="s360-brand-icon"><i class="bi bi-mortarboard-fill"></i></span>Studia360 <span class="badge text-bg-warning">Vista previa</span></a><div class="d-flex gap-2"><a class="btn btn-light border s360-btn" href="<?=e($urlInfo)?>"><i class="bi bi-pencil me-1"></i>Editar tema</a><a class="btn btn-primary s360-btn" href="<?=e($urlEditor)?>">Contenido</a></div></div></nav>
 <main class="preview-shell"><section class="preview-hero mb-4"><div class="s360-kicker">Vista previa para administración</div><h1 class="h2 fw-bold mt-2 mb-2"><?=e($tema['tema'])?></h1><p class="mb-0 opacity-75"><?=e($tema['materia'])?> · <?=e($tema['grado'])?>°<?php if($tema['descripcion']):?> · <?=e($tema['descripcion'])?><?php endif;?></p></section>
 <?php if($contenido):?><div class="mb-3"><span class="s360-chip <?=$contenido['estado']==='Publicado'?'success':'warning'?>"><i class="bi <?=$contenido['estado']==='Publicado'?'bi-check-circle':'bi-pencil-square'?>"></i><?=e($contenido['estado'])?></span> <span class="small text-secondary ms-2">Última actualización: <?=e(date('d/m/Y H:i',strtotime($contenido['fecha_actualizacion'])))?></span></div><?php endif;?>
 <div class="row g-4"><div class="col-lg-8"><section class="content-card"><?php if($html):?><article class="content-body"><?=$html?></article><?php else:?><div class="empty-preview"><div class="s360-iconbox mx-auto mb-3"><i class="bi bi-file-earmark-text"></i></div><h2 class="h5 fw-bold">Este tema todavía no tiene contenido</h2><p class="s360-muted mb-0">Puedes construir la lección desde el editor de contenido.</p></div><?php endif;?></section></div>
 <aside class="col-lg-4"><section class="s360-card p-4 mb-4"><div class="s360-section-title mb-3">Ficha del tema</div><div class="mb-3"><small class="s360-muted">Materia</small><div class="fw-bold"><?=e($tema['materia'])?></div></div><div class="mb-3"><small class="s360-muted">Grado</small><div class="fw-bold"><?=e($tema['grado'])?>°</div></div><div><small class="s360-muted">Recursos</small><div class="fw-bold"><?=count($recursos)?></div></div></section></aside></div>
-<?php if($recursos):?><section class="mt-5"><div class="mb-3"><div class="s360-section-title">Recursos complementarios</div><div class="small s360-muted">Así se verán los recursos asociados al tema.</div></div><div class="row g-3"><?php foreach($recursos as $r):$img=assetUrl((string)($r['imagen']??''));if(!$img&&strtolower((string)$r['tipo'])==='video'&&($yt=youtubeId((string)$r['url'])))$img='https://img.youtube.com/vi/'.rawurlencode($yt).'/hqdefault.jpg';?><div class="col-md-6 col-xl-4"><article class="resource"><div class="d-flex gap-3 mb-3"><div class="resource-icon"><i class="bi <?=e(recursoIcon((string)$r['tipo']))?>"></i></div><div><h3 class="h6 fw-bold mb-1"><?=e($r['titulo'])?></h3><span class="small text-secondary"><?=e(ucfirst((string)$r['tipo']))?></span></div></div><?php if($r['descripcion']):?><p class="small text-secondary"><?=e($r['descripcion'])?></p><?php endif;?><a class="resource-link text-decoration-none" href="<?=e($r['url'])?>" target="_blank" rel="noopener noreferrer">Abrir recurso <i class="bi bi-box-arrow-up-right"></i></a></article></div><?php endforeach;?></div></section><?php endif;?>
+<?php if($recursos):?><section class="mt-5"><div class="mb-3"><div class="s360-section-title">Recursos complementarios</div><div class="small s360-muted">Así se verán los recursos asociados al tema.</div></div><div class="row g-4"><?php foreach($recursos as $r):$img=assetUrl((string)($r['imagen']??''));if(!$img&&strtolower((string)$r['tipo'])==='video'&&($yt=youtubeId((string)$r['url'])))$img='https://img.youtube.com/vi/'.rawurlencode($yt).'/hqdefault.jpg';?><div class="col-md-6 col-xl-4"><article class="resource resource-card-premium"><?php if($img):?><div class="resource-cover"><img src="<?=e($img)?>" alt="<?=e($r['titulo'])?>" loading="lazy"><span class="resource-cover-type"><i class="bi <?=e(recursoIcon((string)$r['tipo']))?>"></i><?=e(ucfirst((string)$r['tipo']))?></span></div><?php else:?><div class="resource-cover resource-cover-empty"><div class="resource-cover-icon"><i class="bi <?=e(recursoIcon((string)$r['tipo']))?>"></i></div><span class="resource-cover-type"><i class="bi <?=e(recursoIcon((string)$r['tipo']))?>"></i><?=e(ucfirst((string)$r['tipo']))?></span></div><?php endif;?><div class="resource-card-body"><div class="resource-card-title-row"><div><h3 class="h5 fw-bold mb-1"><?=e($r['titulo'])?></h3><?php if(!empty($r['autor'])):?><div class="resource-meta"><i class="bi bi-person"></i><?=e($r['autor'])?></div><?php endif;?></div><div class="resource-mini-icon"><i class="bi <?=e(recursoIcon((string)$r['tipo']))?>"></i></div></div><?php if($r['descripcion']):?><p class="resource-description"><?=e($r['descripcion'])?></p><?php endif;?><?php if(!empty($r['fuente'])):?><div class="resource-source"><i class="bi bi-globe2"></i><?=e($r['fuente'])?></div><?php endif;?><a class="resource-link-premium" href="<?=e($r['url'])?>" target="_blank" rel="noopener noreferrer"><span>Abrir recurso</span><i class="bi bi-arrow-up-right"></i></a></div></article></div><?php endforeach;?></div></section><?php endif;?>
 </main><!-- Studia360 Admin: personalizador global -->
 <button id="admThemeToggle" class="adm-theme-toggle" type="button" aria-label="Personalizar apariencia" title="Personalizar apariencia"><i class="bi bi-palette2"></i></button>
 <div id="admThemePanel" class="adm-theme-panel" aria-label="Personalizar apariencia">
 <div class="adm-theme-title">Personaliza el panel</div><div class="adm-theme-sub">Elige un color y usa el modo claro u oscuro en todo el administrador.</div>
 <div class="adm-theme-grid">
-<button class="adm-theme-option" data-theme="purple" type="button" onclick="admSetTheme('purple')"><div class="adm-swatch" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"></div><strong>Violeta</strong><small>Studia360</small></button>
-<button class="adm-theme-option" data-theme="blue" type="button" onclick="admSetTheme('blue')"><div class="adm-swatch" style="background:linear-gradient(135deg,#2563eb,#4f46e5)"></div><strong>Azul</strong><small>Clásico</small></button>
-<button class="adm-theme-option" data-theme="orange" type="button" onclick="admSetTheme('orange')"><div class="adm-swatch" style="background:linear-gradient(135deg,#f97316,#ea580c)"></div><strong>Naranja</strong><small>Enérgico</small></button>
-<button class="adm-theme-option" data-theme="green" type="button" onclick="admSetTheme('green')"><div class="adm-swatch" style="background:linear-gradient(135deg,#10b981,#059669)"></div><strong>Verde</strong><small>Calma</small></button>
-</div><button id="admModeBtn" class="adm-mode-btn" type="button" onclick="admToggleMode()"></button></div>
+<button class="adm-theme-option" data-theme="purple" type="button"><div class="adm-swatch" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"></div><strong>Violeta</strong><small>Studia360</small></button>
+<button class="adm-theme-option" data-theme="blue" type="button"><div class="adm-swatch" style="background:linear-gradient(135deg,#2563eb,#4f46e5)"></div><strong>Azul</strong><small>Clásico</small></button>
+<button class="adm-theme-option" data-theme="orange" type="button"><div class="adm-swatch" style="background:linear-gradient(135deg,#f97316,#ea580c)"></div><strong>Naranja</strong><small>Enérgico</small></button>
+<button class="adm-theme-option" data-theme="green" type="button"><div class="adm-swatch" style="background:linear-gradient(135deg,#10b981,#059669)"></div><strong>Verde</strong><small>Calma</small></button>
+</div><button id="admModeBtn" class="adm-mode-btn" type="button"></button></div>
 
-<script id="studia360-contenidos-theme-controller">
+<script id="studia360-theme-controller">
 (function(){
-  'use strict';
-  var body=document.body;
-  var key='studia360_theme';
-  var toggle=document.getElementById('admThemeToggle');
-  var panel=document.getElementById('admThemePanel');
-  var modeBtn=document.getElementById('admModeBtn');
-  var options=document.querySelectorAll('.adm-theme-option');
-
-  var themes={
-    blue:{cls:'',label:'Azul'},
-    purple:{cls:'s360-accent-purple',label:'Violeta'},
-    orange:{cls:'s360-accent-orange',label:'Naranja'},
-    green:{cls:'s360-accent-green',label:'Verde'}
-  };
-
-  var saved={theme:'blue',mode:'light'};
-  try{
-    var raw=localStorage.getItem(key);
-    if(raw){
-      var parsed=JSON.parse(raw);
-      if(parsed && typeof parsed==='object') saved=Object.assign(saved,parsed);
-    }
-  }catch(e){}
-  if(!themes[saved.theme]) saved.theme='blue';
-  if(saved.mode!=='dark' && saved.mode!=='light') saved.mode='light';
-
-  function persist(){
-    try{localStorage.setItem(key,JSON.stringify(saved));}catch(e){}
-  }
-
-  function apply(){
-    body.classList.add('s360-content-theme');
-    Object.keys(themes).forEach(function(name){
-      if(themes[name].cls) body.classList.remove(themes[name].cls);
-    });
-    if(themes[saved.theme].cls) body.classList.add(themes[saved.theme].cls);
-    body.classList.toggle('s360-content-dark',saved.mode==='dark');
-
-    options.forEach(function(option){
-      option.classList.toggle('active',option.getAttribute('data-theme')===saved.theme);
-    });
-
-    if(modeBtn){
-      modeBtn.innerHTML=saved.mode==='dark'
-        ? '<i class="bi bi-moon-stars me-2"></i>Modo oscuro'
-        : '<i class="bi bi-sun me-2"></i>Modo claro';
+'use strict';
+var body=document.body, key='studia360_theme';
+var themes={
+  blue:{cls:''},
+  orange:{cls:'s360-accent-orange'},
+  purple:{cls:'s360-accent-purple'},
+  green:{cls:'s360-accent-green'}
+};
+var state={theme:'blue',mode:'light'};
+try{
+  var raw=localStorage.getItem(key);
+  if(raw){
+    var p=JSON.parse(raw);
+    if(p&&typeof p==='object'){
+      if(themes[p.theme]) state.theme=p.theme;
+      if(p.mode==='dark'||p.mode==='light') state.mode=p.mode;
     }
   }
+}catch(e){}
 
-  window.admSetTheme=function(theme){
-    if(!themes[theme]) return;
-    saved.theme=theme;
-    persist();
-    apply();
-  };
+function persist(){
+  try{localStorage.setItem(key,JSON.stringify(state));}catch(e){}
+}
+function apply(){
+  Object.keys(themes).forEach(function(k){
+    if(themes[k].cls) body.classList.remove(themes[k].cls);
+  });
+  body.classList.add('s360-content-theme');
+  if(themes[state.theme].cls) body.classList.add(themes[state.theme].cls);
+  body.classList.toggle('s360-content-dark',state.mode==='dark');
+  body.classList.toggle('adm-dark',state.mode==='dark');
 
-  window.admToggleMode=function(){
-    saved.mode=saved.mode==='dark'?'light':'dark';
-    persist();
-    apply();
-  };
-
-  if(toggle && panel){
-    toggle.addEventListener('click',function(event){
-      event.preventDefault();
-      event.stopPropagation();
-      panel.classList.toggle('open');
-    });
-    panel.addEventListener('click',function(event){
-      event.stopPropagation();
-    });
-    document.addEventListener('click',function(){
-      panel.classList.remove('open');
-    });
-  }
-
+  document.querySelectorAll('.adm-theme-option').forEach(function(btn){
+    btn.classList.toggle('active',btn.getAttribute('data-theme')===state.theme);
+    btn.setAttribute('aria-pressed',btn.getAttribute('data-theme')===state.theme?'true':'false');
+  });
+  var mode=document.getElementById('admModeBtn');
+  if(mode) mode.innerHTML=state.mode==='dark'
+    ? '<i class="bi bi-sun me-2"></i>Modo claro'
+    : '<i class="bi bi-moon-stars me-2"></i>Modo oscuro';
+}
+window.admSetTheme=function(theme){
+  if(!themes[theme]) return false;
+  state.theme=theme;
+  persist();
   apply();
+  return false;
+};
+window.admToggleMode=function(){
+  state.mode=state.mode==='dark'?'light':'dark';
+  persist();
+  apply();
+  return false;
+};
+
+var toggle=document.getElementById('admThemeToggle');
+var panel=document.getElementById('admThemePanel');
+if(toggle && panel){
+  toggle.addEventListener('click',function(e){
+    e.preventDefault(); e.stopPropagation();
+    panel.classList.toggle('open');
+  });
+  panel.addEventListener('click',function(e){
+    e.stopPropagation();
+    var option=e.target.closest('.adm-theme-option');
+    if(option){
+      e.preventDefault();
+      window.admSetTheme(option.getAttribute('data-theme'));
+      return;
+    }
+    var mode=e.target.closest('#admModeBtn');
+    if(mode){
+      e.preventDefault();
+      window.admToggleMode();
+    }
+  });
+  document.addEventListener('click',function(e){
+    if(!panel.contains(e.target) && !toggle.contains(e.target)) panel.classList.remove('open');
+  });
+}
+apply();
 })();
 </script>
 

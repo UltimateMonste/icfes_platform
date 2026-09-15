@@ -18,6 +18,34 @@ $foto=fotoPerfil($est['avatar']??'');$nombre=trim($est['nombres'].' '.$est['apel
 </style>    <link rel="stylesheet" href="estudiantes.css">
 
 <link rel="stylesheet" href="<?= htmlspecialchars(urlAplicacion('/admin/assets/studia-admin.css'), ENT_QUOTES, 'UTF-8') ?>">
+
+<style id="studia360-local-theme-fix">
+body.adm-dark,body.s360-content-dark{background:#0d1424!important;color:#edf2f8!important}
+body.adm-dark .cardx,body.adm-dark .kv,body.s360-content-dark .cardx,body.s360-content-dark .kv,body.s360-content-dark .materia-card{background:#172236!important;color:#edf2f8!important;border-color:#2b374b!important}
+body.adm-dark .kv strong,body.adm-dark .cardx h2,body.s360-content-dark .cardx h2,body.s360-content-dark .materia-card h2,body.s360-content-dark .materia-card p{color:#edf2f8!important}
+body.adm-dark .muted,body.adm-dark .text-muted,body.s360-content-dark .muted,body.s360-content-dark .s360-muted,body.s360-content-dark .text-muted{color:#9ba8ba!important}
+body.adm-dark .progress,body.s360-content-dark .progress{background:#263449!important}
+body.adm-dark .photo,body.adm-dark .placeholder{border-color:#2b374b!important}
+body.adm-dark .placeholder{background:#202c41!important}
+body.adm-dark .alert-light{background:#111a2b!important;color:#edf2f8!important;border-color:#334158!important}
+body.s360-content-theme .materia-card{background:var(--s360card,#fff)!important;color:var(--s360text,#1f2937)!important;border-color:var(--s360line,#e5eaf1)!important}
+body.s360-content-theme .materia-card h2,body.s360-content-theme .materia-card p{color:var(--s360text,#1f2937)!important}
+body.s360-content-theme.s360-content-dark .materia-card h2,body.s360-content-theme.s360-content-dark .materia-card p{color:#edf2f8!important}
+body.s360-content-theme .materia-icon{background:var(--s360soft,#eff6ff)!important;color:var(--s360a,#2563eb)!important}
+body.s360-content-theme .topic-pill{background:var(--s360soft,#eff6ff)!important;color:var(--s360a,#2563eb)!important;border-color:var(--s360line,#e5eaf1)!important}
+body.s360-content-theme.s360-content-dark .topic-pill{background:#202c41!important;color:#cbd5e1!important;border-color:#334158!important}
+body.s360-content-theme.s360-content-dark .btn-light{background:#172236!important;color:#edf2f8!important;border-color:#334158!important}
+body.s360-content-theme.s360-content-dark .btn-outline-secondary{background:transparent!important;color:#b8c2d0!important;border-color:#46536a!important}
+body.s360-content-theme.s360-content-dark .btn-outline-danger{color:#ff8f9d!important;border-color:#a33b4b!important}
+body.s360-content-theme.s360-content-dark .modal-content{background:#172236!important;color:#edf2f8!important;border-color:#334158!important}
+body.s360-content-theme.s360-content-dark .modal-header,body.s360-content-theme.s360-content-dark .modal-footer{border-color:#2b374b!important}
+body.s360-content-theme.s360-content-dark .modal .form-control{background:#111827!important;color:#edf2f8!important;border-color:#334158!important}
+body.s360-content-theme.s360-content-dark .modal .form-control::placeholder{color:#7f8ca1!important}
+body.s360-content-theme.s360-content-dark .btn-close{filter:invert(1) grayscale(1) brightness(2)}
+body.adm-dark .adm-theme-panel,body.s360-content-theme.s360-content-dark .adm-theme-panel{background:#172236!important;color:#edf2f8!important;border-color:#334158!important}
+body.adm-dark .adm-theme-option,body.adm-dark .adm-mode-btn,body.s360-content-theme.s360-content-dark .adm-theme-option,body.s360-content-theme.s360-content-dark .adm-mode-btn{background:#111a2b!important;color:#edf2f8!important;border-color:#334158!important}
+</style>
+
 </head><body class="s360-admin"><nav class="navbar navbar-studia">
 <div class="container-fluid px-3 px-lg-4 py-2">
 <a class="navbar-brand fw-bold" href="<?=h(urlAplicacion('/admin/dashboard.php'))?>"><span class="brand-mark"><i class="bi bi-stars"></i></span>Studia360</a>
@@ -46,5 +74,33 @@ $foto=fotoPerfil($est['avatar']??'');$nombre=trim($est['nombres'].' '.$est['apel
 <button class="adm-theme-option" data-theme="orange" type="button" onclick="admSetTheme('orange')"><div class="adm-swatch" style="background:linear-gradient(135deg,#f97316,#ea580c)"></div><strong>Naranja</strong><small>Enérgico</small></button>
 <button class="adm-theme-option" data-theme="green" type="button" onclick="admSetTheme('green')"><div class="adm-swatch" style="background:linear-gradient(135deg,#10b981,#059669)"></div><strong>Verde</strong><small>Calma</small></button>
 </div><button id="admModeBtn" class="adm-mode-btn" type="button" onclick="admToggleMode()"></button></div>
-<script>(function(){const b=document.body,k='studia360_admin_theme',t={purple:'adm-accent-purple',blue:'adm-accent-blue',orange:'adm-accent-orange',green:'adm-accent-green'};let s={theme:'purple',mode:'dark'};try{s=Object.assign(s,JSON.parse(localStorage.getItem(k)||'{}'))}catch(e){}function a(){b.classList.add('s360-admin');Object.values(t).forEach(c=>b.classList.remove(c));b.classList.add(t[s.theme]||t.purple);b.classList.toggle('adm-dark',s.mode==='dark');document.querySelectorAll('.adm-theme-option').forEach(x=>x.classList.toggle('active',x.dataset.theme===s.theme));const m=document.getElementById('admModeBtn');if(m)m.innerHTML=s.mode==='dark'?"<i class='bi bi-moon-stars me-2'></i>Modo oscuro":"<i class='bi bi-sun me-2'></i>Modo claro"}window.admSetTheme=function(x){if(!t[x])return;s.theme=x;try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};window.admToggleMode=function(){s.mode=s.mode==='dark'?'light':'dark';try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};a();const q=document.getElementById('admThemeToggle'),p=document.getElementById('admThemePanel');q?.addEventListener('click',()=>p?.classList.toggle('open'));document.addEventListener('click',e=>{if(p?.classList.contains('open')&&!p.contains(e.target)&&!q.contains(e.target))p.classList.remove('open')})})();</script>
+
+<script id="studia360-theme-controller">
+(function(){
+'use strict';
+var body=document.body,key='studia360_theme',legacy='studia360_admin_theme';
+var themes={blue:'',orange:'s360-accent-orange',purple:'s360-accent-purple',green:'s360-accent-green'};
+var saved={theme:'blue',mode:'light'};
+try{var raw=localStorage.getItem(key)||localStorage.getItem(legacy);if(raw){var p=JSON.parse(raw);if(p&&typeof p==='object'){if(typeof p.theme==='string')saved.theme=p.theme;if(p.mode==='dark'||p.mode==='light')saved.mode=p.mode;}}}catch(e){}
+if(!Object.prototype.hasOwnProperty.call(themes,saved.theme))saved.theme='blue';
+function save(){try{localStorage.setItem(key,JSON.stringify(saved));localStorage.setItem(legacy,JSON.stringify(saved));}catch(e){}}
+function apply(){
+Object.keys(themes).forEach(function(k){if(themes[k])body.classList.remove(themes[k]);});
+body.classList.add('s360-content-theme');
+if(themes[saved.theme])body.classList.add(themes[saved.theme]);
+body.classList.toggle('s360-content-dark',saved.mode==='dark');
+body.classList.toggle('adm-dark',saved.mode==='dark');
+document.querySelectorAll('.adm-theme-option').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-theme')===saved.theme);});
+var mode=document.getElementById('admModeBtn');if(mode)mode.innerHTML=saved.mode==='dark'?'<i class="bi bi-moon-stars me-2"></i>Modo oscuro':'<i class="bi bi-sun me-2"></i>Modo claro';
+}
+window.admSetTheme=function(x){if(!Object.prototype.hasOwnProperty.call(themes,x))return;saved.theme=x;save();apply()};
+window.admToggleMode=function(){saved.mode=saved.mode==='dark'?'light':'dark';save();apply()};
+apply();
+var toggle=document.getElementById('admThemeToggle'),panel=document.getElementById('admThemePanel');
+if(toggle)toggle.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();if(panel)panel.classList.toggle('open')});
+if(panel)panel.addEventListener('click',function(e){e.stopPropagation()});
+document.addEventListener('click',function(e){if(panel&&toggle&&!panel.contains(e.target)&&!toggle.contains(e.target))panel.classList.remove('open')});
+})();
+</script>
+
 </body></html>

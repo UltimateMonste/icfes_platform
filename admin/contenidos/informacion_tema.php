@@ -249,6 +249,139 @@ body.s360-content-theme.s360-content-dark .adm-theme-panel{box-shadow:0 22px 60p
 }
 </style>
 
+
+<style id="studia360-info-dark-fix">
+/* Solo corrige superficies y contraste; conserva la estructura original. */
+body.s360-content-theme{
+  --c-bg:#f6f8fc;--c-card:#fff;--c-text:#1f2937;--c-muted:#748196;--c-line:#e5eaf1;--c-input:#fff;
+  background:var(--c-bg)!important;color:var(--c-text)!important;
+}
+body.s360-content-theme.s360-accent-orange{--c-accent:#f97316;--c-accent2:#ea580c;--c-soft:#fff7ed}
+body.s360-content-theme.s360-accent-purple{--c-accent:#8b5cf6;--c-accent2:#7c3aed;--c-soft:#f5f3ff}
+body.s360-content-theme.s360-accent-green{--c-accent:#10b981;--c-accent2:#059669;--c-soft:#ecfdf5}
+body.s360-content-theme.s360-content-dark{
+  --c-bg:#0d1424;--c-card:#172236;--c-text:#edf2f8;--c-muted:#9ba8ba;--c-line:#2b374b;--c-input:#111827;
+  background:var(--c-bg)!important;color:var(--c-text)!important;
+}
+/* Las tarjetas que se ven blancas en la captura */
+body.s360-content-theme .s360-card,
+body.s360-content-theme .stat-mini{
+  background:var(--c-card)!important;
+  color:var(--c-text)!important;
+  border-color:var(--c-line)!important;
+}
+body.s360-content-theme .field-label,
+body.s360-content-theme .s360-section-title,
+body.s360-content-theme h1,body.s360-content-theme h2,body.s360-content-theme h3,
+body.s360-content-theme h4,body.s360-content-theme h5,body.s360-content-theme h6{
+  color:var(--c-text)!important;
+}
+body.s360-content-theme .s360-muted,
+body.s360-content-theme .text-muted{
+  color:var(--c-muted)!important;
+}
+body.s360-content-theme .form-control,
+body.s360-content-theme .form-select,
+body.s360-content-theme textarea{
+  background:var(--c-input)!important;
+  color:var(--c-text)!important;
+  border-color:var(--c-line)!important;
+}
+body.s360-content-theme.s360-content-dark .form-control,
+body.s360-content-theme.s360-content-dark .form-select,
+body.s360-content-theme.s360-content-dark textarea{
+  background:#111827!important;color:#edf2f8!important;border-color:#334158!important;
+}
+body.s360-content-theme.s360-content-dark .btn-light{
+  background:#172236!important;color:#edf2f8!important;border-color:#334158!important;
+}
+body.s360-content-theme.s360-content-dark .alert-success{
+  background:#123c32!important;color:#9ff0cf!important;border-color:#1d6b56!important;
+}
+body.s360-content-theme.s360-content-dark .alert-danger{
+  background:#451d26!important;color:#ffb4bd!important;border-color:#7a303e!important;
+}
+/* Personalizador: el script existente ya controla la apertura/selección. */
+body.s360-content-theme .adm-theme-panel{
+  background:var(--c-card)!important;color:var(--c-text)!important;border-color:var(--c-line)!important;
+}
+body.s360-content-theme.s360-content-dark .adm-theme-option,
+body.s360-content-theme.s360-content-dark .adm-mode-btn{
+  background:#111a2b!important;color:#edf2f8!important;border-color:#334158!important;
+}
+</style>
+
+
+<style id="studia360-final-surface-fix">
+/* Corrección final de superficies: no altera PHP, formularios ni estructura. */
+body.s360-content-theme.s360-content-dark{
+  background:var(--c-bg)!important;
+  color:var(--c-text)!important;
+}
+
+/* Barra superior y controles que seguían usando el estilo claro original. */
+body.s360-content-theme .s360-topbar{
+  background:var(--c-card)!important;
+  border-bottom:1px solid var(--c-line)!important;
+  color:var(--c-text)!important;
+}
+body.s360-content-theme.s360-content-dark .s360-topbar{
+  background:#0d1424!important;
+  border-color:#2b374b!important;
+}
+body.s360-content-theme.s360-content-dark .s360-topbar .btn-light,
+body.s360-content-theme.s360-content-dark .btn-light{
+  background:#172236!important;
+  color:#edf2f8!important;
+  border-color:#334158!important;
+}
+body.s360-content-theme.s360-content-dark .s360-brand{
+  color:#edf2f8!important;
+}
+
+/* Tarjetas principales y resumen. */
+body.s360-content-theme.s360-content-dark .s360-card,
+body.s360-content-theme.s360-content-dark .stat-mini{
+  background:#172236!important;
+  color:#edf2f8!important;
+  border:1px solid #2b374b!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.16)!important;
+}
+body.s360-content-theme.s360-content-dark .stat-mini strong,
+body.s360-content-theme.s360-content-dark .stat-mini .fw-bold{
+  color:#edf2f8!important;
+}
+body.s360-content-theme.s360-content-dark .field-label{
+  color:#dce5f0!important;
+}
+
+/* Select nativo: evita que vuelva a aparecer blanco al abrir/mostrar opciones. */
+body.s360-content-theme.s360-content-dark select,
+body.s360-content-theme.s360-content-dark select option{
+  background:#111827!important;
+  color:#edf2f8!important;
+}
+body.s360-content-theme.s360-content-dark select option:checked{
+  background:#27344a!important;
+}
+
+/* Alertas y textos secundarios. */
+body.s360-content-theme.s360-content-dark .alert{
+  border-color:#334158!important;
+}
+body.s360-content-theme.s360-content-dark .alert-success{
+  background:#123c32!important;color:#a7f3d0!important;
+}
+body.s360-content-theme.s360-content-dark .alert-danger{
+  background:#451d26!important;color:#fecdd3!important;
+}
+
+/* Evita que elementos Bootstrap con texto oscuro queden ilegibles. */
+body.s360-content-theme.s360-content-dark .text-dark{
+  color:#edf2f8!important;
+}
+</style>
+
 </head><body class="s360-admin">
 <nav class="s360-topbar"><div class="container-fluid px-3 px-lg-4 py-2 d-flex justify-content-between align-items-center"><a class="s360-brand d-flex align-items-center gap-2" href="<?=e($urlDashboard)?>"><span class="s360-brand-icon"><i class="bi bi-mortarboard-fill"></i></span>Studia360 <span class="badge text-bg-primary">Admin</span></a><div class="d-flex gap-2"><a class="btn btn-light border s360-btn" href="<?=e($urlTemas)?>"><i class="bi bi-arrow-left me-1"></i>Temas</a></div></div></nav>
 <main class="s360-shell"><section class="s360-hero mb-4"><div class="row align-items-center g-3"><div class="col"><div class="s360-kicker">Editar estructura</div><h1 class="h2 mb-2"><?=e($tema['nombre'])?></h1><p class="mb-0 opacity-75"><?=e($tema['materia'])?> · <?=e($tema['grado'])?>°</p></div><div class="col-auto d-flex gap-2 flex-wrap"><a class="btn btn-light s360-btn" href="<?=e($urlPreview)?>" target="_blank"><i class="bi bi-eye me-1"></i>Vista previa</a><a class="btn btn-outline-light s360-btn" href="<?=e($urlEditor)?>"><i class="bi bi-file-earmark-text me-1"></i>Editar contenido</a></div></div></section>
