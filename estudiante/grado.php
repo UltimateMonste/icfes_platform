@@ -7,21 +7,91 @@ exigirEstudiante();
 $idUsuario=(int)($_SESSION['id_usuario']??0);
 $grado=(string)($_GET['grado']??'');
 $idMateria=(int)($_GET['id_materia']??0);
+$idUnidad=(int)($_GET['id_unidad']??0);
 if(!in_array($grado,['9','10','11'],true)){$grado='11';}
 function h($v):string{return htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');}
+
+$materia=null;
+$unidad=null;
+$materias=[];
+$unidades=[];
+$temas=[];
+
 try{
- $sql="SELECT t.id_tema,t.nombre,t.descripcion,t.id_materia,m.nombre materia,
- COALESCE(p.porcentaje_avance,0) porcentaje_avance,
- COALESCE(p.recursos_vistos,0) recursos_vistos,COALESCE(p.evaluaciones_realizadas,0) evaluaciones_realizadas
- FROM temas t INNER JOIN materias m ON m.id_materia=t.id_materia
- LEFT JOIN progreso p ON p.id_tema=t.id_tema AND p.id_usuario=?
- WHERE t.grado=?"; $params=[$idUsuario,$grado];
- if($idMateria>0){$sql.=" AND t.id_materia=?";$params[]=$idMateria;}
- $sql.=" ORDER BY m.nombre,t.id_tema";
- $st=$conexion->prepare($sql);$st->execute($params);$temas=$st->fetchAll(PDO::FETCH_ASSOC);
- $tituloMateria='';
- if($idMateria>0){$st=$conexion->prepare("SELECT nombre FROM materias WHERE id_materia=?");$st->execute([$idMateria]);$tituloMateria=(string)$st->fetchColumn();}
-}catch(Throwable $e){die('No fue posible cargar los contenidos.');}
+    // Nivel 1: materias.
+    if($idMateria<=0){
+        $st=$conexion->prepare("
+            SELECT m.id_materia,m.nombre,m.descripcion,COUNT(t.id_tema) AS total_temas
+            FROM materias m
+            LEFT JOIN temas t ON t.id_materia=m.id_materia AND t.grado=?
+            GROUP BY m.id_materia,m.nombre,m.descripcion
+            ORDER BY m.nombre
+        ");
+        $st->execute([$grado]);
+        $materias=$st->fetchAll(PDO::FETCH_ASSOC);
+    }else{
+        // Validamos que la materia exista.
+        $st=$conexion->prepare("SELECT id_materia,nombre,descripcion FROM materias WHERE id_materia=? LIMIT 1");
+        $st->execute([$idMateria]);
+        $materia=$st->fetch(PDO::FETCH_ASSOC);
+        if(!$materia){
+            $idMateria=0;
+        }
+    }
+
+    // Nivel 2: unidades temáticas de la materia.
+    if($idMateria>0 && $idUnidad<=0){
+        $st=$conexion->prepare("
+            SELECT
+                u.id_unidad,u.nombre,u.descripcion,u.es_predeterminada,
+                COUNT(t.id_tema) AS total_temas,
+                COALESCE(ROUND(AVG(COALESCE(p.porcentaje_avance,0))),0) AS progreso
+            FROM unidades_tematicas u
+            LEFT JOIN temas t
+                ON t.id_unidad=u.id_unidad AND t.grado=?
+            LEFT JOIN progreso p
+                ON p.id_tema=t.id_tema AND p.id_usuario=?
+            WHERE u.id_materia=? AND u.estado='Activa'
+            GROUP BY u.id_unidad,u.nombre,u.descripcion,u.es_predeterminada
+            HAVING COUNT(t.id_tema)>0 OR u.es_predeterminada=0
+            ORDER BY u.es_predeterminada DESC,u.nombre
+        ");
+        $st->execute([$grado,$idUsuario,$idMateria]);
+        $unidades=$st->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Nivel 3: temas de la unidad seleccionada.
+    if($idMateria>0 && $idUnidad>0){
+        $st=$conexion->prepare("
+            SELECT
+                u.id_unidad,u.nombre AS unidad,
+                t.id_tema,t.nombre,t.descripcion,t.id_materia,m.nombre AS materia,
+                COALESCE(p.porcentaje_avance,0) porcentaje_avance,
+                COALESCE(p.recursos_vistos,0) recursos_vistos,
+                COALESCE(p.evaluaciones_realizadas,0) evaluaciones_realizadas
+            FROM unidades_tematicas u
+            INNER JOIN materias m ON m.id_materia=u.id_materia
+            INNER JOIN temas t ON t.id_unidad=u.id_unidad
+            LEFT JOIN progreso p ON p.id_tema=t.id_tema AND p.id_usuario=?
+            WHERE u.id_unidad=? AND u.id_materia=? AND u.estado='Activa' AND t.grado=?
+            ORDER BY t.id_tema
+        ");
+        $st->execute([$idUsuario,$idUnidad,$idMateria,$grado]);
+        $temas=$st->fetchAll(PDO::FETCH_ASSOC);
+        if(!$temas){
+            // La unidad puede no tener temas para este grado; seguimos mostrando la unidad para no romper la navegación.
+            $st=$conexion->prepare("SELECT id_unidad,nombre,descripcion,es_predeterminada FROM unidades_tematicas WHERE id_unidad=? AND id_materia=? AND estado='Activa' LIMIT 1");
+            $st->execute([$idUnidad,$idMateria]);
+            $unidad=$st->fetch(PDO::FETCH_ASSOC) ?: null;
+        }else{
+            $unidad=['id_unidad'=>$idUnidad,'nombre'=>$temas[0]['unidad'],'descripcion'=>'','es_predeterminada'=>0];
+        }
+    }
+}catch(Throwable $e){
+    die('No fue posible cargar los contenidos.');
+}
+
+$foto='';
 ?>
 <!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Contenidos | Studia360</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -275,7 +345,17 @@ body.sd-page{background:var(--sd-bg)!important;color:var(--sd-text)!important}
 .btn-primary:hover{background:var(--sd-accent-2)!important;border-color:var(--sd-accent-2)!important}
 .text-primary{color:var(--sd-accent)!important}
 .badge.text-bg-light{background:var(--sd-accent-soft)!important;color:var(--sd-accent)!important}
-</style></head><body class="sd-page">
+</style><style id="hierarchy-styles">
+.sd-unit-icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--sd-accent-soft);color:var(--sd-accent);font-size:1.05rem;border:1px solid color-mix(in srgb,var(--sd-accent) 10%,var(--sd-line));}
+.sd-back{display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:var(--sd-muted);font-size:.72rem;font-weight:800;}
+.sd-back:hover{color:var(--sd-accent)}
+.sd-predetermined,.sd-topic-label{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 8px;font-size:.58rem;font-weight:850;background:var(--sd-accent-soft);color:var(--sd-accent);border:1px solid color-mix(in srgb,var(--sd-accent) 10%,var(--sd-line));}
+.sd-topic-label{width:max-content}
+.sd-progress{height:8px;background:color-mix(in srgb,var(--sd-accent) 8%,var(--sd-line));}
+.sd-progress .progress-bar{background:linear-gradient(90deg,var(--sd-accent),var(--sd-accent-2));}
+body.sd-dark .sd-unit-icon,body.sd-dark .sd-predetermined,body.sd-dark .sd-topic-label{background:color-mix(in srgb,var(--sd-accent) 15%,var(--sd-card));border-color:var(--sd-line);}
+</style>
+</head><body class="sd-page">
 
 <nav class="navbar sd-navbar">
   <div class="container-fluid px-3 px-lg-4">
@@ -305,25 +385,101 @@ body.sd-page{background:var(--sd-bg)!important;color:var(--sd-text)!important}
   </div>
 </nav>
 
-<main class="container py-4">
-<div class="mb-4 d-flex justify-content-between align-items-end gap-3 flex-wrap">
-  <div>
-    <div class="text-primary fw-semibold">Grado <?=h($grado)?>°</div>
-    <h1 class="h2 fw-bold mb-1"><?=h($tituloMateria?:'Contenidos de aprendizaje')?></h1>
-    <p class="text-muted mb-0"><?=count($temas)?> tema(s) disponibles</p>
+<main class="sd-shell">
+<?php if($idMateria<=0): ?>
+  <div class="mb-4 d-flex justify-content-between align-items-end gap-3 flex-wrap sd-fade">
+    <div>
+      <span class="sd-eyebrow"><i class="bi bi-book-half"></i> Aprendizaje</span>
+      <h1 class="sd-page-title mt-2">¿Qué materia estudiarás?</h1>
+      <p class="sd-page-sub">Explora tus materias y entra en la temática que quieras aprender.</p>
+    </div>
+    <nav class="grade-switcher" aria-label="Cambiar de grado">
+      <a href="grado.php?grado=9" class="<?= $grado==='9'?'active':'' ?>">9°</a>
+      <a href="grado.php?grado=10" class="<?= $grado==='10'?'active':'' ?>">10°</a>
+      <a href="grado.php?grado=11" class="<?= $grado==='11'?'active':'' ?>">11°</a>
+    </nav>
   </div>
-  <nav class="grade-switcher" aria-label="Cambiar de grado">
-    <a href="grado.php?grado=9<?= $idMateria>0 ? '&id_materia='.(int)$idMateria : '' ?>" class="<?= $grado==='9'?'active':'' ?>">9°</a>
-    <a href="grado.php?grado=10<?= $idMateria>0 ? '&id_materia='.(int)$idMateria : '' ?>" class="<?= $grado==='10'?'active':'' ?>">10°</a>
-    <a href="grado.php?grado=11<?= $idMateria>0 ? '&id_materia='.(int)$idMateria : '' ?>" class="<?= $grado==='11'?'active':'' ?>">11°</a>
-  </nav>
-</div>
-<div class="row g-3"><?php foreach($temas as $t):?><div class="col-12 col-md-6 col-lg-4"><div class="cardx topic p-4 h-100">
-<span class="badge text-bg-light mb-3"><?=h($t['materia'])?></span><h2 class="h5 fw-bold"><?=h($t['nombre'])?></h2><p class="small text-muted"><?=h($t['descripcion']??'')?></p>
-<div class="d-flex justify-content-between small mb-1"><span>Progreso</span><strong><?=number_format((float)$t['porcentaje_avance'],0)?>%</strong></div><div class="progress mb-3"><div class="progress-bar" style="width:<?=h((string)$t['porcentaje_avance'])?>%"></div></div>
-<a class="btn btn-primary w-100" href="<?=h(urlAplicacion('/estudiante/tema.php?id='.(int)$t['id_tema']))?>">Estudiar tema <i class="bi bi-arrow-right ms-1"></i></a>
-</div></div><?php endforeach;?>
-<?php if(!$temas):?><div class="col-12"><div class="alert alert-light border">No hay temas disponibles para esta selección.</div></div><?php endif;?></div></main>
+  <div class="row g-3 sd-fade">
+    <?php foreach($materias as $m): ?>
+      <div class="col-12 col-md-6 col-lg-4">
+        <article class="sd-card topic p-4 h-100 d-flex flex-column">
+          <div class="sd-unit-icon mb-3"><i class="bi bi-book-half"></i></div>
+          <h2 class="h5 fw-bold mb-2"><?=h($m['nombre'])?></h2>
+          <p class="small sd-muted mb-3"><?=h($m['descripcion'] ?: 'Explora las temáticas disponibles y aprende a tu ritmo.')?></p>
+          <div class="mt-auto d-flex justify-content-between align-items-center gap-2">
+            <span class="small sd-muted"><i class="bi bi-journal-text me-1"></i><?=number_format((int)$m['total_temas'])?> tema(s)</span>
+            <a class="sd-btn sd-btn-primary text-decoration-none" href="<?=h('grado.php?grado='.urlencode($grado).'&id_materia='.(int)$m['id_materia'])?>">Explorar <i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+        </article>
+      </div>
+    <?php endforeach; ?>
+    <?php if(!$materias): ?>
+      <div class="col-12"><div class="sd-card p-5 text-center"><div class="sd-unit-icon mx-auto mb-3"><i class="bi bi-book"></i></div><div class="fw-bold">Aún no hay materias disponibles</div><div class="small sd-muted mt-1">Cuando haya materias con contenidos para este grado, aparecerán aquí.</div></div></div>
+    <?php endif; ?>
+  </div>
+
+<?php elseif($idUnidad<=0): ?>
+  <div class="mb-4 sd-fade">
+    <a class="sd-back" href="dashboard.php"><i class="bi bi-arrow-left"></i> Volver al dashboard</a>
+    <div class="mt-3">
+      <span class="sd-eyebrow"><i class="bi bi-layers"></i> <?=h($materia['nombre'] ?? 'Materia')?></span>
+      <h1 class="sd-page-title mt-2">¿Qué temática estudiarás?</h1>
+      <p class="sd-page-sub"><?=h($materia['descripcion'] ?? '')?></p>
+    </div>
+  </div>
+  <div class="row g-3 sd-fade">
+    <?php foreach($unidades as $u): ?>
+      <div class="col-12 col-md-6 col-lg-4">
+        <article class="sd-card topic p-4 h-100 d-flex flex-column">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="sd-unit-icon"><i class="bi bi-collection"></i></div>
+            <?php if((int)$u['es_predeterminada']===1): ?><span class="sd-predetermined">Transición</span><?php endif; ?>
+          </div>
+          <h2 class="h5 fw-bold mb-2"><?=h($u['nombre'])?></h2>
+          <p class="small sd-muted mb-3"><?=h($u['descripcion'] ?: 'Explora los temas que pertenecen a esta temática.')?></p>
+          <div class="mt-auto">
+            <div class="d-flex justify-content-between small sd-muted mb-2"><span><?=number_format((int)$u['total_temas'])?> tema(s)</span><strong><?=number_format((float)$u['progreso'],0)?>%</strong></div>
+            <div class="progress sd-progress mb-3"><div class="progress-bar" style="width:<?=h((string)$u['progreso'])?>%"></div></div>
+            <a class="sd-btn sd-btn-primary w-100 text-center text-decoration-none d-block" href="<?=h('grado.php?grado='.urlencode($grado).'&id_materia='.(int)$idMateria.'&id_unidad='.(int)$u['id_unidad'])?>">Ver temas <i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+        </article>
+      </div>
+    <?php endforeach; ?>
+    <?php if(!$unidades): ?>
+      <div class="col-12"><div class="sd-card p-5 text-center"><div class="sd-unit-icon mx-auto mb-3"><i class="bi bi-collection"></i></div><div class="fw-bold">No hay temáticas disponibles</div><div class="small sd-muted mt-1">Esta materia todavía no tiene unidades temáticas activas para este grado.</div></div></div>
+    <?php endif; ?>
+  </div>
+
+<?php else: ?>
+  <div class="mb-4 sd-fade">
+    <a class="sd-back" href="grado.php?grado=<?=h($grado)?>&id_materia=<?=h((string)$idMateria)?>"><i class="bi bi-arrow-left"></i> Volver a temáticas</a>
+    <div class="mt-3">
+      <span class="sd-eyebrow"><i class="bi bi-collection"></i> <?=h($materia['nombre'] ?? 'Materia')?></span>
+      <h1 class="sd-page-title mt-2"><?=h($unidad['nombre'] ?? 'Temas')?></h1>
+      <p class="sd-page-sub">Elige un tema para comenzar a estudiar.</p>
+    </div>
+  </div>
+  <div class="row g-3 sd-fade">
+    <?php foreach($temas as $t): ?>
+      <div class="col-12 col-md-6 col-lg-4">
+        <article class="sd-card topic p-4 h-100 d-flex flex-column">
+          <span class="sd-topic-label mb-3"><i class="bi bi-journal-text"></i> Tema</span>
+          <h2 class="h5 fw-bold mb-2"><?=h($t['nombre'])?></h2>
+          <p class="small sd-muted mb-3"><?=h($t['descripcion']??'')?></p>
+          <div class="mt-auto">
+            <div class="d-flex justify-content-between small sd-muted mb-1"><span>Progreso</span><strong><?=number_format((float)$t['porcentaje_avance'],0)?>%</strong></div>
+            <div class="progress sd-progress mb-3"><div class="progress-bar" style="width:<?=h((string)$t['porcentaje_avance'])?>%"></div></div>
+            <a class="sd-btn sd-btn-primary w-100 text-center text-decoration-none d-block" href="<?=h(urlAplicacion('/estudiante/tema.php?id='.(int)$t['id_tema'].'&return_grado='.urlencode($grado).'&return_materia='.(int)$idMateria.'&return_unidad='.(int)$idUnidad))?>">Estudiar tema <i class="bi bi-arrow-right ms-1"></i></a>
+          </div>
+        </article>
+      </div>
+    <?php endforeach; ?>
+    <?php if(!$temas): ?>
+      <div class="col-12"><div class="sd-card p-5 text-center"><div class="sd-unit-icon mx-auto mb-3"><i class="bi bi-journal-x"></i></div><div class="fw-bold">Esta temática aún no tiene temas para este grado</div><div class="small sd-muted mt-1">Puedes volver a las temáticas y elegir otra.</div></div></div>
+    <?php endif; ?>
+  </div>
+<?php endif; ?>
+</main>
 <button id="sdThemeToggle" class="sd-theme-toggle" type="button" aria-label="Cambiar apariencia" title="Personalizar apariencia">
   <i class="bi bi-palette2"></i>
 </button>

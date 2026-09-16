@@ -141,6 +141,77 @@ function actualizarProgresoTema(PDO $conexion,int $idUsuario,int $idTema,?int $r
     return obtenerProgresoTema($conexion,$idUsuario,$idTema);
 }
 
+function revisarYOtorgarRecompensaUnidad(PDO $conexion, int $idUsuario, int $idTema): int {
+    /*
+     * Una unidad temática se considera completada cuando TODOS sus temas
+     * tienen un progreso de 100% para el estudiante.
+     *
+     * La unidad predeterminada creada por la migración es solo de transición
+     * y no genera esta recompensa.
+     */
+    try {
+        $st = $conexion->prepare(
+            "SELECT u.id_unidad, u.es_predeterminada, u.estado
+             FROM temas t
+             INNER JOIN unidades_tematicas u ON u.id_unidad=t.id_unidad
+             WHERE t.id_tema=?
+             LIMIT 1"
+        );
+        $st->execute([$idTema]);
+        $unidad = $st->fetch(PDO::FETCH_ASSOC);
+
+        if (!$unidad || (int)$unidad['es_predeterminada'] === 1 || $unidad['estado'] !== 'Activa') {
+            return 0;
+        }
+
+        $idUnidad = (int)$unidad['id_unidad'];
+
+        $st = $conexion->prepare(
+            "SELECT
+                COUNT(t.id_tema) AS total_temas,
+                SUM(CASE WHEN COALESCE(p.porcentaje_avance,0) >= 100 THEN 1 ELSE 0 END) AS temas_completados
+             FROM temas t
+             INNER JOIN usuarios usr ON usr.id_usuario=?
+             LEFT JOIN progreso p
+               ON p.id_tema=t.id_tema
+              AND p.id_usuario=?
+             WHERE t.id_unidad=?
+               AND t.grado=usr.grado"
+        );
+        $st->execute([$idUsuario, $idUsuario, $idUnidad]);
+        $estado = $st->fetch(PDO::FETCH_ASSOC) ?: [];
+
+        $total = (int)($estado['total_temas'] ?? 0);
+        $completados = (int)($estado['temas_completados'] ?? 0);
+
+        if ($total <= 0 || $completados < $total) {
+            return 0;
+        }
+
+        $puntos = obtenerConfiguracionGamificacion(
+            $conexion,
+            'completar_unidad',
+            50
+        );
+
+        if ($puntos <= 0) {
+            return 0;
+        }
+
+        $motivo = 'completar_unidad:' . $idUnidad;
+        return otorgarPuntos(
+            $conexion,
+            $idUsuario,
+            $puntos,
+            $motivo,
+            true
+        ) ? $puntos : 0;
+    } catch (Throwable $e) {
+        /* La recompensa de unidad nunca debe impedir completar un tema. */
+        return 0;
+    }
+}
+
 function completarTema(PDO $conexion,int $idUsuario,int $idTema): array {
     $actual=obtenerProgresoTema($conexion,$idUsuario,$idTema);
 
@@ -162,6 +233,10 @@ function completarTema(PDO $conexion,int $idUsuario,int $idTema): array {
 
     $p=obtenerConfiguracionGamificacion($conexion,'completar_tema',25);
     otorgarPuntos($conexion,$idUsuario,$p,'completar_tema:'.$idTema,true);
+
+    // Después de completar el tema, comprobamos si con este avance
+    // también se terminó la unidad temática completa.
+    revisarYOtorgarRecompensaUnidad($conexion,$idUsuario,$idTema);
 
     if(function_exists('revisarYOtorgarInsignias')){
         revisarYOtorgarInsignias($conexion,$idUsuario);

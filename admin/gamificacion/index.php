@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         /*
          * Las recompensas relacionadas con evaluaciones ya no forman
-         * parte de Studia360. Se conservan en la BD por compatibilidad,
+         * parte del recorrido de Studia360. Se conservan en la BD por compatibilidad,
          * pero no se muestran ni se pueden editar desde este panel.
          */
         if ($accion === 'config') {
@@ -614,15 +614,15 @@ body{
     <?php endif; ?>
 
     <!-- RECOMPENSAS -->
-    <section class="section-card mb-4">
+    <section class="section-card mb-4" id="recompensas">
         <div class="section-title mb-4">
             <div class="section-title-icon">
                 <i class="bi bi-lightning-charge-fill"></i>
             </div>
             <div>
-                <h2>Recompensas por interacción</h2>
+                <h2>Recompensas por avance</h2>
                 <p>
-                    Puntos que el estudiante puede obtener al interactuar con los contenidos.
+                    Configura los puntos que se entregan por acciones y logros dentro del recorrido de aprendizaje.
                 </p>
             </div>
         </div>
@@ -673,6 +673,12 @@ body{
                     </div>
                 </div>
             <?php endforeach; ?>
+        </div>
+
+        <div class="help mt-3">
+            <i class="bi bi-info-circle me-1"></i>
+            La recompensa <strong>Completar una unidad temática</strong> se entrega una sola vez cuando el estudiante completa todos los temas de una unidad temática real.
+            La <strong>Temática general</strong> de migración se considera una unidad de transición y no genera esta recompensa.
         </div>
     </section>
 

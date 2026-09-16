@@ -18,6 +18,7 @@ $nombre = "";
 $descripcion = "";
 $grado = "";
 $idMateria = "";
+$idUnidad = "";
 
 $nombreAdmin = trim($_SESSION["nombres"] ?? "");
 if ($nombreAdmin === "") {
@@ -35,6 +36,7 @@ $urlTemas = urlAplicacion("/admin/contenidos/temas.php");
 $urlCerrarSesion = urlAplicacion("/cerrar_sesion.php");
 
 $materias = [];
+$unidades = [];
 
 try {
     $stmt = $conexion->query(
@@ -44,6 +46,14 @@ try {
     );
 
     $materias = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $idUnidadGet = filter_var($_GET["id_unidad"] ?? null, FILTER_VALIDATE_INT);
+    $idMateriaGet = filter_var($_GET["id_materia"] ?? null, FILTER_VALIDATE_INT);
+    $gradoGet = trim((string)($_GET["grado"] ?? ""));
+    $usql = "SELECT id_unidad,id_materia,grado,nombre,es_predeterminada FROM unidades_tematicas WHERE estado='Activa' ORDER BY id_materia,CAST(grado AS UNSIGNED),es_predeterminada DESC,nombre";
+    $unidades = $conexion->query($usql)->fetchAll(PDO::FETCH_ASSOC);
+    if ($idUnidadGet) $idUnidad=(string)$idUnidadGet;
+    if ($idMateriaGet) $idMateria=(string)$idMateriaGet;
+    if (in_array($gradoGet,["9","10","11"],true)) $grado=$gradoGet;
 } catch (PDOException $e) {
     $errores[] = "No fue posible cargar las materias.";
 }
@@ -54,6 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $descripcion = trim($_POST["descripcion"] ?? "");
     $grado = trim($_POST["grado"] ?? "");
     $idMateria = trim($_POST["id_materia"] ?? "");
+    $idUnidad = trim($_POST["id_unidad"] ?? "");
 
     if ($nombre === "") {
         $errores[] = "El nombre del tema es obligatorio.";
@@ -78,6 +89,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!$idMateriaInt) {
         $errores[] = "Debes seleccionar una materia.";
     }
+    $idUnidadInt = filter_var($idUnidad, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]]);
+    if (!$idUnidadInt) $errores[] = "Debes seleccionar una unidad temática.";
 
     if (empty($errores)) {
 
@@ -93,6 +106,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             if (!$stmt->fetchColumn()) {
                 $errores[] = "La materia seleccionada no existe.";
+            }
+
+            if (empty($errores)) {
+                $stmt = $conexion->prepare("SELECT COUNT(*) FROM unidades_tematicas WHERE id_unidad=? AND id_materia=? AND grado=? AND estado='Activa' AND es_predeterminada=0 LIMIT 1");
+                $stmt->execute([$idUnidadInt,$idMateriaInt,$grado]);
+                if (!$stmt->fetchColumn()) $errores[] = "La unidad temática no pertenece a la materia y grado seleccionados o es una unidad de transición.";
             }
 
             if (empty($errores)) {
@@ -121,13 +140,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 $stmt = $conexion->prepare(
                     "INSERT INTO temas
-                        (id_materia, nombre, descripcion, grado)
+                        (id_materia, id_unidad, nombre, descripcion, grado)
                      VALUES
-                        (?, ?, ?, ?)"
+                        (?, ?, ?, ?, ?)"
                 );
 
                 $stmt->execute([
                     $idMateriaInt,
+                    $idUnidadInt,
                     $nombre,
                     $descripcion !== "" ? $descripcion : null,
                     $grado
@@ -885,3 +905,5 @@ body.s360-content-theme.s360-content-dark .adm-theme-panel{box-shadow:0 22px 60p
 
 </body>
 </html>
+
+<script>(function(){const m=document.querySelector('[name="id_materia"]'),g=document.querySelector('[name="grado"]'),u=document.getElementById('idUnidad');if(!m||!g||!u)return;function f(){Array.from(u.options).forEach(o=>{if(!o.value)return;o.hidden=(m.value&&o.dataset.materia!==m.value)||(g.value&&o.dataset.grado!==g.value)||(o.textContent.includes('Temática general'));});if(u.selectedOptions[0]&&u.selectedOptions[0].hidden)u.value='';}m.addEventListener('change',f);g.addEventListener('change',f);f();})();</script>

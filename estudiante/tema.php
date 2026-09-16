@@ -29,8 +29,12 @@ $idTema = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
 
 $returnGrado = trim((string)($_GET["return_grado"] ?? ""));
 $returnMateria = filter_input(INPUT_GET, "return_materia", FILTER_VALIDATE_INT);
+$returnUnidad = filter_input(INPUT_GET, "return_unidad", FILTER_VALIDATE_INT);
 if (!$returnMateria || $returnMateria < 1) {
     $returnMateria = null;
+}
+if (!$returnUnidad || $returnUnidad < 1) {
+    $returnUnidad = null;
 }
 
 if ($idUsuario <= 0 || !$idTema) {
@@ -269,14 +273,19 @@ try {
         SELECT
             t.id_tema,
             t.id_materia,
+            t.id_unidad,
             t.nombre AS tema,
             t.descripcion,
             t.grado,
             m.nombre AS materia,
-            m.descripcion AS descripcion_materia
+            m.descripcion AS descripcion_materia,
+            u.nombre AS unidad,
+            u.descripcion AS descripcion_unidad
         FROM temas t
         INNER JOIN materias m
             ON m.id_materia = t.id_materia
+        LEFT JOIN unidades_tematicas u
+            ON u.id_unidad = t.id_unidad
         WHERE t.id_tema = ?
         LIMIT 1
     ");
@@ -542,11 +551,16 @@ $idMateriaRetorno = $returnMateria !== null
     ? $returnMateria
     : (int)($tema["id_materia"] ?? 0);
 
+$idUnidadRetorno = $returnUnidad !== null
+    ? $returnUnidad
+    : (int)($tema["id_unidad"] ?? 0);
+
 $urlGrado = urlAplicacion(
     "/estudiante/grado.php?grado=" .
     urlencode($gradoRetorno) .
     "&id_materia=" .
-    $idMateriaRetorno
+    $idMateriaRetorno .
+    ($idUnidadRetorno > 0 ? "&id_unidad=" . $idUnidadRetorno : "")
 );
 $urlLogout = urlAplicacion("/cerrar_sesion.php");
 ?>
@@ -1373,11 +1387,15 @@ body.sd-accent-green{--sd-accent:#10b981;--sd-accent-2:#059669;--sd-accent-soft:
 <div class="breadcrumbs">
     <a href="<?= e($urlDashboard) ?>">Inicio</a>
     <span class="mx-1">/</span>
-    <a href="<?= e($urlGrado) ?>">
-        <?= e($tema["grado"]) ?>°
+    <a href="<?= e(urlAplicacion('/estudiante/grado.php?grado=' . urlencode((string)$tema['grado']) . '&id_materia=' . (int)$tema['id_materia'])) ?>">
+        <?= e($tema["materia"]) ?>
     </a>
+    <?php if (!empty($tema["unidad"])): ?>
+        <span class="mx-1">/</span>
+        <a href="<?= e($urlGrado) ?>"><?= e($tema["unidad"]) ?></a>
+    <?php endif; ?>
     <span class="mx-1">/</span>
-    <?= e($tema["materia"]) ?>
+    <?= e($tema["tema"]) ?>
 </div>
 
 <section class="hero">
