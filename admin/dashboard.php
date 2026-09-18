@@ -622,7 +622,7 @@ body.sidebar-collapsed .sidebar-footer{padding:12px 8px}
 .section-link:hover{text-decoration:underline}
 
 /* ---------- STATS ---------- */
-.stat-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:15px}
+.stat-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:15px}
 .stat-col{min-width:0}
 .stat-unit .stat-label{line-height:1.25}
 @media (max-width:1199px){.stat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -1397,6 +1397,10 @@ body.s360-admin:not(.adm-dark){
             <a href="estudiantes/index.php" class="side-link" data-label="estudiantes usuarios perfiles">
                 <i class="bi bi-people-fill"></i><span>Estudiantes</span>
             </a>
+            <a href="cursos/index.php" class="side-link" data-label="cursos grupos 901 902 1001 1002 1101 1102">
+                <i class="bi bi-mortarboard-fill"></i><span>Cursos</span>
+                <?php if ($total_cursos > 0): ?><span class="badge rounded-pill text-bg-primary side-badge"><?= $total_cursos ?></span><?php endif; ?>
+            </a>
             <a href="progreso/index.php" class="side-link" data-label="progreso avance seguimiento">
                 <i class="bi bi-graph-up-arrow"></i><span>Progreso estudiantil</span>
             </a>
@@ -1494,6 +1498,7 @@ body.s360-admin:not(.adm-dark){
             <p>Todo lo importante de Studia360, organizado en un solo lugar. Administra contenidos, estudiantes, progreso y la experiencia de aprendizaje.</p>
             <div class="hero-actions">
                 <a href="contenidos/materias.php" class="btn-white"><i class="bi bi-book-half me-1"></i> Administrar materias</a>
+                <a href="cursos/index.php" class="btn-soft-white"><i class="bi bi-mortarboard me-1"></i> Gestionar cursos</a>
                 <a href="estudiantes/index.php" class="btn-soft-white"><i class="bi bi-people me-1"></i> Ver estudiantes</a>
             </div>
         </section>
@@ -1556,6 +1561,15 @@ body.s360-admin:not(.adm-dark){
                             <div class="stat-icon cyan"><i class="bi bi-collection-play-fill"></i></div>
                         </div>
                         <div class="stat-foot"><a href="contenidos/index.php">Administrar recursos <i class="bi bi-arrow-right ms-1"></i></a></div>
+                    </div>
+                </div>
+                <div class="stat-col">
+                    <div class="stat">
+                        <div class="stat-body">
+                            <div><div class="stat-label">Cursos</div><div class="stat-number"><?= $total_cursos ?></div><div class="stat-note"><?= $total_estudiantes_activos ?> estudiantes activos</div></div>
+                            <div class="stat-icon blue"><i class="bi bi-mortarboard-fill"></i></div>
+                        </div>
+                        <div class="stat-foot"><a href="cursos/index.php">Gestionar cursos <i class="bi bi-arrow-right ms-1"></i></a></div>
                     </div>
                 </div>
             </div>
@@ -1686,6 +1700,7 @@ body.s360-admin:not(.adm-dark){
             </div>
             <div class="row g-2">
                 <div class="col-12 col-md-6 col-xl-3"><a href="contenidos/materias.php" class="quick"><div class="quick-icon green"><i class="bi bi-book-fill"></i></div><div><div class="quick-title">Materias</div><div class="quick-text">Organiza materias y temas.</div></div></a></div>
+                <div class="col-12 col-md-6 col-xl-3"><a href="cursos/index.php" class="quick"><div class="quick-icon blue"><i class="bi bi-mortarboard-fill"></i></div><div><div class="quick-title">Cursos</div><div class="quick-text"><?= $total_cursos ?> cursos · <?= $total_estudiantes_activos ?> estudiantes activos.</div></div></a></div>
                 <div class="col-12 col-md-6 col-xl-3"><a href="contenidos/temas.php" class="quick"><div class="quick-icon orange"><i class="bi bi-journal-text"></i></div><div><div class="quick-title">Temas</div><div class="quick-text">Busca, edita y revisa temas.</div></div></a></div>
                 <div class="col-12 col-md-6 col-xl-3"><a href="estudiantes/index.php" class="quick"><div class="quick-icon blue"><i class="bi bi-people-fill"></i></div><div><div class="quick-title">Estudiantes</div><div class="quick-text">Consulta perfiles y cuentas.</div></div></a></div>
                 <div class="col-12 col-md-6 col-xl-3"><a href="gamificacion/index.php" class="quick"><div class="quick-icon purple"><i class="bi bi-stars"></i></div><div><div class="quick-title">Gamificación</div><div class="quick-text">Niveles, avatares e insignias.</div></div></a></div>
@@ -1701,6 +1716,7 @@ body.s360-admin:not(.adm-dark){
             </div>
             <div class="row g-2">
                 <div class="col-12 col-md-6 col-xl-3"><a href="contenidos/index.php" class="module"><div class="module-icon blue"><i class="bi bi-journal-richtext"></i></div><div class="module-title">Contenidos</div><div class="module-description">Editor y gestión de las lecciones.</div><span class="badge rounded-pill text-bg-success status">Disponible</span></a></div>
+                <div class="col-12 col-md-6 col-xl-3"><a href="cursos/index.php" class="module"><div class="module-icon blue"><i class="bi bi-mortarboard-fill"></i></div><div class="module-title">Cursos</div><div class="module-description">Crea y organiza grupos como 901, 902, 1001 o 1101.</div><span class="badge rounded-pill text-bg-success status"><?= $total_cursos ?> registrados</span></a></div>
                 <div class="col-12 col-md-6 col-xl-3"><a href="contenidos/materias.php" class="module"><div class="module-icon green"><i class="bi bi-book-half"></i></div><div class="module-title">Materias y temas</div><div class="module-description">Estructura académica de la plataforma.</div><span class="badge rounded-pill text-bg-success status">Disponible</span></a></div>
                 <div class="col-12 col-md-6 col-xl-3"><a href="contenidos/index.php" class="module"><div class="module-icon cyan"><i class="bi bi-collection-play"></i></div><div class="module-title">Recursos</div><div class="module-description">Videos, PDFs, enlaces y actividades.</div><span class="badge rounded-pill text-bg-success status">Disponible</span></a></div>
                 <div class="col-12 col-md-6 col-xl-3"><a href="gamificacion/index.php" class="module"><div class="module-icon purple"><i class="bi bi-stars"></i></div><div class="module-title">Gamificación</div><div class="module-description">Puntos, niveles, avatares e insignias.</div><span class="badge rounded-pill text-bg-success status">Disponible</span></a></div>
