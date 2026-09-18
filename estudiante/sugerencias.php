@@ -586,6 +586,323 @@ body.sd-dark .message-icon i{
 }
 </style>
 
+
+<style id="studia360-sugerencias-final">
+/* Corrección final de tema: ningún panel queda blanco en modo oscuro. */
+body.sd-page .card-soft,
+body.sd-page .stat,
+body.sd-page .message-card{
+  background:var(--sd-card)!important;
+  color:var(--sd-text)!important;
+  border-color:var(--sd-line)!important;
+}
+body.sd-page .stat{background:var(--sd-card)!important}
+body.sd-page .type-option{
+  width:100%;min-height:92px;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;padding:12px 10px;
+  background:var(--sd-card);color:var(--sd-text);
+  border-color:var(--sd-line);
+}
+body.sd-page .type-option .type-icon{margin:0 auto 3px}
+body.sd-dark .card-soft,
+body.sd-dark .stat,
+body.sd-dark .message-card,
+body.sd-dark .type-option{
+  background:var(--sd-card)!important;color:var(--sd-text)!important;border-color:var(--sd-line)!important;
+}
+body.sd-dark .type-option:has(input:checked){
+  background:rgba(139,92,246,.13)!important;
+  border-color:#8b5cf6!important;
+  box-shadow:0 0 0 3px rgba(139,92,246,.10);
+}
+body.sd-dark .response-box{
+  background:#193a2e!important;border-color:#2e5b49!important;color:#edf2f7!important;
+}
+body.sd-dark .response-box *{color:#edf2f7!important}
+body.sd-dark .alert{color:#edf2f7;border-color:var(--sd-line)}
+body.sd-dark .alert-success{background:#193a2e}
+body.sd-dark .alert-danger{background:#43262d}
+body.sd-dark .btn-close{filter:invert(1) grayscale(1)}
+@media(min-width:768px){
+  .sugerencias-type-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .sugerencias-type-grid > .col-6{width:auto;padding:0}
+}
+@media(max-width:767px){
+  .sugerencias-type-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .sugerencias-type-grid > .col-6{width:auto;padding:0}
+  body.sd-page .type-option{min-height:86px}
+}
+</style>
+
+
+<style id="studia360-sugerencias-iconos-definitivo">
+/* ===== Corrección definitiva de iconos y mensajes recibidos ===== */
+body.sd-page .stat-icon,
+body.sd-page .type-icon,
+body.sd-page .message-icon{
+    position:relative!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:0 0 auto!important;
+    opacity:1!important;
+    filter:none!important;
+    box-shadow:none!important;
+}
+
+/* Los iconos de estadísticas ya no usan el fondo blanco de Bootstrap */
+body.sd-page .stat-icon{
+    width:42px!important;
+    height:42px!important;
+    border-radius:13px!important;
+    background:var(--sd-accent-soft)!important;
+    border:1px solid color-mix(in srgb,var(--sd-accent) 16%,var(--sd-line))!important;
+    color:var(--sd-accent)!important;
+}
+body.sd-page .stat-icon i{
+    color:var(--sd-accent)!important;
+    -webkit-text-fill-color:var(--sd-accent)!important;
+}
+
+/* Selector de tipo */
+body.sd-page .type-icon{
+    width:38px!important;
+    height:38px!important;
+    border-radius:12px!important;
+    background:var(--sd-accent-soft)!important;
+    border:1px solid color-mix(in srgb,var(--sd-accent) 16%,var(--sd-line))!important;
+    color:var(--sd-accent)!important;
+}
+body.sd-page .type-icon i{
+    color:var(--sd-accent)!important;
+    -webkit-text-fill-color:var(--sd-accent)!important;
+}
+
+/* Historial: el icono usa la misma identidad visual */
+body.sd-page .message-icon,
+body.sd-page .message-icon.bg-primary-subtle,
+body.sd-page .message-icon.bg-danger-subtle,
+body.sd-page .message-icon.bg-warning-subtle,
+body.sd-page .message-icon.bg-success-subtle{
+    width:45px!important;
+    height:45px!important;
+    border-radius:14px!important;
+    background:var(--sd-accent-soft)!important;
+    border:1px solid color-mix(in srgb,var(--sd-accent) 16%,var(--sd-line))!important;
+    color:var(--sd-accent)!important;
+}
+body.sd-page .message-icon i{
+    color:var(--sd-accent)!important;
+    -webkit-text-fill-color:var(--sd-accent)!important;
+}
+
+/* Modo oscuro: nada blanco dentro de estos iconos */
+body.sd-dark .stat-icon,
+body.sd-dark .type-icon,
+body.sd-dark .message-icon,
+body.sd-dark .message-icon.bg-primary-subtle,
+body.sd-dark .message-icon.bg-danger-subtle,
+body.sd-dark .message-icon.bg-warning-subtle,
+body.sd-dark .message-icon.bg-success-subtle{
+    background:#0d1728!important;
+    border-color:#2d3b53!important;
+    color:#c4b5fd!important;
+}
+body.sd-dark .stat-icon i,
+body.sd-dark .type-icon i,
+body.sd-dark .message-icon i{
+    color:#c4b5fd!important;
+    -webkit-text-fill-color:#c4b5fd!important;
+}
+
+/* Las tarjetas recibidas/respuestas siguen el tema seleccionado */
+body.sd-page .card-soft,
+body.sd-page .message-card{
+    background:var(--sd-card)!important;
+    color:var(--sd-text)!important;
+    border-color:var(--sd-line)!important;
+}
+body.sd-dark .card-soft,
+body.sd-dark .message-card{
+    background:var(--sd-card)!important;
+    color:var(--sd-text)!important;
+    border-color:var(--sd-line)!important;
+}
+body.sd-dark .message-card h3,
+body.sd-dark .message-card p,
+body.sd-dark .message-card .text-muted{
+    color:var(--sd-text)!important;
+}
+body.sd-dark .message-card p,
+body.sd-dark .message-card .text-muted{
+    color:var(--sd-muted)!important;
+}
+
+/* Respuesta del administrador: nunca vuelve a blanco */
+body.sd-page .response-box{
+    background:color-mix(in srgb,var(--sd-accent) 7%,var(--sd-card))!important;
+    border-color:color-mix(in srgb,var(--sd-accent) 18%,var(--sd-line))!important;
+    color:var(--sd-text)!important;
+}
+body.sd-dark .response-box{
+    background:#172b2a!important;
+    border-color:#2c574b!important;
+    color:#edf2f7!important;
+}
+body.sd-dark .response-box .text-success{
+    color:#6ee7b7!important;
+}
+
+/* Estado y tipografía no deben quedar con fondos blancos de Bootstrap */
+body.sd-dark .message-card .badge,
+body.sd-dark .message-card .text-bg-warning{
+    color:#20180a!important;
+}
+</style>
+
+
+<style id="studia360-sugerencias-1-final">
+/* Studia360 1.0 · corrección final de iconos, respuestas y modo oscuro */
+body.sd-page .message-icon,
+body.sd-page .message-icon.message-icon-primary,
+body.sd-page .message-icon.message-icon-danger,
+body.sd-page .message-icon.message-icon-warning,
+body.sd-page .message-icon.message-icon-success{
+    width:45px!important;height:45px!important;min-width:45px!important;min-height:45px!important;
+    display:grid!important;place-items:center!important;padding:0!important;margin:0!important;
+    border-radius:14px!important;background:var(--sd-accent-soft)!important;
+    border:1px solid color-mix(in srgb,var(--sd-accent) 20%,var(--sd-line))!important;
+    color:var(--sd-accent)!important;opacity:1!important;box-shadow:none!important;
+}
+body.sd-page .message-icon i{
+    display:block!important;margin:0!important;color:var(--sd-accent)!important;
+    -webkit-text-fill-color:var(--sd-accent)!important;font-size:1.18rem!important;line-height:1!important;
+}
+body.sd-dark .message-icon,
+body.sd-dark .message-icon.message-icon-primary,
+body.sd-dark .message-icon.message-icon-danger,
+body.sd-dark .message-icon.message-icon-warning,
+body.sd-dark .message-icon.message-icon-success{
+    background:#0d1728!important;border-color:#303e57!important;color:#c4b5fd!important;
+}
+body.sd-dark .message-icon i{color:#c4b5fd!important;-webkit-text-fill-color:#c4b5fd!important}
+
+body.sd-page .message-card,body.sd-page .card-soft,body.sd-page .stat{
+    background:var(--sd-card)!important;color:var(--sd-text)!important;border-color:var(--sd-line)!important;
+}
+body.sd-dark .message-card,body.sd-dark .card-soft,body.sd-dark .stat{
+    background:#182235!important;color:#edf2f7!important;border-color:#2a3549!important;
+}
+
+body.sd-page .response-box{
+    background:color-mix(in srgb,var(--sd-accent) 7%,var(--sd-card))!important;
+    color:var(--sd-text)!important;border:1px solid color-mix(in srgb,var(--sd-accent) 18%,var(--sd-line))!important;
+}
+body.sd-page .response-box .text-success{color:var(--sd-success)!important}
+body.sd-dark .response-box{background:#172b2a!important;color:#edf2f7!important;border-color:#2c574b!important}
+body.sd-dark .response-box .text-success{color:#6ee7b7!important}
+
+body.sd-dark .alert-success{background:#193a2e!important;border-color:#2e5b49!important;color:#dff7eb!important}
+body.sd-dark .alert-danger{background:#43262d!important;border-color:#69404a!important;color:#ffe5ea!important}
+body.sd-dark .alert-warning{background:#3b3018!important;border-color:#655326!important;color:#fff0bd!important}
+
+body.sd-dark .type-option{background:#182235!important;color:#edf2f7!important;border-color:#2a3549!important}
+body.sd-dark .type-option:has(input:checked){background:rgba(139,92,246,.13)!important;border-color:#8b5cf6!important}
+
+body.sd-dark .form-label{color:#edf2f7!important}
+body.sd-dark .form-control,body.sd-dark .form-select{
+    background:#111827!important;color:#edf2f7!important;border-color:#2a3549!important;
+}
+body.sd-dark .form-control::placeholder{color:#718096!important}
+
+body.sd-page .stat-icon{
+    background:var(--sd-accent-soft)!important;
+    border:1px solid color-mix(in srgb,var(--sd-accent) 18%,var(--sd-line))!important;
+    color:var(--sd-accent)!important;
+}
+body.sd-page .stat-icon i{color:var(--sd-accent)!important;-webkit-text-fill-color:var(--sd-accent)!important}
+body.sd-dark .stat-icon{background:#0d1728!important;border-color:#303e57!important;color:#c4b5fd!important}
+body.sd-dark .stat-icon i{color:#c4b5fd!important;-webkit-text-fill-color:#c4b5fd!important}
+</style>
+
+
+<style id="studia360-no-white-icon-boxes">
+/* =========================================================
+   Studia360 · Iconos sin recuadros blancos
+   Este bloque queda al final de los estilos para ganar
+   prioridad sobre Bootstrap y hojas antiguas compartidas.
+   ========================================================= */
+body.sd-page .stat-icon,
+body.sd-page .type-icon,
+body.sd-page .message-icon{
+    background:var(--sd-card)!important;
+    background-image:none!important;
+    border:1px solid var(--sd-line)!important;
+    box-shadow:none!important;
+    color:var(--sd-accent)!important;
+}
+
+body.sd-page .stat-icon i,
+body.sd-page .type-icon i,
+body.sd-page .message-icon i{
+    display:inline-block!important;
+    width:auto!important;
+    height:auto!important;
+    padding:0!important;
+    margin:0!important;
+    background:transparent!important;
+    background-image:none!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    outline:0!important;
+    color:var(--sd-accent)!important;
+    -webkit-text-fill-color:var(--sd-accent)!important;
+    text-shadow:none!important;
+    filter:none!important;
+}
+
+body.sd-dark .stat-icon,
+body.sd-dark .type-icon,
+body.sd-dark .message-icon{
+    background:#0d1728!important;
+    border-color:#2d3b53!important;
+    color:#c4b5fd!important;
+}
+
+body.sd-dark .stat-icon i,
+body.sd-dark .type-icon i,
+body.sd-dark .message-icon i{
+    background:transparent!important;
+    background-image:none!important;
+    color:#c4b5fd!important;
+    -webkit-text-fill-color:#c4b5fd!important;
+    box-shadow:none!important;
+}
+
+/* Las estadísticas usan un contenedor visual, no un segundo cuadro. */
+body.sd-page .stat-icon{
+    width:42px!important;
+    height:42px!important;
+    border-radius:13px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+}
+
+/* Evita que reglas de Bootstrap vuelvan a pintar fondos contextuales. */
+body.sd-page .message-icon[class*="bg-"],
+body.sd-page .message-icon[class*="text-"]{
+    background:var(--sd-accent-soft)!important;
+    color:var(--sd-accent)!important;
+}
+body.sd-dark .message-icon[class*="bg-"],
+body.sd-dark .message-icon[class*="text-"]{
+    background:#0d1728!important;
+    color:#c4b5fd!important;
+}
+</style>
 </head>
 
 <body class="sd-page">
@@ -648,14 +965,14 @@ body.sd-dark .message-icon i{
     <div class="row g-4 mb-4">
         <div class="col-6 col-md-3">
             <div class="stat">
-                <div class="stat-icon mb-3"><i class="bi bi-inboxes"></i></div>
+                <div class="stat-icon mb-3"><i class="bi bi-chat-square-text"></i></div>
                 <div class="stat-number"><?= $resumen['total'] ?></div>
                 <div class="small text-muted">Mensajes enviados</div>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="stat">
-                <div class="stat-icon mb-3"><i class="bi bi-hourglass-split"></i></div>
+                <div class="stat-icon mb-3"><i class="bi bi-hourglass"></i></div>
                 <div class="stat-number"><?= $resumen['pendientes'] ?></div>
                 <div class="small text-muted">Pendientes</div>
             </div>
@@ -669,7 +986,7 @@ body.sd-dark .message-icon i{
         </div>
         <div class="col-6 col-md-3">
             <div class="stat">
-                <div class="stat-icon mb-3"><i class="bi bi-check2-circle"></i></div>
+                <div class="stat-icon mb-3"><i class="bi bi-check-circle"></i></div>
                 <div class="stat-number"><?= $resumen['cerradas'] ?></div>
                 <div class="small text-muted">Cerradas</div>
             </div>
@@ -696,7 +1013,7 @@ body.sd-dark .message-icon i{
                     <div class="mb-3">
                         <label class="form-label fw-semibold">¿Qué quieres comunicar?</label>
 
-                        <div class="row g-2">
+                        <div class="row g-2 sugerencias-type-grid">
                             <div class="col-6">
                                 <label class="type-option">
                                     <input type="radio" name="tipo" value="Sugerencia" checked>
@@ -796,7 +1113,7 @@ body.sd-dark .message-icon i{
                                 <div class="message-main">
                                     <div class="d-flex gap-3">
 
-                                        <div class="message-icon bg-<?= e($color) ?>-subtle text-<?= e($color) ?>">
+                                        <div class="message-icon message-icon-<?= e(strtolower($color)) ?>">
                                             <i class="bi <?= e($icono) ?>"></i>
                                         </div>
 

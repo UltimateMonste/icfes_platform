@@ -27,7 +27,7 @@ function normalizarHtml(string $html):string{
  }libxml_clear_errors();libxml_use_internal_errors($prev);return trim($html);
 }
 try{
- $st=$conexion->prepare("SELECT t.id_tema,t.nombre tema,t.descripcion,t.grado,m.nombre materia FROM temas t INNER JOIN materias m ON m.id_materia=t.id_materia WHERE t.id_tema=? LIMIT 1");$st->execute([$id]);$tema=$st->fetch(PDO::FETCH_ASSOC);if(!$tema){header('Location: temas.php');exit;}
+ $st=$conexion->prepare("SELECT t.id_tema,t.nombre tema,t.descripcion,t.grado,m.nombre materia,u.nombre unidad FROM temas t INNER JOIN materias m ON m.id_materia=t.id_materia LEFT JOIN unidades_tematicas u ON u.id_unidad=t.id_unidad WHERE t.id_tema=? LIMIT 1");$st->execute([$id]);$tema=$st->fetch(PDO::FETCH_ASSOC);if(!$tema){header('Location: temas.php');exit;}
  $st=$conexion->prepare("SELECT id_contenido,contenido,estado,fecha_actualizacion FROM contenido_temas WHERE id_tema=? ORDER BY CASE WHEN estado='Borrador' THEN 0 ELSE 1 END,fecha_actualizacion DESC,id_contenido DESC LIMIT 1");$st->execute([$id]);$contenido=$st->fetch(PDO::FETCH_ASSOC)?:null;
  $st=$conexion->prepare("SELECT titulo,tipo,url,descripcion,imagen,autor,fuente,estado FROM recursos WHERE id_tema=? ORDER BY id_recurso");$st->execute([$id]);$recursos=$st->fetchAll(PDO::FETCH_ASSOC);
 }catch(PDOException $ex){die('No fue posible cargar la vista previa.');}
@@ -790,12 +790,97 @@ body.s360-content-theme.s360-content-dark .preview-shell > section.mt-5{
 }
 </style>
 
+
+
+<style id="studia360-bloques-predeterminados-final">
+/* Bloques predeterminados: una sola identidad visual en editor, vista previa y estudiante. */
+.info-box,.important-box,.example-box,.exercise-box,.remember-box{
+  display:block!important;box-sizing:border-box!important;
+  padding:16px 18px!important;margin:20px 0!important;border-radius:14px!important;
+}
+
+/* ADMIN / EDITOR / VISTA PREVIA */
+body.s360-content-theme .info-box,
+body.s360-content-theme .important-box,
+body.s360-content-theme .example-box,
+body.s360-content-theme .exercise-box,
+body.s360-content-theme .remember-box{
+  color:var(--c-text,var(--s360-text,#172033))!important;
+  border-top:1px solid transparent!important;border-right:1px solid transparent!important;border-bottom:1px solid transparent!important;
+}
+body.s360-content-theme .info-box{background:#eff6ff!important;border-left:5px solid #2563eb!important;border-color:#d9e9ff #d9e9ff #d9e9ff #2563eb!important}
+body.s360-content-theme .important-box{background:#fff1f2!important;border-left:5px solid #dc3545!important;border-color:#ffdadd #ffdadd #ffdadd #dc3545!important}
+body.s360-content-theme .example-box{background:#ecfdf3!important;border-left:5px solid #198754!important;border-color:#d4f3df #d4f3df #d4f3df #198754!important}
+body.s360-content-theme .exercise-box{background:#fff9e6!important;border-left:5px solid #e0a800!important;border-color:#f8e8b0 #f8e8b0 #f8e8b0 #e0a800!important}
+body.s360-content-theme .remember-box{background:#f5f0ff!important;border-left:5px solid #7c3aed!important;border-color:#e7ddff #e7ddff #e7ddff #7c3aed!important}
+body.s360-content-theme .info-box .bloque-label,body.s360-content-theme .important-box .bloque-label,body.s360-content-theme .example-box .bloque-label,body.s360-content-theme .exercise-box .bloque-label,body.s360-content-theme .remember-box .bloque-label,
+body.s360-content-theme .info-box p,body.s360-content-theme .important-box p,body.s360-content-theme .example-box p,body.s360-content-theme .exercise-box p,body.s360-content-theme .remember-box p,
+body.s360-content-theme .info-box li,body.s360-content-theme .important-box li,body.s360-content-theme .example-box li,body.s360-content-theme .exercise-box li,body.s360-content-theme .remember-box li,
+body.s360-content-theme .info-box strong,body.s360-content-theme .important-box strong,body.s360-content-theme .example-box strong,body.s360-content-theme .exercise-box strong,body.s360-content-theme .remember-box strong,
+body.s360-content-theme .info-box b,body.s360-content-theme .important-box b,body.s360-content-theme .example-box b,body.s360-content-theme .exercise-box b,body.s360-content-theme .remember-box b{
+  color:var(--c-text,var(--s360-text,#172033))!important;
+}
+body.s360-content-theme .info-box a,body.s360-content-theme .important-box a,body.s360-content-theme .example-box a,body.s360-content-theme .exercise-box a,body.s360-content-theme .remember-box a{color:var(--c-accent,var(--s360-accent,#2563eb))!important}
+
+body.s360-content-theme.s360-content-dark .info-box,body.s360-content-theme.s360-content-dark .important-box,body.s360-content-theme.s360-content-dark .example-box,body.s360-content-theme.s360-content-dark .exercise-box,body.s360-content-theme.s360-content-dark .remember-box{color:#edf2f8!important}
+body.s360-content-theme.s360-content-dark .info-box{background:#292348!important;border-color:#453c6b #453c6b #453c6b #8b5cf6!important}
+body.s360-content-theme.s360-content-dark .important-box{background:#43262d!important;border-color:#68404a #68404a #68404a #ef6673!important}
+body.s360-content-theme.s360-content-dark .example-box{background:#193a2e!important;border-color:#2e5b49 #2e5b49 #2e5b49 #34c58b!important}
+body.s360-content-theme.s360-content-dark .exercise-box{background:#463918!important;border-color:#675521 #675521 #675521 #f4c64e!important}
+body.s360-content-theme.s360-content-dark .remember-box{background:#32254f!important;border-color:#514070 #514070 #514070 #a78bfa!important}
+body.s360-content-theme.s360-content-dark .info-box .bloque-label,body.s360-content-theme.s360-content-dark .important-box .bloque-label,body.s360-content-theme.s360-content-dark .example-box .bloque-label,body.s360-content-theme.s360-content-dark .exercise-box .bloque-label,body.s360-content-theme.s360-content-dark .remember-box .bloque-label,
+body.s360-content-theme.s360-content-dark .info-box p,body.s360-content-theme.s360-content-dark .important-box p,body.s360-content-theme.s360-content-dark .example-box p,body.s360-content-theme.s360-content-dark .exercise-box p,body.s360-content-theme.s360-content-dark .remember-box p,
+body.s360-content-theme.s360-content-dark .info-box li,body.s360-content-theme.s360-content-dark .important-box li,body.s360-content-theme.s360-content-dark .example-box li,body.s360-content-theme.s360-content-dark .exercise-box li,body.s360-content-theme.s360-content-dark .remember-box li,
+body.s360-content-theme.s360-content-dark .info-box strong,body.s360-content-theme.s360-content-dark .important-box strong,body.s360-content-theme.s360-content-dark .example-box strong,body.s360-content-theme.s360-content-dark .exercise-box strong,body.s360-content-theme.s360-content-dark .remember-box strong,
+body.s360-content-theme.s360-content-dark .info-box b,body.s360-content-theme.s360-content-dark .important-box b,body.s360-content-theme.s360-content-dark .example-box b,body.s360-content-theme.s360-content-dark .exercise-box b,body.s360-content-theme.s360-content-dark .remember-box b{color:#edf2f8!important}
+body.s360-content-theme.s360-content-dark .info-box a,body.s360-content-theme.s360-content-dark .important-box a,body.s360-content-theme.s360-content-dark .example-box a,body.s360-content-theme.s360-content-dark .exercise-box a,body.s360-content-theme.s360-content-dark .remember-box a{color:#c4b5fd!important}
+
+/* ESTUDIANTE */
+body.sd-page .info-box,body.sd-page .important-box,body.sd-page .example-box,body.sd-page .exercise-box,body.sd-page .remember-box{
+  color:var(--sd-text,#172033)!important;border:1px solid transparent!important;
+}
+body.sd-page .info-box{background:#eff6ff!important;border-left:5px solid #2563eb!important;border-color:#d9e9ff #d9e9ff #d9e9ff #2563eb!important}
+body.sd-page .important-box{background:#fff1f2!important;border-left:5px solid #dc3545!important;border-color:#ffdadd #ffdadd #ffdadd #dc3545!important}
+body.sd-page .example-box{background:#ecfdf3!important;border-left:5px solid #198754!important;border-color:#d4f3df #d4f3df #d4f3df #198754!important}
+body.sd-page .exercise-box{background:#fff9e6!important;border-left:5px solid #e0a800!important;border-color:#f8e8b0 #f8e8b0 #f8e8b0 #e0a800!important}
+body.sd-page .remember-box{background:#f5f0ff!important;border-left:5px solid #7c3aed!important;border-color:#e7ddff #e7ddff #e7ddff #7c3aed!important}
+body.sd-page .info-box .bloque-label,body.sd-page .important-box .bloque-label,body.sd-page .example-box .bloque-label,body.sd-page .exercise-box .bloque-label,body.sd-page .remember-box .bloque-label,
+body.sd-page .info-box p,body.sd-page .important-box p,body.sd-page .example-box p,body.sd-page .exercise-box p,body.sd-page .remember-box p,
+body.sd-page .info-box li,body.sd-page .important-box li,body.sd-page .example-box li,body.sd-page .exercise-box li,body.sd-page .remember-box li,
+body.sd-page .info-box strong,body.sd-page .important-box strong,body.sd-page .example-box strong,body.sd-page .exercise-box strong,body.sd-page .remember-box strong,
+body.sd-page .info-box b,body.sd-page .important-box b,body.sd-page .example-box b,body.sd-page .exercise-box b,body.sd-page .remember-box b{color:var(--sd-text,#172033)!important}
+body.sd-page .info-box a,body.sd-page .important-box a,body.sd-page .example-box a,body.sd-page .exercise-box a,body.sd-page .remember-box a{color:var(--sd-accent,#2563eb)!important}
+body.sd-page.sd-dark .info-box,body.sd-page.sd-dark .important-box,body.sd-page.sd-dark .example-box,body.sd-page.sd-dark .exercise-box,body.sd-page.sd-dark .remember-box{color:#edf2f7!important}
+body.sd-page.sd-dark .info-box{background:#292348!important;border-color:#453c6b #453c6b #453c6b #8b5cf6!important}
+body.sd-page.sd-dark .important-box{background:#43262d!important;border-color:#68404a #68404a #68404a #ef6673!important}
+body.sd-page.sd-dark .example-box{background:#193a2e!important;border-color:#2e5b49 #2e5b49 #2e5b49 #34c58b!important}
+body.sd-page.sd-dark .exercise-box{background:#463918!important;border-color:#675521 #675521 #675521 #f4c64e!important}
+body.sd-page.sd-dark .remember-box{background:#32254f!important;border-color:#514070 #514070 #514070 #a78bfa!important}
+body.sd-page.sd-dark .info-box .bloque-label,body.sd-page.sd-dark .important-box .bloque-label,body.sd-page.sd-dark .example-box .bloque-label,body.sd-page.sd-dark .exercise-box .bloque-label,body.sd-page.sd-dark .remember-box .bloque-label,
+body.sd-page.sd-dark .info-box p,body.sd-page.sd-dark .important-box p,body.sd-page.sd-dark .example-box p,body.sd-page.sd-dark .exercise-box p,body.sd-page.sd-dark .remember-box p,
+body.sd-page.sd-dark .info-box li,body.sd-page.sd-dark .important-box li,body.sd-page.sd-dark .example-box li,body.sd-page.sd-dark .exercise-box li,body.sd-page.sd-dark .remember-box li,
+body.sd-page.sd-dark .info-box strong,body.sd-page.sd-dark .important-box strong,body.sd-page.sd-dark .example-box strong,body.sd-page.sd-dark .exercise-box strong,body.sd-page.sd-dark .remember-box strong,
+body.sd-page.sd-dark .info-box b,body.sd-page.sd-dark .important-box b,body.sd-page.sd-dark .example-box b,body.sd-page.sd-dark .exercise-box b,body.sd-page.sd-dark .remember-box b{color:#edf2f7!important}
+body.sd-page.sd-dark .info-box a,body.sd-page.sd-dark .important-box a,body.sd-page.sd-dark .example-box a,body.sd-page.sd-dark .exercise-box a,body.sd-page.sd-dark .remember-box a{color:#c4b5fd!important}
+
+/* Dentro del editor, los bloques conservan la misma apariencia mientras se editan. */
+body.s360-content-theme .note-editable .info-box,body.s360-content-theme .note-editable .important-box,body.s360-content-theme .note-editable .example-box,body.s360-content-theme .note-editable .exercise-box,body.s360-content-theme .note-editable .remember-box{font-size:inherit;line-height:inherit}
+
+/* Encabezado morado del editor: ningún botón queda con texto invisible. */
+body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between .btn-outline-secondary,
+body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between .btn-light{
+  color:#fff!important;background:rgba(255,255,255,.13)!important;border-color:rgba(255,255,255,.48)!important;
+}
+body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between .btn-outline-secondary:hover,
+body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between .btn-light:hover{color:#fff!important;background:rgba(255,255,255,.22)!important;border-color:#fff!important}
+</style>
+
 </head><body class="s360-admin">
 <nav class="s360-topbar"><div class="container-fluid px-3 px-lg-4 py-2 d-flex justify-content-between align-items-center"><a class="s360-brand d-flex align-items-center gap-2" href="<?=e($urlTemas)?>"><span class="s360-brand-icon"><i class="bi bi-mortarboard-fill"></i></span>Studia360 <span class="badge text-bg-warning">Vista previa</span></a><div class="d-flex gap-2"><a class="btn btn-light border s360-btn" href="<?=e($urlInfo)?>"><i class="bi bi-pencil me-1"></i>Editar tema</a><a class="btn btn-primary s360-btn" href="<?=e($urlEditor)?>">Contenido</a></div></div></nav>
-<main class="preview-shell"><section class="preview-hero mb-4"><div class="s360-kicker">Vista previa para administración</div><h1 class="h2 fw-bold mt-2 mb-2"><?=e($tema['tema'])?></h1><p class="mb-0 opacity-75"><?=e($tema['materia'])?> · <?=e($tema['grado'])?>°<?php if($tema['descripcion']):?> · <?=e($tema['descripcion'])?><?php endif;?></p></section>
+<main class="preview-shell"><section class="preview-hero mb-4"><div class="s360-kicker">Vista previa para administración</div><h1 class="h2 fw-bold mt-2 mb-2"><?=e($tema['tema'])?></h1><p class="mb-0 opacity-75"><?=e($tema['materia'])?> · <?=e($tema['grado'])?>°<?php if(!empty($tema['unidad'])):?> · <?=e($tema['unidad'])?><?php endif;?><?php if($tema['descripcion']):?> · <?=e($tema['descripcion'])?><?php endif;?></p></section>
 <?php if($contenido):?><div class="mb-3"><span class="s360-chip <?=$contenido['estado']==='Publicado'?'success':'warning'?>"><i class="bi <?=$contenido['estado']==='Publicado'?'bi-check-circle':'bi-pencil-square'?>"></i><?=e($contenido['estado'])?></span> <span class="small text-secondary ms-2">Última actualización: <?=e(date('d/m/Y H:i',strtotime($contenido['fecha_actualizacion'])))?></span></div><?php endif;?>
 <div class="row g-4"><div class="col-lg-8"><section class="content-card"><?php if($html):?><article class="content-body"><?=$html?></article><?php else:?><div class="empty-preview"><div class="s360-iconbox mx-auto mb-3"><i class="bi bi-file-earmark-text"></i></div><h2 class="h5 fw-bold">Este tema todavía no tiene contenido</h2><p class="s360-muted mb-0">Puedes construir la lección desde el editor de contenido.</p></div><?php endif;?></section></div>
-<aside class="col-lg-4"><section class="s360-card p-4 mb-4"><div class="s360-section-title mb-3">Ficha del tema</div><div class="mb-3"><small class="s360-muted">Materia</small><div class="fw-bold"><?=e($tema['materia'])?></div></div><div class="mb-3"><small class="s360-muted">Grado</small><div class="fw-bold"><?=e($tema['grado'])?>°</div></div><div><small class="s360-muted">Recursos</small><div class="fw-bold"><?=count($recursos)?></div></div></section></aside></div>
+<aside class="col-lg-4"><section class="s360-card p-4 mb-4"><div class="s360-section-title mb-3">Ficha del tema</div><div class="mb-3"><small class="s360-muted">Materia</small><div class="fw-bold"><?=e($tema['materia'])?></div></div><div class="mb-3"><small class="s360-muted">Grado</small><div class="fw-bold"><?=e($tema['grado'])?>°</div></div><?php if(!empty($tema['unidad'])):?><div class="mb-3"><small class="s360-muted">Unidad temática</small><div class="fw-bold"><?=e($tema['unidad'])?></div></div><?php endif;?><div><small class="s360-muted">Recursos</small><div class="fw-bold"><?=count($recursos)?></div></div></section></aside></div>
 <?php if($recursos):?><section class="mt-5"><div class="mb-3"><div class="s360-section-title">Recursos complementarios</div><div class="small s360-muted">Así se verán los recursos asociados al tema.</div></div><div class="row g-4"><?php foreach($recursos as $r):$img=assetUrl((string)($r['imagen']??''));if(!$img&&strtolower((string)$r['tipo'])==='video'&&($yt=youtubeId((string)$r['url'])))$img='https://img.youtube.com/vi/'.rawurlencode($yt).'/hqdefault.jpg';?><div class="col-md-6 col-xl-4"><article class="resource resource-card-premium"><?php if($img):?><div class="resource-cover"><img src="<?=e($img)?>" alt="<?=e($r['titulo'])?>" loading="lazy"><span class="resource-cover-type"><i class="bi <?=e(recursoIcon((string)$r['tipo']))?>"></i><?=e(ucfirst((string)$r['tipo']))?></span></div><?php else:?><div class="resource-cover resource-cover-empty"><div class="resource-cover-icon"><i class="bi <?=e(recursoIcon((string)$r['tipo']))?>"></i></div><span class="resource-cover-type"><i class="bi <?=e(recursoIcon((string)$r['tipo']))?>"></i><?=e(ucfirst((string)$r['tipo']))?></span></div><?php endif;?><div class="resource-card-body"><div class="resource-card-title-row"><div><h3 class="h5 fw-bold mb-1"><?=e($r['titulo'])?></h3><?php if(!empty($r['autor'])):?><div class="resource-meta"><i class="bi bi-person"></i><?=e($r['autor'])?></div><?php endif;?></div><div class="resource-mini-icon"><i class="bi <?=e(recursoIcon((string)$r['tipo']))?>"></i></div></div><?php if($r['descripcion']):?><p class="resource-description"><?=e($r['descripcion'])?></p><?php endif;?><?php if(!empty($r['fuente'])):?><div class="resource-source"><i class="bi bi-globe2"></i><?=e($r['fuente'])?></div><?php endif;?><a class="resource-link-premium" href="<?=e($r['url'])?>" target="_blank" rel="noopener noreferrer"><span>Abrir recurso</span><i class="bi bi-arrow-up-right"></i></a></div></article></div><?php endforeach;?></div></section><?php endif;?>
 </main><!-- Studia360 Admin: personalizador global -->
 <button id="admThemeToggle" class="adm-theme-toggle" type="button" aria-label="Personalizar apariencia" title="Personalizar apariencia"><i class="bi bi-palette2"></i></button>

@@ -72,8 +72,8 @@ if (!$tema) {
 /*
  * Eliminación.
  *
- * Las relaciones de contenido, recursos, evaluaciones y progreso que
- * tengan FOREIGN KEY con ON DELETE CASCADE serán eliminadas por MySQL.
+ * Las relaciones de contenido, recursos y progreso que tengan
+ * FOREIGN KEY con ON DELETE CASCADE serán eliminadas por MySQL.
  */
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -106,8 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $tablasRelacionadas = [
             "contenido_temas",
             "recursos",
-            "evaluaciones",
-            "progreso_temas"
+            "progreso"
         ];
 
         foreach ($tablasRelacionadas as $tabla) {
@@ -670,8 +669,7 @@ body.s360-content-theme.s360-content-dark .adm-theme-panel{box-shadow:0 22px 60p
                     </li>
 
                     <li>
-                        Las evaluaciones y relaciones vinculadas al tema
-                        también pueden verse afectadas.
+                        Las relaciones asociadas al tema también pueden verse afectadas.
                     </li>
 
                     <li>

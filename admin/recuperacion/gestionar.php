@@ -28,7 +28,49 @@ $urlIndex=urlAplicacion('/admin/recuperacion/index.php');$urlDash=urlAplicacion(
 ?>
 <!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Restablecimiento | Studia360</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><link rel="stylesheet" href="<?=e(urlAplicacion('/admin/assets/studia-admin.css'))?>">
-<style>.security-note{background:#eff6ff;border:1px solid #d7e7ff;border-radius:17px;padding:15px}.student-card{background:#fff;border:1px solid #e4eaf2;border-radius:22px;box-shadow:0 10px 28px rgba(23,32,51,.05)}.info-line{padding:12px 0;border-bottom:1px solid #edf1f6}.info-line:last-child{border-bottom:0}</style></head><body class="s360-admin">
+<style>.security-note{background:#eff6ff;border:1px solid #d7e7ff;border-radius:17px;padding:15px}.student-card{background:#fff;border:1px solid #e4eaf2;border-radius:22px;box-shadow:0 10px 28px rgba(23,32,51,.05)}.info-line{padding:12px 0;border-bottom:1px solid #edf1f6}.info-line:last-child{border-bottom:0}
+
+/* Contraste real para las tarjetas de recuperación. */
+body.s360-admin.adm-dark .student-card{
+    background:#172236!important;
+    color:#edf2f8!important;
+    border-color:#2b374b!important;
+}
+body.s360-admin.adm-dark .security-note{
+    background:#202c41!important;
+    color:#edf2f8!important;
+    border-color:#34425a!important;
+}
+body.s360-admin.adm-dark .info-line{
+    border-color:#354158!important;
+}
+body.s360-admin.adm-dark .s360-muted,
+body.s360-admin.adm-dark .text-secondary{
+    color:#9ba8ba!important;
+}
+body.s360-admin.adm-dark .form-control,
+body.s360-admin.adm-dark textarea{
+    background:#111827!important;
+    color:#edf2f8!important;
+    border-color:#2b374b!important;
+}
+body.s360-admin.adm-dark .form-control::placeholder,
+body.s360-admin.adm-dark textarea::placeholder{
+    color:#8492a7!important;
+    opacity:1!important;
+}
+body.s360-admin.adm-dark .alert-secondary{
+    background:#202c41!important;
+    color:#edf2f8!important;
+    border-color:#34425a!important;
+}
+body.s360-admin.adm-dark .btn-light{
+    background:#202c41!important;
+    color:#edf2f8!important;
+    border-color:#354158!important;
+}
+
+</style></head><body class="s360-admin">
 <nav class="s360-topbar"><div class="container-fluid px-3 px-lg-4 py-2 d-flex justify-content-between align-items-center"><a class="s360-brand d-flex align-items-center gap-2" href="<?=e($urlDash)?>"><span class="s360-brand-icon"><i class="bi bi-mortarboard-fill"></i></span>Studia360</a><a class="btn btn-light border s360-btn" href="<?=e($urlIndex)?>"><i class="bi bi-arrow-left me-1"></i>Solicitudes</a></div></nav>
 <main class="s360-shell"><section class="s360-hero mb-4"><div class="s360-kicker">Seguridad de cuentas</div><h1 class="h2 fw-bold mt-2 mb-2">Restablecer contraseña</h1><p class="mb-0 opacity-75">La administración no conoce ni define la contraseña personal del estudiante.</p></section>
 <?php if($alerta):?><div class="alert alert-<?=$tipo?> border-0"><?=e($alerta)?></div><?php endif;?>
@@ -45,5 +87,5 @@ $urlIndex=urlAplicacion('/admin/recuperacion/index.php');$urlDash=urlAplicacion(
 <button class="adm-theme-option" data-theme="orange" type="button" onclick="admSetTheme('orange')"><div class="adm-swatch" style="background:linear-gradient(135deg,#f97316,#ea580c)"></div><strong>Naranja</strong><small>Enérgico</small></button>
 <button class="adm-theme-option" data-theme="green" type="button" onclick="admSetTheme('green')"><div class="adm-swatch" style="background:linear-gradient(135deg,#10b981,#059669)"></div><strong>Verde</strong><small>Calma</small></button>
 </div><button id="admModeBtn" class="adm-mode-btn" type="button" onclick="admToggleMode()"></button></div>
-<script>(function(){const b=document.body,k='studia360_admin_theme',t={purple:'adm-accent-purple',blue:'adm-accent-blue',orange:'adm-accent-orange',green:'adm-accent-green'};let s={theme:'purple',mode:'dark'};try{s=Object.assign(s,JSON.parse(localStorage.getItem(k)||'{}'))}catch(e){}function a(){b.classList.add('s360-admin');Object.values(t).forEach(c=>b.classList.remove(c));b.classList.add(t[s.theme]||t.purple);b.classList.toggle('adm-dark',s.mode==='dark');document.querySelectorAll('.adm-theme-option').forEach(x=>x.classList.toggle('active',x.dataset.theme===s.theme));const m=document.getElementById('admModeBtn');if(m)m.innerHTML=s.mode==='dark'?"<i class='bi bi-moon-stars me-2'></i>Modo oscuro":"<i class='bi bi-sun me-2'></i>Modo claro"}window.admSetTheme=function(x){if(!t[x])return;s.theme=x;try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};window.admToggleMode=function(){s.mode=s.mode==='dark'?'light':'dark';try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};a();const q=document.getElementById('admThemeToggle'),p=document.getElementById('admThemePanel');q?.addEventListener('click',()=>p?.classList.toggle('open'));document.addEventListener('click',e=>{if(p?.classList.contains('open')&&!p.contains(e.target)&&!q.contains(e.target))p.classList.remove('open')})})();</script>
+<script>(function(){const b=document.body,k='studia360_theme',t={purple:'adm-accent-purple',blue:'adm-accent-blue',orange:'adm-accent-orange',green:'adm-accent-green'};let s={theme:'purple',mode:'dark'};try{s=Object.assign(s,JSON.parse(localStorage.getItem(k)||'{}'))}catch(e){}function a(){b.classList.add('s360-admin');Object.values(t).forEach(c=>b.classList.remove(c));b.classList.add(t[s.theme]||t.purple);b.classList.toggle('adm-dark',s.mode==='dark');document.querySelectorAll('.adm-theme-option').forEach(x=>x.classList.toggle('active',x.dataset.theme===s.theme));const m=document.getElementById('admModeBtn');if(m)m.innerHTML=s.mode==='dark'?"<i class='bi bi-moon-stars me-2'></i>Modo oscuro":"<i class='bi bi-sun me-2'></i>Modo claro"}window.admSetTheme=function(x){if(!t[x])return;s.theme=x;try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};window.admToggleMode=function(){s.mode=s.mode==='dark'?'light':'dark';try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};a();const q=document.getElementById('admThemeToggle'),p=document.getElementById('admThemePanel');q?.addEventListener('click',()=>p?.classList.toggle('open'));document.addEventListener('click',e=>{if(p?.classList.contains('open')&&!p.contains(e.target)&&!q.contains(e.target))p.classList.remove('open')})})();</script>
 </body></html>

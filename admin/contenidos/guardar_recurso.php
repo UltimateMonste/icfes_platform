@@ -67,7 +67,7 @@ if ($tipo === 'pdf' && $url !== '' && $imagenUrl !== null) {
     // No cambia nada: el PDF ya fue proporcionado por archivo.
 }
 
-if ($tipo === 'pdf' && $url !== '' && !str_contains($url, '/assets/uploads/recursos/')) {
+if ($tipo === 'pdf' && !$pdfSubidoLocal && $url !== '' && !str_contains($url, '/assets/uploads/recursos/')) {
     if (!filter_var($url, FILTER_VALIDATE_URL)) die('La URL del PDF no es válida.');
     $p = parse_url($url); $scheme = strtolower($p['scheme'] ?? ''); $host = strtolower($p['host'] ?? '');
     if ($scheme !== 'https' || $host === '') die('Para descargar un PDF remoto debes usar una URL HTTPS válida.');
@@ -85,7 +85,23 @@ if ($tipo === 'pdf' && $url !== '' && !str_contains($url, '/assets/uploads/recur
     $url = urlAplicacion('/assets/uploads/recursos/' . $nombre);
 }
 
-if ($url === '' || !filter_var($url, FILTER_VALIDATE_URL)) die('Debes proporcionar una URL válida o subir un PDF.');
+/*
+ * Validación final:
+ * - Un PDF subido localmente ya genera su propia URL y no necesita vínculo.
+ * - Un PDF remoto necesita URL.
+ * - Los demás tipos necesitan URL.
+ */
+if ($url === '') {
+    die(
+        $tipo === 'pdf'
+            ? 'Para este PDF debes subir un archivo PDF o proporcionar una URL HTTPS al PDF.'
+            : 'Debes proporcionar la URL del recurso.'
+    );
+}
+
+if (!filter_var($url, FILTER_VALIDATE_URL)) {
+    die('La URL del recurso no es válida.');
+}
 
 try {
     $stmt = $conexion->prepare('INSERT INTO recursos (id_tema,titulo,tipo,url,descripcion,imagen,autor,fuente,estado) VALUES (?,?,?,?,?,?,?,?,?)');

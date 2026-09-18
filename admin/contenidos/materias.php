@@ -27,7 +27,8 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
                 $id=(int)($_POST['id_materia']??0);
                 if($id<=0)$errores[]='La materia seleccionada no es válida.';
                 else{$st=$conexion->prepare("SELECT COUNT(*) FROM temas WHERE id_materia=?");$st->execute([$id]);$n=(int)$st->fetchColumn();
-                    if($n>0)$errores[]="No puedes eliminar esta materia porque tiene {$n} tema(s) asociado(s).";
+                    $su=$conexion->prepare("SELECT COUNT(*) FROM unidades_tematicas WHERE id_materia=?");$su->execute([$id]);$nu=(int)$su->fetchColumn();
+                    if($n>0 || $nu>0)$errores[]="No puedes eliminar esta materia porque tiene {$n} tema(s) asociado(s).";
                     else{$st=$conexion->prepare("DELETE FROM materias WHERE id_materia=?");$st->execute([$id]);$mensajes[]='Materia eliminada correctamente.';}
                 }
             }
@@ -35,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     }
 }
 try{
-    $st=$conexion->query("SELECT m.id_materia,m.nombre,m.descripcion,COUNT(t.id_tema) cantidad_temas FROM materias m LEFT JOIN temas t ON t.id_materia=m.id_materia GROUP BY m.id_materia,m.nombre,m.descripcion ORDER BY m.nombre");
+    $st=$conexion->query("SELECT m.id_materia,m.nombre,m.descripcion,COUNT(DISTINCT t.id_tema) cantidad_temas, COUNT(DISTINCT u.id_unidad) cantidad_unidades FROM materias m LEFT JOIN temas t ON t.id_materia=m.id_materia LEFT JOIN unidades_tematicas u ON u.id_materia=m.id_materia AND u.estado='Activa' GROUP BY m.id_materia,m.nombre,m.descripcion ORDER BY m.nombre");
     $materias=$st->fetchAll(PDO::FETCH_ASSOC);
 }catch(PDOException $ex){$materias=[];$errores[]='No fue posible cargar las materias.';}
 $urlDashboard=urlAplicacion('/admin/dashboard.php');$urlTemas=urlAplicacion('/admin/contenidos/temas.php');$urlSalir=urlAplicacion('/cerrar_sesion.php');
@@ -186,10 +187,10 @@ body.s360-content-theme .adm-theme-option.active{
 <?php if(!$materias):?><div class="col-12"><div class="s360-empty"><div class="s360-iconbox mx-auto mb-3"><i class="bi bi-book"></i></div><h2 class="h5 fw-bold">Aún no hay materias</h2><p class="s360-muted mb-0">Crea la primera para comenzar a organizar los temas.</p></div></div><?php endif;?>
 <?php foreach($materias as $m):?>
 <div class="col-12 col-md-6 col-xl-4"><article class="materia-card">
-<div class="d-flex gap-3 align-items-start mb-3"><div class="materia-icon"><i class="bi bi-book-fill"></i></div><div class="min-w-0"><h2 class="h5 fw-bold mb-2"><?=e($m['nombre'])?></h2><span class="badge rounded-pill topic-pill"><?= (int)$m['cantidad_temas']?> <?=((int)$m['cantidad_temas']===1?'tema':'temas')?></span></div></div>
+<div class="d-flex gap-3 align-items-start mb-3"><div class="materia-icon"><i class="bi bi-book-fill"></i></div><div class="min-w-0"><h2 class="h5 fw-bold mb-2"><?=e($m['nombre'])?></h2><span class="badge rounded-pill topic-pill"><?= (int)$m['cantidad_unidades']?> <?=((int)$m['cantidad_unidades']===1?'unidad':'unidades')?></span> <span class="badge rounded-pill topic-pill ms-1"><?= (int)$m['cantidad_temas']?> <?=((int)$m['cantidad_temas']===1?'tema':'temas')?></span></div></div>
 <p class="s360-muted small mb-4" style="line-height:1.6"><?=e($m['descripcion']?:'Esta materia todavía no tiene una descripción.')?></p>
-<div class="materia-actions"><a class="btn btn-primary flex-grow-1" href="temas.php?id_materia=<?=(int)$m['id_materia']?>"><i class="bi bi-arrow-right me-1"></i>Ver temas</a><a class="btn btn-outline-secondary" href="editar_materia.php?id=<?=(int)$m['id_materia']?>" title="Editar materia"><i class="bi bi-pencil"></i></a></div>
-<form method="post" class="mt-2" onsubmit="return confirm('¿Eliminar esta materia? Solo es posible si no tiene temas asociados.');"><input type="hidden" name="csrf" value="<?=e($csrf)?>"><input type="hidden" name="accion" value="eliminar"><input type="hidden" name="id_materia" value="<?=(int)$m['id_materia']?>"><button class="btn btn-sm btn-outline-danger w-100" type="submit"><i class="bi bi-trash3 me-1"></i>Eliminar</button></form>
+<div class="materia-actions"><a class="btn btn-primary flex-grow-1" href="unidades.php?id_materia=<?=(int)$m['id_materia']?>"><i class="bi bi-collection me-1"></i>Ver unidades</a><a class="btn btn-outline-secondary" href="editar_materia.php?id=<?=(int)$m['id_materia']?>" title="Editar materia"><i class="bi bi-pencil"></i></a></div>
+<form method="post" class="mt-2" onsubmit="return confirm('¿Eliminar esta materia? Solo es posible si no tiene temas ni unidades temáticas asociadas.');"><input type="hidden" name="csrf" value="<?=e($csrf)?>"><input type="hidden" name="accion" value="eliminar"><input type="hidden" name="id_materia" value="<?=(int)$m['id_materia']?>"><button class="btn btn-sm btn-outline-danger w-100" type="submit"><i class="bi bi-trash3 me-1"></i>Eliminar</button></form>
 </article></div>
 <?php endforeach;?></div>
 </main>

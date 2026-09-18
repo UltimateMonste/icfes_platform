@@ -545,6 +545,62 @@ body.s360-content-theme.s360-content-dark .adm-theme-panel{box-shadow:0 22px 60p
   body.s360-content-theme .adm-theme-toggle{right:14px!important;bottom:14px!important}
   body.s360-content-theme .adm-theme-panel{right:12px!important;bottom:72px!important}
 }
+
+
+/* Corrección de contraste de tarjetas y formularios en modo oscuro. */
+body.s360-content-theme .form-card,
+body.s360-content-theme .grade-box{
+    background:var(--c-card)!important;
+    color:var(--c-text)!important;
+    border-color:var(--c-line)!important;
+}
+body.s360-content-theme .form-card h2,
+body.s360-content-theme .form-card .form-label,
+body.s360-content-theme .grade-box .fw-bold{
+    color:var(--c-text)!important;
+}
+body.s360-content-theme .help,
+body.s360-content-theme .form-text,
+body.s360-content-theme .text-muted{
+    color:var(--c-muted)!important;
+}
+body.s360-content-theme .form-control,
+body.s360-content-theme .form-select{
+    background:var(--c-input)!important;
+    color:var(--c-text)!important;
+    border-color:var(--c-line)!important;
+}
+body.s360-content-theme .form-control::placeholder{
+    color:var(--c-muted)!important;
+    opacity:1!important;
+}
+body.s360-content-theme .form-select option{
+    background:var(--c-input)!important;
+    color:var(--c-text)!important;
+}
+body.s360-content-theme .grade-number{
+    background:var(--c-soft)!important;
+    color:var(--c-accent)!important;
+}
+body.s360-content-theme .grade-option:hover .grade-box{
+    border-color:color-mix(in srgb,var(--c-accent) 45%,var(--c-line))!important;
+}
+body.s360-content-theme .grade-option input:checked + .grade-box{
+    border-color:var(--c-accent)!important;
+    background:var(--c-soft)!important;
+    color:var(--c-text)!important;
+    box-shadow:0 8px 20px color-mix(in srgb,var(--c-accent) 14%,transparent)!important;
+}
+body.s360-content-theme hr{
+    border-color:var(--c-line)!important;
+    opacity:1!important;
+}
+body.s360-content-theme.s360-content-dark .alert{
+    background:#202c41!important;
+    color:var(--c-text)!important;
+    border-color:var(--c-line)!important;
+}
+
 </style>
 
 </head>
@@ -906,4 +962,3 @@ body.s360-content-theme.s360-content-dark .adm-theme-panel{box-shadow:0 22px 60p
 </body>
 </html>
 
-<script>(function(){const m=document.querySelector('[name="id_materia"]'),g=document.querySelector('[name="grado"]'),u=document.getElementById('idUnidad');if(!m||!g||!u)return;function f(){Array.from(u.options).forEach(o=>{if(!o.value)return;o.hidden=(m.value&&o.dataset.materia!==m.value)||(g.value&&o.dataset.grado!==g.value)||(o.textContent.includes('Temática general'));});if(u.selectedOptions[0]&&u.selectedOptions[0].hidden)u.value='';}m.addEventListener('change',f);g.addEventListener('change',f);f();})();</script>

@@ -276,6 +276,59 @@ function estadoUi(string $estado): array
         }
     </style>
 <link rel="stylesheet" href="<?= htmlspecialchars(urlAplicacion('/admin/assets/studia-admin.css'), ENT_QUOTES, 'UTF-8') ?>">
+
+<style id="studia360-sugerencias-admin-final">
+/* ===== Buzón administrador: iconos y tarjetas coherentes en oscuro ===== */
+body.s360-admin .stat-icon,
+body.s360-admin .type-icon{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    opacity:1!important;
+}
+body.s360-admin .stat-icon{
+    background:var(--adm-accent-soft,#eff6ff)!important;
+    color:var(--adm-accent,#2563eb)!important;
+    border-color:color-mix(in srgb,var(--adm-accent,#2563eb) 16%,var(--adm-line,#2b3850))!important;
+}
+body.s360-admin .stat-icon i,
+body.s360-admin .type-icon i{
+    color:currentColor!important;
+    -webkit-text-fill-color:currentColor!important;
+}
+body.s360-admin .type-icon{
+    background:var(--adm-accent-soft,#eff6ff)!important;
+    color:var(--adm-accent,#2563eb)!important;
+}
+body.s360-admin .message-card,
+body.s360-admin .soft-card,
+body.s360-admin .stat-card{
+    color:var(--adm-text,#edf2f7);
+}
+body.s360-admin.adm-dark .message-card,
+body.s360-admin.adm-dark .soft-card,
+body.s360-admin.adm-dark .stat-card{
+    background:var(--adm-card,#182235)!important;
+    border-color:var(--adm-line,#2b3850)!important;
+    color:var(--adm-text,#edf2f7)!important;
+}
+body.s360-admin.adm-dark .stat-icon,
+body.s360-admin.adm-dark .type-icon{
+    background:#101827!important;
+    border-color:#2d3b53!important;
+    color:#c4b5fd!important;
+}
+body.s360-admin.adm-dark .stat-icon i,
+body.s360-admin.adm-dark .type-icon i{
+    color:#c4b5fd!important;
+    -webkit-text-fill-color:#c4b5fd!important;
+}
+body.s360-admin.adm-dark .student-avatar{
+    background:#202d42!important;
+    color:#c4b5fd!important;
+}
+</style>
+
 </head>
 
 <body class="s360-admin">
@@ -295,7 +348,7 @@ function estadoUi(string $estado): array
                 Dashboard
             </a>
 
-            <a href="<?= e(urlAplicacion('/logout.php')) ?>" class="btn btn-sm btn-outline-light">
+            <a href="<?= e(urlAplicacion('/cerrar_sesion.php')) ?>" class="btn btn-sm btn-outline-light">
                 <i class="bi bi-box-arrow-right me-1"></i>
                 Salir
             </a>

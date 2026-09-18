@@ -27,11 +27,13 @@ function e($valor): string
 $urlDashboard = urlAplicacion("/admin/dashboard.php");
 $urlMaterias = urlAplicacion("/admin/contenidos/materias.php");
 $urlTemas = urlAplicacion("/admin/contenidos/temas.php");
+$urlUnidades = urlAplicacion("/admin/contenidos/unidades.php");
 $urlNuevoTema = urlAplicacion("/admin/contenidos/nuevo_tema.php");
 $urlCerrarSesion = urlAplicacion("/cerrar_sesion.php");
 
 $estadisticas = [
     "materias" => 0,
+    "unidades" => 0,
     "temas" => 0,
     "contenido" => 0,
     "recursos" => 0
@@ -43,6 +45,8 @@ try {
     $estadisticas["materias"] = (int)$conexion->query(
         "SELECT COUNT(*) FROM materias"
     )->fetchColumn();
+
+    $estadisticas["unidades"] = (int)$conexion->query("SELECT COUNT(*) FROM unidades_tematicas WHERE estado='Activa'")->fetchColumn();
 
     $estadisticas["temas"] = (int)$conexion->query(
         "SELECT COUNT(*) FROM temas"
@@ -65,6 +69,7 @@ try {
             t.nombre AS tema,
             t.grado,
             m.nombre AS materia,
+            u.nombre AS unidad,
             CASE
                 WHEN EXISTS (
                     SELECT 1
@@ -85,6 +90,7 @@ try {
             END AS estado_contenido
          FROM temas t
          INNER JOIN materias m ON m.id_materia = t.id_materia
+         LEFT JOIN unidades_tematicas u ON u.id_unidad = t.id_unidad
          ORDER BY t.id_tema DESC
          LIMIT 6"
     );
@@ -534,6 +540,77 @@ body.s360-content-theme.s360-content-dark .adm-theme-panel{box-shadow:0 22px 60p
   body.s360-content-theme .adm-theme-toggle{right:14px!important;bottom:14px!important}
   body.s360-content-theme .adm-theme-panel{right:12px!important;bottom:72px!important}
 }
+
+
+/* Corrección de contraste: todos los contenedores propios de esta pantalla
+   respetan el tema global y dejan de quedar blancos en modo oscuro. */
+body.s360-content-theme .stat-card,
+body.s360-content-theme .module-card,
+body.s360-content-theme .recent-card{
+    background:var(--c-card)!important;
+    color:var(--c-text)!important;
+    border-color:var(--c-line)!important;
+}
+body.s360-content-theme .module-card h3,
+body.s360-content-theme .module-card .section-title,
+body.s360-content-theme .stat-number,
+body.s360-content-theme .recent-title{
+    color:var(--c-text)!important;
+}
+body.s360-content-theme .stat-label,
+body.s360-content-theme .module-card p,
+body.s360-content-theme .recent-meta,
+body.s360-content-theme .section-title + .text-muted{
+    color:var(--c-muted)!important;
+}
+body.s360-content-theme .recent-row{
+    border-color:var(--c-line)!important;
+}
+body.s360-content-theme .module-icon.blue{
+    background:color-mix(in srgb,var(--c-accent) 12%,var(--c-card))!important;
+    color:var(--c-accent)!important;
+}
+body.s360-content-theme .module-icon.green{
+    background:color-mix(in srgb,#10b981 12%,var(--c-card))!important;
+    color:#10b981!important;
+}
+body.s360-content-theme .module-icon.orange{
+    background:color-mix(in srgb,#f59e0b 13%,var(--c-card))!important;
+    color:#f59e0b!important;
+}
+body.s360-content-theme .module-icon.purple{
+    background:color-mix(in srgb,#8b5cf6 13%,var(--c-card))!important;
+    color:#8b5cf6!important;
+}
+body.s360-content-theme.s360-content-dark .module-icon.green{
+    color:#34d399!important;
+}
+body.s360-content-theme.s360-content-dark .module-icon.orange{
+    color:#fbbf24!important;
+}
+body.s360-content-theme.s360-content-dark .module-icon.purple{
+    color:#a78bfa!important;
+}
+body.s360-content-theme .btn-outline-success,
+body.s360-content-theme .btn-outline-warning,
+body.s360-content-theme .btn-outline-secondary{
+    background:var(--c-card)!important;
+}
+body.s360-content-theme.s360-content-dark .btn-outline-success{
+    color:#34d399!important;border-color:#34d399!important;
+}
+body.s360-content-theme.s360-content-dark .btn-outline-warning{
+    color:#fbbf24!important;border-color:#fbbf24!important;
+}
+body.s360-content-theme.s360-content-dark .btn-outline-secondary{
+    color:#cbd5e1!important;border-color:#526078!important;
+}
+body.s360-content-theme.s360-content-dark .alert{
+    color:var(--c-text)!important;
+    background:#202c41!important;
+    border-color:var(--c-line)!important;
+}
+
 </style>
 
 </head>
@@ -704,6 +781,9 @@ body.s360-content-theme.s360-content-dark .adm-theme-panel{box-shadow:0 22px 60p
                         Filtra por grado y administra únicamente
                         los temas que necesites modificar.
                     </p>
+                    <a href="<?= e($urlUnidades) ?>" class="btn btn-outline-success w-100">
+                        <i class="bi bi-collection me-1"></i>Unidades temáticas
+                    </a>
                     <a href="<?= e($urlTemas) ?>" class="btn btn-outline-success w-100">
                         <i class="bi bi-arrow-right me-1"></i>
                         Gestionar temas
@@ -788,7 +868,7 @@ body.s360-content-theme.s360-content-dark .adm-theme-panel{box-shadow:0 22px 60p
                             <?= e($tema["tema"]) ?>
                         </div>
                         <div class="recent-meta">
-                            <?= e($tema["materia"]) ?>
+                            <?= e($tema["materia"]) ?><?php if(!empty($tema["unidad"])): ?> · <?= e($tema["unidad"]) ?><?php endif; ?>
                             ·
                             <?= e($tema["grado"]) ?>°
                         </div>

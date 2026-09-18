@@ -457,6 +457,17 @@ body.sd-page .badge-card.locked .sd-title-emblem{opacity:.68;filter:grayscale(.7
 body.sd-page .badge-card.locked .sd-title-emblem *{color:inherit!important}
 body.sd-page .sd-password-card .form-label{color:var(--sd-muted)!important}
 </style>
+
+<style id="studia360-perfil-email-final">
+body.sd-page .cardx{background:var(--sd-card)!important;color:var(--sd-text)!important;border-color:var(--sd-line)!important}
+body.sd-page .cardx .form-control{background:var(--sd-card)!important;color:var(--sd-text)!important;border-color:var(--sd-line)!important}
+body.sd-dark .cardx .form-control{background:#111827!important;color:#edf2f7!important;border-color:#2a3549!important}
+body.sd-dark .cardx .form-control::placeholder{color:#718096!important}
+@media(max-width:575px){
+  #correo + .btn, .sd-password-card .btn{width:100%}
+}
+</style>
+
 </head>
 <body class="sd-page">
 
@@ -519,7 +530,15 @@ body.sd-page .sd-password-card .form-label{color:var(--sd-muted)!important}
 <p class="text-muted mt-3 mb-0"><?=h($nivel['descripcion'] ?? 'Sigue aprendiendo y acumulando puntos.')?></p>
 </section></div>
 <div class="col-lg-5"><section class="cardx p-4 h-100"><h2 class="h5 fw-bold mb-3"><i class="bi bi-person-vcard me-2 text-primary"></i>Datos de cuenta</h2>
-<div class="mb-3"><small class="text-muted">Correo</small><div class="fw-semibold"><?=h($usuario['correo'])?></div></div>
+<div class="mb-3">
+  <label for="correo" class="form-label small text-muted mb-1">Correo electrónico</label>
+  <form method="post" action="<?=h(urlAplicacion('/estudiante/perfil_accion.php'))?>" class="d-flex gap-2 flex-wrap">
+    <input type="hidden" name="csrf" value="<?=h($_SESSION['csrf_perfil_accion'] ?? '')?>">
+    <input type="hidden" name="accion" value="actualizar_correo">
+    <input type="email" id="correo" name="correo" class="form-control flex-grow-1" maxlength="120" autocomplete="email" value="<?=h($usuario['correo'])?>" required>
+    <button type="submit" class="btn sd-btn sd-btn-primary"><i class="bi bi-envelope-check me-1"></i>Actualizar</button>
+  </form>
+</div>
 <div class="mb-3"><small class="text-muted">Grado</small><div class="fw-semibold"><?=h($usuario['grado'])?></div></div>
 <div><small class="text-muted">Puntos</small><div class="fw-semibold"><?=number_format($puntos)?></div></div>
 </section></div>

@@ -29,12 +29,8 @@ $idTema = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
 
 $returnGrado = trim((string)($_GET["return_grado"] ?? ""));
 $returnMateria = filter_input(INPUT_GET, "return_materia", FILTER_VALIDATE_INT);
-$returnUnidad = filter_input(INPUT_GET, "return_unidad", FILTER_VALIDATE_INT);
 if (!$returnMateria || $returnMateria < 1) {
     $returnMateria = null;
-}
-if (!$returnUnidad || $returnUnidad < 1) {
-    $returnUnidad = null;
 }
 
 if ($idUsuario <= 0 || !$idTema) {
@@ -273,19 +269,14 @@ try {
         SELECT
             t.id_tema,
             t.id_materia,
-            t.id_unidad,
             t.nombre AS tema,
             t.descripcion,
             t.grado,
             m.nombre AS materia,
-            m.descripcion AS descripcion_materia,
-            u.nombre AS unidad,
-            u.descripcion AS descripcion_unidad
+            m.descripcion AS descripcion_materia
         FROM temas t
         INNER JOIN materias m
             ON m.id_materia = t.id_materia
-        LEFT JOIN unidades_tematicas u
-            ON u.id_unidad = t.id_unidad
         WHERE t.id_tema = ?
         LIMIT 1
     ");
@@ -551,16 +542,11 @@ $idMateriaRetorno = $returnMateria !== null
     ? $returnMateria
     : (int)($tema["id_materia"] ?? 0);
 
-$idUnidadRetorno = $returnUnidad !== null
-    ? $returnUnidad
-    : (int)($tema["id_unidad"] ?? 0);
-
 $urlGrado = urlAplicacion(
     "/estudiante/grado.php?grado=" .
     urlencode($gradoRetorno) .
     "&id_materia=" .
-    $idMateriaRetorno .
-    ($idUnidadRetorno > 0 ? "&id_unidad=" . $idUnidadRetorno : "")
+    $idMateriaRetorno
 );
 $urlLogout = urlAplicacion("/cerrar_sesion.php");
 ?>
@@ -1330,6 +1316,254 @@ body.sd-accent-green{--sd-accent:#10b981;--sd-accent-2:#059669;--sd-accent-soft:
 }
 </style>
 <link rel="stylesheet" href="studia360-estudiante.css">
+
+<style id="studia360-tema-dark-final">
+/* Corrección final: en modo oscuro todos los cuadros principales se integran con el tema. */
+body.sd-page.sd-dark .card-studia,
+body.sd-page.sd-dark .content-card,
+body.sd-page.sd-dark .resource-card,
+body.sd-page.sd-dark .evaluation-card{
+  background:var(--sd-card)!important;
+  color:var(--sd-text)!important;
+  border-color:var(--sd-line)!important;
+}
+body.sd-page.sd-dark .content-header{border-color:var(--sd-line)!important}
+body.sd-page.sd-dark .content-header h2,
+body.sd-page.sd-dark .resources-title,
+body.sd-page.sd-dark .resource-title,
+body.sd-page.sd-dark .evaluation-title,
+body.sd-page.sd-dark .stat-value{color:var(--sd-text)!important}
+body.sd-page.sd-dark .stat-row{border-color:var(--sd-line)!important}
+body.sd-page.sd-dark .resource-description,
+body.sd-page.sd-dark .resources-subtitle,
+body.sd-page.sd-dark .stat-label,
+body.sd-page.sd-dark .empty-content{color:var(--sd-muted)!important}
+body.sd-page.sd-dark .resource-open-icon{background:#182235!important;color:#c4b5fd!important;border:1px solid #34415a}
+body.sd-page.sd-dark .resource-thumb{background:#111827!important}
+body.sd-page.sd-dark .complete-box{background:#193a2e!important;border-color:#2e5b49!important;color:#edf2f7!important}
+body.sd-page.sd-dark .complete-box.done{background:#202d42!important;border-color:#38506f!important}
+body.sd-page.sd-dark .complete-box *{color:#edf2f7!important}
+body.sd-page.sd-dark .breadcrumbs{color:var(--sd-muted)!important}
+body.sd-page.sd-dark .breadcrumbs a{color:#c4b5fd!important}
+body.sd-page.sd-dark .lesson-content,
+body.sd-page.sd-dark .lesson-content p,
+body.sd-page.sd-dark .lesson-content li,
+body.sd-page.sd-dark .lesson-content td,
+body.sd-page.sd-dark .lesson-content th{color:var(--sd-text)!important}
+</style>
+
+<style id="studia360-contenido-bloques">
+/*
+ * Bloques educativos creados desde el editor.
+ * Se mantienen como ventanas visuales también en la vista del estudiante.
+ */
+.lesson-content .info-box,
+.lesson-content .important-box,
+.lesson-content .example-box,
+.lesson-content .exercise-box,
+.lesson-content .remember-box{
+    display:block!important;
+    box-sizing:border-box!important;
+    padding:16px 18px!important;
+    margin:20px 0!important;
+    border-radius:14px!important;
+    border:1px solid transparent!important;
+    line-height:1.65!important;
+}
+
+.lesson-content .info-box{
+    background:#eff6ff!important;
+    border-color:#d9e9ff #d9e9ff #d9e9ff #2563eb!important;
+    border-left:5px solid #2563eb!important;
+}
+.lesson-content .important-box{
+    background:#fff1f2!important;
+    border-color:#ffdadd #ffdadd #ffdadd #dc3545!important;
+    border-left:5px solid #dc3545!important;
+}
+.lesson-content .example-box{
+    background:#ecfdf3!important;
+    border-color:#d4f3df #d4f3df #d4f3df #198754!important;
+    border-left:5px solid #198754!important;
+}
+.lesson-content .exercise-box{
+    background:#fff9e6!important;
+    border-color:#f8e8b0 #f8e8b0 #f8e8b0 #e0a800!important;
+    border-left:5px solid #e0a800!important;
+}
+.lesson-content .remember-box{
+    background:#f5f0ff!important;
+    border-color:#e7ddff #e7ddff #e7ddff #7c3aed!important;
+    border-left:5px solid #7c3aed!important;
+}
+
+.lesson-content .info-box .bloque-label,
+.lesson-content .important-box .bloque-label,
+.lesson-content .example-box .bloque-label,
+.lesson-content .exercise-box .bloque-label,
+.lesson-content .remember-box .bloque-label{
+    font-weight:800!important;
+    margin-bottom:8px!important;
+    color:#172033!important;
+}
+
+.lesson-content .info-box p,
+.lesson-content .important-box p,
+.lesson-content .example-box p,
+.lesson-content .exercise-box p,
+.lesson-content .remember-box p,
+.lesson-content .info-box div,
+.lesson-content .important-box div,
+.lesson-content .example-box div,
+.lesson-content .exercise-box div,
+.lesson-content .remember-box div,
+.lesson-content .info-box li,
+.lesson-content .important-box li,
+.lesson-content .example-box li,
+.lesson-content .exercise-box li,
+.lesson-content .remember-box li,
+.lesson-content .info-box strong,
+.lesson-content .important-box strong,
+.lesson-content .example-box strong,
+.lesson-content .exercise-box strong,
+.lesson-content .remember-box strong,
+.lesson-content .info-box b,
+.lesson-content .important-box b,
+.lesson-content .example-box b,
+.lesson-content .exercise-box b,
+.lesson-content .remember-box b{
+    color:#172033!important;
+}
+
+.lesson-content .info-box p:last-child,
+.lesson-content .important-box p:last-child,
+.lesson-content .example-box p:last-child,
+.lesson-content .exercise-box p:last-child,
+.lesson-content .remember-box p:last-child{
+    margin-bottom:0!important;
+}
+
+.lesson-content .info-box a,
+.lesson-content .important-box a,
+.lesson-content .example-box a,
+.lesson-content .exercise-box a,
+.lesson-content .remember-box a{
+    color:var(--sd-accent,#2563eb)!important;
+}
+
+/* Corrige estilos pegados desde Word/Office que generan franjas blancas. */
+.lesson-content .info-box [style*="background-color"],
+.lesson-content .important-box [style*="background-color"],
+.lesson-content .example-box [style*="background-color"],
+.lesson-content .exercise-box [style*="background-color"],
+.lesson-content .remember-box [style*="background-color"]{
+    background-color:transparent!important;
+}
+.lesson-content .info-box [style*="background"],
+.lesson-content .important-box [style*="background"],
+.lesson-content .example-box [style*="background"],
+.lesson-content .exercise-box [style*="background"],
+.lesson-content .remember-box [style*="background"]{
+    background:transparent!important;
+}
+.lesson-content .info-box [style*="color"],
+.lesson-content .important-box [style*="color"],
+.lesson-content .example-box [style*="color"],
+.lesson-content .exercise-box [style*="color"],
+.lesson-content .remember-box [style*="color"]{
+    color:inherit!important;
+}
+
+/* Modo oscuro: las ventanas conservan el aspecto trabajado en la vista previa. */
+body.sd-page.sd-dark .lesson-content .info-box,
+body.sd-page.sd-dark .lesson-content .important-box,
+body.sd-page.sd-dark .lesson-content .example-box,
+body.sd-page.sd-dark .lesson-content .exercise-box,
+body.sd-page.sd-dark .lesson-content .remember-box{
+    color:#edf2f7!important;
+}
+body.sd-page.sd-dark .lesson-content .info-box{
+    background:#292348!important;
+    border-color:#453c6b #453c6b #453c6b #8b5cf6!important;
+}
+body.sd-page.sd-dark .lesson-content .important-box{
+    background:#43262d!important;
+    border-color:#68404a #68404a #68404a #ef6673!important;
+}
+body.sd-page.sd-dark .lesson-content .example-box{
+    background:#193a2e!important;
+    border-color:#2e5b49 #2e5b49 #2e5b49 #34c58b!important;
+}
+body.sd-page.sd-dark .lesson-content .exercise-box{
+    background:#463918!important;
+    border-color:#675521 #675521 #675521 #f4c64e!important;
+}
+body.sd-page.sd-dark .lesson-content .remember-box{
+    background:#32254f!important;
+    border-color:#514070 #514070 #514070 #a78bfa!important;
+}
+body.sd-page.sd-dark .lesson-content .info-box .bloque-label,
+body.sd-page.sd-dark .lesson-content .important-box .bloque-label,
+body.sd-page.sd-dark .lesson-content .example-box .bloque-label,
+body.sd-page.sd-dark .lesson-content .exercise-box .bloque-label,
+body.sd-page.sd-dark .lesson-content .remember-box .bloque-label,
+body.sd-page.sd-dark .lesson-content .info-box p,
+body.sd-page.sd-dark .lesson-content .important-box p,
+body.sd-page.sd-dark .lesson-content .example-box p,
+body.sd-page.sd-dark .lesson-content .exercise-box p,
+body.sd-page.sd-dark .lesson-content .remember-box p,
+body.sd-page.sd-dark .lesson-content .info-box div,
+body.sd-page.sd-dark .lesson-content .important-box div,
+body.sd-page.sd-dark .lesson-content .example-box div,
+body.sd-page.sd-dark .lesson-content .exercise-box div,
+body.sd-page.sd-dark .lesson-content .remember-box div,
+body.sd-page.sd-dark .lesson-content .info-box li,
+body.sd-page.sd-dark .lesson-content .important-box li,
+body.sd-page.sd-dark .lesson-content .example-box li,
+body.sd-page.sd-dark .lesson-content .exercise-box li,
+body.sd-page.sd-dark .lesson-content .remember-box li,
+body.sd-page.sd-dark .lesson-content .info-box strong,
+body.sd-page.sd-dark .lesson-content .important-box strong,
+body.sd-page.sd-dark .lesson-content .example-box strong,
+body.sd-page.sd-dark .lesson-content .exercise-box strong,
+body.sd-page.sd-dark .lesson-content .remember-box strong,
+body.sd-page.sd-dark .lesson-content .info-box b,
+body.sd-page.sd-dark .lesson-content .important-box b,
+body.sd-page.sd-dark .lesson-content .example-box b,
+body.sd-page.sd-dark .lesson-content .exercise-box b,
+body.sd-page.sd-dark .lesson-content .remember-box b{
+    color:#edf2f7!important;
+}
+body.sd-page.sd-dark .lesson-content .info-box a,
+body.sd-page.sd-dark .lesson-content .important-box a,
+body.sd-page.sd-dark .lesson-content .example-box a,
+body.sd-page.sd-dark .lesson-content .exercise-box a,
+body.sd-page.sd-dark .lesson-content .remember-box a{
+    color:#c4b5fd!important;
+}
+
+/* El contenido pegado desde Word puede traer tablas muy anchas. */
+.lesson-content table{
+    max-width:100%!important;
+    overflow:hidden;
+    display:table;
+}
+.lesson-content td,
+.lesson-content th{
+    overflow-wrap:anywhere;
+}
+@media(max-width:575px){
+    .lesson-content .info-box,
+    .lesson-content .important-box,
+    .lesson-content .example-box,
+    .lesson-content .exercise-box,
+    .lesson-content .remember-box{
+        padding:14px 15px!important;
+        margin:16px 0!important;
+    }
+}
+</style>
+
 </head>
 
 <body class="sd-page">
@@ -1387,15 +1621,11 @@ body.sd-accent-green{--sd-accent:#10b981;--sd-accent-2:#059669;--sd-accent-soft:
 <div class="breadcrumbs">
     <a href="<?= e($urlDashboard) ?>">Inicio</a>
     <span class="mx-1">/</span>
-    <a href="<?= e(urlAplicacion('/estudiante/grado.php?grado=' . urlencode((string)$tema['grado']) . '&id_materia=' . (int)$tema['id_materia'])) ?>">
-        <?= e($tema["materia"]) ?>
+    <a href="<?= e($urlGrado) ?>">
+        <?= e($tema["grado"]) ?>°
     </a>
-    <?php if (!empty($tema["unidad"])): ?>
-        <span class="mx-1">/</span>
-        <a href="<?= e($urlGrado) ?>"><?= e($tema["unidad"]) ?></a>
-    <?php endif; ?>
     <span class="mx-1">/</span>
-    <?= e($tema["tema"]) ?>
+    <?= e($tema["materia"]) ?>
 </div>
 
 <section class="hero">

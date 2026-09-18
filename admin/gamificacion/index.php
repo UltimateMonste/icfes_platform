@@ -355,7 +355,7 @@ body{
 }
 
 .navbar{
-    background:linear-gradient(105deg,#12366f,#2563c7);
+    background:linear-gradient(105deg,var(--adm-accent-dark,#12366f),var(--adm-accent,#2563c7));
     box-shadow:0 5px 20px rgba(15,42,84,.14);
 }
 
@@ -564,6 +564,72 @@ body{
 }
 </style>
 <link rel="stylesheet" href="<?= htmlspecialchars(urlAplicacion('/admin/assets/studia-admin.css'), ENT_QUOTES, 'UTF-8') ?>">
+<style>
+/* Corrección visual: todas las superficies respetan el modo oscuro y el tema global. */
+body.s360-admin .section-card,
+body.s360-admin .item,
+body.s360-admin .reward-card,
+body.s360-admin .stat,
+body.s360-admin .empty{
+    background:var(--adm-surface,#fff);
+    color:var(--adm-text,#1e293b);
+    border-color:var(--adm-border,#e2e8f0);
+}
+body.s360-admin .section-title p,
+body.s360-admin .help,
+body.s360-admin .text-muted,
+body.s360-admin .small.text-muted{
+    color:var(--adm-muted,#64748b)!important;
+}
+body.s360-admin .section-title-icon,
+body.s360-admin .reward-icon,
+body.s360-admin .level-number,
+body.s360-admin .avatar-empty{
+    background:var(--adm-soft,#eff6ff);
+    color:var(--adm-accent,#7c3aed);
+}
+body.s360-admin .form-control,
+body.s360-admin .form-select,
+body.s360-admin .input-group-text{
+    background:var(--adm-input,#fff);
+    color:var(--adm-text,#1e293b);
+    border-color:var(--adm-border,#d7e0eb);
+}
+body.s360-admin .form-control::placeholder{color:var(--adm-muted,#64748b);}
+body.s360-admin .form-control:focus,
+body.s360-admin .form-select:focus{
+    background:var(--adm-input,#fff);
+    color:var(--adm-text,#1e293b);
+}
+body.s360-admin .avatar-preview{border-color:var(--adm-border,#dbe5f1);background:var(--adm-soft,#eff6ff);}
+body.s360-admin .badge-preview{background:rgba(245,158,11,.14);color:#fbbf24;border-color:rgba(245,158,11,.35);}
+body.s360-admin .badge-preview i{color:#fbbf24;}
+body.s360-admin .item:hover{border-color:var(--adm-border-strong,#cbd8ea);}
+body.s360-admin.adm-dark{
+    --adm-surface:#172238;
+    --adm-input:#0f172a;
+    --adm-text:#f1f5f9;
+    --adm-muted:#aebbd0;
+    --adm-border:#2b3951;
+    --adm-border-strong:#465674;
+    --adm-soft:rgba(124,58,237,.15);
+}
+body.s360-admin.adm-dark .section-card,
+body.s360-admin.adm-dark .item,
+body.s360-admin.adm-dark .reward-card,
+body.s360-admin.adm-dark .stat,
+body.s360-admin.adm-dark .empty{
+    box-shadow:0 12px 30px rgba(0,0,0,.18);
+}
+body.s360-admin.adm-dark .form-control,
+body.s360-admin.adm-dark .form-select,
+body.s360-admin.adm-dark .input-group-text{
+    color-scheme:dark;
+}
+body.s360-admin.adm-dark .input-group-text{color:var(--adm-text);}
+body.s360-admin.adm-dark .form-select option{background:#0f172a;color:#f1f5f9;}
+body.s360-admin.adm-dark .empty{background:#111b2e;}
+</style>
 </head>
 
 <body class="s360-admin">
@@ -1041,6 +1107,6 @@ body{
 <button class="adm-theme-option" data-theme="orange" type="button" onclick="admSetTheme('orange')"><div class="adm-swatch" style="background:linear-gradient(135deg,#f97316,#ea580c)"></div><strong>Naranja</strong><small>Enérgico</small></button>
 <button class="adm-theme-option" data-theme="green" type="button" onclick="admSetTheme('green')"><div class="adm-swatch" style="background:linear-gradient(135deg,#10b981,#059669)"></div><strong>Verde</strong><small>Calma</small></button>
 </div><button id="admModeBtn" class="adm-mode-btn" type="button" onclick="admToggleMode()"></button></div>
-<script>(function(){const b=document.body,k='studia360_admin_theme',t={purple:'adm-accent-purple',blue:'adm-accent-blue',orange:'adm-accent-orange',green:'adm-accent-green'};let s={theme:'purple',mode:'dark'};try{s=Object.assign(s,JSON.parse(localStorage.getItem(k)||'{}'))}catch(e){}function a(){b.classList.add('s360-admin');Object.values(t).forEach(c=>b.classList.remove(c));b.classList.add(t[s.theme]||t.purple);b.classList.toggle('adm-dark',s.mode==='dark');document.querySelectorAll('.adm-theme-option').forEach(x=>x.classList.toggle('active',x.dataset.theme===s.theme));const m=document.getElementById('admModeBtn');if(m)m.innerHTML=s.mode==='dark'?"<i class='bi bi-moon-stars me-2'></i>Modo oscuro":"<i class='bi bi-sun me-2'></i>Modo claro"}window.admSetTheme=function(x){if(!t[x])return;s.theme=x;try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};window.admToggleMode=function(){s.mode=s.mode==='dark'?'light':'dark';try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};a();const q=document.getElementById('admThemeToggle'),p=document.getElementById('admThemePanel');q?.addEventListener('click',()=>p?.classList.toggle('open'));document.addEventListener('click',e=>{if(p?.classList.contains('open')&&!p.contains(e.target)&&!q.contains(e.target))p.classList.remove('open')})})();</script>
+<script>(function(){const b=document.body,k='studia360_theme',t={purple:'adm-accent-purple',blue:'adm-accent-blue',orange:'adm-accent-orange',green:'adm-accent-green'};let s={theme:'purple',mode:'dark'};try{s=Object.assign(s,JSON.parse(localStorage.getItem(k)||'{}'))}catch(e){}function a(){b.classList.add('s360-admin');Object.values(t).forEach(c=>b.classList.remove(c));b.classList.add(t[s.theme]||t.purple);b.classList.toggle('adm-dark',s.mode==='dark');document.querySelectorAll('.adm-theme-option').forEach(x=>x.classList.toggle('active',x.dataset.theme===s.theme));const m=document.getElementById('admModeBtn');if(m)m.innerHTML=s.mode==='dark'?"<i class='bi bi-moon-stars me-2'></i>Modo oscuro":"<i class='bi bi-sun me-2'></i>Modo claro"}window.admSetTheme=function(x){if(!t[x])return;s.theme=x;try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};window.admToggleMode=function(){s.mode=s.mode==='dark'?'light':'dark';try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};a();const q=document.getElementById('admThemeToggle'),p=document.getElementById('admThemePanel');q?.addEventListener('click',()=>p?.classList.toggle('open'));document.addEventListener('click',e=>{if(p?.classList.contains('open')&&!p.contains(e.target)&&!q.contains(e.target))p.classList.remove('open')})})();</script>
 </body>
 </html>

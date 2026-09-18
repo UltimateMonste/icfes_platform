@@ -53,6 +53,52 @@ body{background:#f4f7fb;color:#26364a}
 .request{padding:1.15rem;border:1px solid #dce5f0;border-radius:18px;background:#fff}
 </style>
 <link rel="stylesheet" href="<?= htmlspecialchars(urlAplicacion('/admin/assets/studia-admin.css'), ENT_QUOTES, 'UTF-8') ?>">
+<style id="studia360-recovery-contrast">
+/* Estas tarjetas tenían colores fijos y por eso quedaban blancas en oscuro. */
+body.s360-admin.adm-dark{
+    background:#0d1424!important;
+    color:#edf2f8!important;
+}
+body.s360-admin.adm-dark .cardx,
+body.s360-admin.adm-dark .stat,
+body.s360-admin.adm-dark .request{
+    background:#172236!important;
+    color:#edf2f8!important;
+    border-color:#2b374b!important;
+    box-shadow:0 10px 30px rgba(0,0,0,.18)!important;
+}
+body.s360-admin.adm-dark .stat .text-muted,
+body.s360-admin.adm-dark .request .text-muted,
+body.s360-admin.adm-dark .text-muted{
+    color:#9ba8ba!important;
+}
+body.s360-admin.adm-dark .form-select{
+    background:#111827!important;
+    color:#edf2f8!important;
+    border-color:#2b374b!important;
+}
+body.s360-admin.adm-dark .form-select option{
+    background:#111827!important;
+    color:#edf2f8!important;
+}
+body.s360-admin.adm-dark .hero{
+    color:#fff!important;
+}
+body.s360-admin.adm-dark .btn-light{
+    background:#202c41!important;
+    color:#edf2f8!important;
+    border-color:#354158!important;
+}
+body.s360-admin.adm-dark .alert{
+    background:#202c41!important;
+    color:#edf2f8!important;
+    border-color:#354158!important;
+}
+body.s360-admin.adm-dark .badge.bg-light{
+    background:#f1f5f9!important;
+    color:#6d28d9!important;
+}
+</style>
 </head>
 <body class="s360-admin">
 
@@ -119,6 +165,7 @@ body{background:#f4f7fb;color:#26364a}
 </div>
 </section>
 </main>
+
 <!-- Studia360 Admin: personalizador global -->
 <button id="admThemeToggle" class="adm-theme-toggle" type="button" aria-label="Personalizar apariencia" title="Personalizar apariencia"><i class="bi bi-palette2"></i></button>
 <div id="admThemePanel" class="adm-theme-panel" aria-label="Personalizar apariencia">
@@ -129,6 +176,67 @@ body{background:#f4f7fb;color:#26364a}
 <button class="adm-theme-option" data-theme="orange" type="button" onclick="admSetTheme('orange')"><div class="adm-swatch" style="background:linear-gradient(135deg,#f97316,#ea580c)"></div><strong>Naranja</strong><small>Enérgico</small></button>
 <button class="adm-theme-option" data-theme="green" type="button" onclick="admSetTheme('green')"><div class="adm-swatch" style="background:linear-gradient(135deg,#10b981,#059669)"></div><strong>Verde</strong><small>Calma</small></button>
 </div><button id="admModeBtn" class="adm-mode-btn" type="button" onclick="admToggleMode()"></button></div>
-<script>(function(){const b=document.body,k='studia360_admin_theme',t={purple:'adm-accent-purple',blue:'adm-accent-blue',orange:'adm-accent-orange',green:'adm-accent-green'};let s={theme:'purple',mode:'dark'};try{s=Object.assign(s,JSON.parse(localStorage.getItem(k)||'{}'))}catch(e){}function a(){b.classList.add('s360-admin');Object.values(t).forEach(c=>b.classList.remove(c));b.classList.add(t[s.theme]||t.purple);b.classList.toggle('adm-dark',s.mode==='dark');document.querySelectorAll('.adm-theme-option').forEach(x=>x.classList.toggle('active',x.dataset.theme===s.theme));const m=document.getElementById('admModeBtn');if(m)m.innerHTML=s.mode==='dark'?"<i class='bi bi-moon-stars me-2'></i>Modo oscuro":"<i class='bi bi-sun me-2'></i>Modo claro"}window.admSetTheme=function(x){if(!t[x])return;s.theme=x;try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};window.admToggleMode=function(){s.mode=s.mode==='dark'?'light':'dark';try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}a()};a();const q=document.getElementById('admThemeToggle'),p=document.getElementById('admThemePanel');q?.addEventListener('click',()=>p?.classList.toggle('open'));document.addEventListener('click',e=>{if(p?.classList.contains('open')&&!p.contains(e.target)&&!q.contains(e.target))p.classList.remove('open')})})();</script>
+
+<script>
+(function(){
+    const b=document.body,
+        k='studia360_theme',
+        t={
+            purple:'adm-accent-purple',
+            blue:'adm-accent-blue',
+            orange:'adm-accent-orange',
+            green:'adm-accent-green'
+        };
+    let s={theme:'purple',mode:'dark'};
+    try{s=Object.assign(s,JSON.parse(localStorage.getItem(k)||'{}'))}catch(e){}
+
+    function a(){
+        b.classList.add('s360-admin');
+        Object.values(t).forEach(c=>b.classList.remove(c));
+        b.classList.add(t[s.theme]||t.purple);
+        b.classList.toggle('adm-dark',s.mode==='dark');
+
+        document.querySelectorAll('.adm-theme-option').forEach(x=>{
+            x.classList.toggle('active',x.dataset.theme===s.theme);
+        });
+
+        const m=document.getElementById('admModeBtn');
+        if(m)m.innerHTML=s.mode==='dark'
+            ?"<i class='bi bi-moon-stars me-2'></i>Modo oscuro"
+            :"<i class='bi bi-sun me-2'></i>Modo claro";
+    }
+
+    window.admSetTheme=function(x){
+        if(!t[x])return;
+        s.theme=x;
+        try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}
+        a();
+    };
+
+    window.admToggleMode=function(){
+        s.mode=s.mode==='dark'?'light':'dark';
+        try{localStorage.setItem(k,JSON.stringify(s))}catch(e){}
+        a();
+    };
+
+    a();
+
+    const q=document.getElementById('admThemeToggle'),
+          p=document.getElementById('admThemePanel');
+
+    q?.addEventListener('click',e=>{
+        e.preventDefault();
+        e.stopPropagation();
+        p?.classList.toggle('open');
+    });
+
+    p?.addEventListener('click',e=>e.stopPropagation());
+
+    document.addEventListener('click',e=>{
+        if(p?.classList.contains('open')&&!p.contains(e.target)&&!q.contains(e.target))
+            p.classList.remove('open');
+    });
+})();
+</script>
 </body>
 </html>

@@ -46,6 +46,21 @@ try{
         volverPerfilAccion('Avatar actualizado correctamente.');
     }
 
+    if($accion==='actualizar_correo'){
+        $correo=trim((string)($_POST['correo']??''));
+        if($correo==='') throw new RuntimeException('Escribe un correo electrónico.');
+        if(!filter_var($correo,FILTER_VALIDATE_EMAIL)) throw new RuntimeException('Escribe un correo electrónico válido.');
+        if(strlen($correo)>120) throw new RuntimeException('El correo electrónico no puede superar 120 caracteres.');
+
+        $st=$conexion->prepare("SELECT id_usuario FROM usuarios WHERE correo=? AND id_usuario<>? LIMIT 1");
+        $st->execute([$correo,$idUsuario]);
+        if($st->fetchColumn()) throw new RuntimeException('Ese correo electrónico ya está registrado en otra cuenta.');
+
+        $st=$conexion->prepare("UPDATE usuarios SET correo=? WHERE id_usuario=?");
+        $st->execute([$correo,$idUsuario]);
+        volverPerfilAccion('Correo electrónico actualizado correctamente.');
+    }
+
     if($accion==='cambiar_password'){
         $actual=trim((string)($_POST['password_actual']??''));
         $nueva=(string)($_POST['password_nueva']??'');
