@@ -22,13 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $id = (int)($_POST['id_curso'] ?? 0);
                 $grado = trim((string)($_POST['grado'] ?? ''));
                 $grupo = strtoupper(trim((string)($_POST['grupo'] ?? '')));
-                $director = trim((string)($_POST['director'] ?? ''));
                 $estado = (string)($_POST['estado'] ?? 'Activo');
 
                 if (!in_array($grado, $grados, true)) $errores[] = 'Selecciona un grado válido.';
                 if ($grupo === '') $errores[] = 'El código del curso es obligatorio.';
                 elseif (!preg_match('/^' . preg_quote($grado, '/') . '\\d{2}$/', $grupo)) $errores[] = "Para grado {$grado}°, el curso debe tener formato {$grado}01, {$grado}02, etc.";
-                if (mb_strlen($director) > 150) $errores[] = 'El nombre del director no puede superar 150 caracteres.';
                 if (!in_array($estado, ['Activo','Inactivo'], true)) $estado = 'Activo';
 
                 if (!$errores) {
@@ -37,12 +35,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($st->fetchColumn()) {
                         $errores[] = "El curso {$grupo} ya existe para {$grado}°.";
                     } elseif ($id > 0) {
-                        $st = $conexion->prepare('UPDATE cursos SET grado = ?, grupo = ?, director = ?, estado = ? WHERE id_curso = ?');
-                        $st->execute([$grado, $grupo, $director !== '' ? $director : null, $estado, $id]);
+                        $st = $conexion->prepare('UPDATE cursos SET grado = ?, grupo = ?, estado = ? WHERE id_curso = ?');
+                        $st->execute([$grado, $grupo, $estado, $id]);
                         $mensajes[] = 'Curso actualizado correctamente.';
                     } else {
-                        $st = $conexion->prepare('INSERT INTO cursos (grado, grupo, director, estado) VALUES (?, ?, ?, ?)');
-                        $st->execute([$grado, $grupo, $director !== '' ? $director : null, $estado]);
+                        $st = $conexion->prepare('INSERT INTO cursos (grado, grupo, estado) VALUES (?, ?, ?)');
+                        $st->execute([$grado, $grupo, $estado]);
                         $mensajes[] = 'Curso creado correctamente.';
                     }
                 }
@@ -83,7 +81,7 @@ if (!in_array($gradoFiltro, $grados, true)) $gradoFiltro = '';
 if (!in_array($estadoFiltro, ['Activo','Inactivo'], true)) $estadoFiltro = '';
 
 try {
-    $sql = "SELECT c.id_curso, c.grado, c.grupo, c.director, c.estado,
+    $sql = "SELECT c.id_curso, c.grado, c.grupo, c.estado,
                    COUNT(u.id_usuario) AS cantidad_estudiantes
             FROM cursos c
             LEFT JOIN usuarios u ON u.id_curso = c.id_curso AND u.id_rol = 2";
@@ -91,9 +89,9 @@ try {
     $params = [];
     if ($gradoFiltro !== '') { $where[] = 'c.grado = ?'; $params[] = $gradoFiltro; }
     if ($estadoFiltro !== '') { $where[] = 'c.estado = ?'; $params[] = $estadoFiltro; }
-    if ($busqueda !== '') { $where[] = '(c.grupo LIKE ? OR c.director LIKE ?)'; $params[] = "%{$busqueda}%"; $params[] = "%{$busqueda}%"; }
+    if ($busqueda !== '') { $where[] = 'c.grupo LIKE ?'; $params[] = "%{$busqueda}%"; }
     if ($where) $sql .= ' WHERE ' . implode(' AND ', $where);
-    $sql .= ' GROUP BY c.id_curso, c.grado, c.grupo, c.director, c.estado ORDER BY c.grado, c.grupo';
+    $sql .= ' GROUP BY c.id_curso, c.grado, c.grupo, c.estado ORDER BY c.grado, c.grupo';
     $st = $conexion->prepare($sql);
     $st->execute($params);
     $cursos = $st->fetchAll(PDO::FETCH_ASSOC);
@@ -415,13 +413,6 @@ body.s360-admin.cursos-page{
     color:#26364d!important;
 }
 
-/* ================= "SIN ASIGNAR" — MÁS LEGIBLE ================= */
-.s360-admin:not(.adm-dark).cursos-page .curso-meta strong{
-    color:#26364d!important;
-}
-.s360-admin.adm-dark.cursos-page .curso-meta strong{
-    color:#edf2f8!important;
-}
 
 /* Dark mode: ninguna superficie puede quedarse con el fondo claro */
 .s360-admin.adm-dark{
@@ -467,7 +458,7 @@ body.s360-admin.cursos-page{
 </header>
 <main class="cursos-shell">
 <section class="cursos-hero d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
- <div><div class="cursos-kicker">Estructura académica</div><h1>Gestión de cursos</h1><p>Crea y organiza cursos como 901, 902, 1001 o 1101. Cada curso queda vinculado a su grado y puede tener un director de grupo.</p></div>
+ <div><div class="cursos-kicker">Estructura académica</div><h1>Gestión de cursos</h1><p>Crea y organiza cursos como 901, 902, 1001 o 1101. Cada curso queda vinculado a su grado para organizar a los estudiantes.</p></div>
  <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#cursoModal" onclick="nuevoCurso()"><i class="bi bi-plus-lg me-1"></i>Nuevo curso</button>
 </section>
 
@@ -482,7 +473,7 @@ body.s360-admin.cursos-page{
 
 <section class="filter-panel mb-4">
 <form method="get" class="row g-3 align-items-end">
- <div class="col-12 col-md-4"><label class="form-label">Buscar</label><input class="form-control" name="buscar" value="<?= e($busqueda) ?>" placeholder="901, 1001 o director..."></div>
+ <div class="col-12 col-md-4"><label class="form-label">Buscar</label><input class="form-control" name="buscar" value="<?= e($busqueda) ?>" placeholder="901, 1001..."></div>
  <div class="col-6 col-md-3"><label class="form-label">Grado</label><select class="form-select" name="grado"><option value="">Todos</option><?php foreach($grados as $g): ?><option value="<?= $g ?>" <?= $gradoFiltro===$g?'selected':'' ?>><?= $g ?>°</option><?php endforeach; ?></select></div>
  <div class="col-6 col-md-3"><label class="form-label">Estado</label><select class="form-select" name="estado"><option value="">Todos</option><option value="Activo" <?= $estadoFiltro==='Activo'?'selected':'' ?>>Activos</option><option value="Inactivo" <?= $estadoFiltro==='Inactivo'?'selected':'' ?>>Inactivos</option></select></div>
  <div class="col-12 col-md-2 d-flex gap-2"><button class="btn btn-theme flex-grow-1" type="submit"><i class="bi bi-search"></i></button><a class="btn btn-ghost" href="<?= e(urlAplicacion('/admin/cursos/index.php')) ?>" title="Limpiar"><i class="bi bi-arrow-clockwise"></i></a></div>
@@ -498,7 +489,7 @@ body.s360-admin.cursos-page{
  <div class="col-12 col-md-6 col-xl-4"><article class="curso-card">
    <div class="curso-head"><div class="curso-icon"><i class="bi bi-people-fill"></i></div><div class="text-end"><span class="grado-pill"><?= e($curso['grado']) ?>°</span><span class="estado-pill <?= $curso['estado']==='Activo'?'activo':'inactivo' ?> ms-1"><?= e($curso['estado']) ?></span></div></div>
    <div class="mt-3"><div class="curso-code"><?= e($curso['grupo']) ?></div><div style="color:#91a0b5;font-size:.78rem">Curso de <?= e($curso['grado']) ?>°</div></div>
-   <div class="curso-meta"><div><i class="bi bi-person-badge me-1"></i><strong><?= e($curso['director'] ?: 'Sin asignar') ?></strong></div><div class="mt-2"><i class="bi bi-people me-1"></i> Estudiantes: <strong><?= (int)$curso['cantidad_estudiantes'] ?></strong></div></div>
+   <div class="curso-meta"><div><i class="bi bi-people me-1"></i> Estudiantes: <strong><?= (int)$curso['cantidad_estudiantes'] ?></strong></div></div>
    <div class="curso-actions"><button class="btn btn-theme flex-grow-1" type="button" data-bs-toggle="modal" data-bs-target="#cursoModal" onclick='editarCurso(<?= json_encode($curso, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP) ?>)'><i class="bi bi-pencil me-1"></i>Editar</button><form method="post" class="m-0"><input type="hidden" name="csrf" value="<?= e($csrf) ?>"><input type="hidden" name="accion" value="estado"><input type="hidden" name="id_curso" value="<?= (int)$curso['id_curso'] ?>"><button class="btn btn-ghost" type="submit" title="Cambiar estado"><i class="bi bi-power"></i></button></form><?php if((int)$curso['cantidad_estudiantes']===0): ?><form method="post" class="m-0" onsubmit="return confirm('¿Eliminar el curso <?= e($curso['grupo']) ?>? Esta acción no se puede deshacer.');"><input type="hidden" name="csrf" value="<?= e($csrf) ?>"><input type="hidden" name="accion" value="eliminar"><input type="hidden" name="id_curso" value="<?= (int)$curso['id_curso'] ?>"><button class="btn btn-ghost" style="color:#fda4af" type="submit" title="Eliminar"><i class="bi bi-trash3"></i></button></form><?php endif; ?></div>
  </article></div>
  <?php endforeach; ?>
@@ -506,11 +497,11 @@ body.s360-admin.cursos-page{
 </section>
 </main>
 
-<div class="modal fade" id="cursoModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><form method="post"><div class="modal-header"><div><h5 class="modal-title" id="modalTitulo" style="font-weight:900">Nuevo curso</h5><small style="color:var(--page-muted)">Define el grado y el código del curso.</small></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button></div><div class="modal-body"><input type="hidden" name="csrf" value="<?= e($csrf) ?>"><input type="hidden" name="accion" value="guardar"><input type="hidden" name="id_curso" id="id_curso" value="0"><div class="row g-3"><div class="col-5"><label class="form-label">Grado *</label><select class="form-select" name="grado" id="modal_grado" required><option value="9">9°</option><option value="10">10°</option><option value="11">11°</option></select></div><div class="col-7"><label class="form-label">Curso *</label><input class="form-control" name="grupo" id="modal_grupo" maxlength="5" placeholder="901" required><div style="font-size:.67rem;color:#91a0b5;margin-top:5px">Ej.: 901, 902, 1001, 1101</div></div><div class="col-12"><label class="form-label">Director de grupo</label><input class="form-control" name="director" id="modal_director" maxlength="150" placeholder="Nombre del director (opcional)"></div><div class="col-12"><label class="form-label">Estado</label><select class="form-select" name="estado" id="modal_estado"><option>Activo</option><option>Inactivo</option></select></div></div></div><div class="modal-footer"><button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-theme" type="submit"><i class="bi bi-check-lg me-1"></i>Guardar curso</button></div></form></div></div></div>
+<div class="modal fade" id="cursoModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><form method="post"><div class="modal-header"><div><h5 class="modal-title" id="modalTitulo" style="font-weight:900">Nuevo curso</h5><small style="color:var(--page-muted)">Define el grado y el código del curso.</small></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button></div><div class="modal-body"><input type="hidden" name="csrf" value="<?= e($csrf) ?>"><input type="hidden" name="accion" value="guardar"><input type="hidden" name="id_curso" id="id_curso" value="0"><div class="row g-3"><div class="col-5"><label class="form-label">Grado *</label><select class="form-select" name="grado" id="modal_grado" required><option value="9">9°</option><option value="10">10°</option><option value="11">11°</option></select></div><div class="col-7"><label class="form-label">Curso *</label><input class="form-control" name="grupo" id="modal_grupo" maxlength="5" placeholder="901" required><div style="font-size:.67rem;color:#91a0b5;margin-top:5px">Ej.: 901, 902, 1001, 1101</div></div><div class="col-12"><label class="form-label">Estado</label><select class="form-select" name="estado" id="modal_estado"><option>Activo</option><option>Inactivo</option></select></div></div></div><div class="modal-footer"><button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-theme" type="submit"><i class="bi bi-check-lg me-1"></i>Guardar curso</button></div></form></div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-function nuevoCurso(){document.getElementById('modalTitulo').textContent='Nuevo curso';document.getElementById('id_curso').value='0';document.getElementById('modal_grado').value='9';document.getElementById('modal_grupo').value='';document.getElementById('modal_director').value='';document.getElementById('modal_estado').value='Activo';setTimeout(()=>document.getElementById('modal_grupo').focus(),150)}
-function editarCurso(c){document.getElementById('modalTitulo').textContent='Editar curso '+c.grupo;document.getElementById('id_curso').value=c.id_curso;document.getElementById('modal_grado').value=c.grado;document.getElementById('modal_grupo').value=c.grupo;document.getElementById('modal_director').value=c.director||'';document.getElementById('modal_estado').value=c.estado;}
+function nuevoCurso(){document.getElementById('modalTitulo').textContent='Nuevo curso';document.getElementById('id_curso').value='0';document.getElementById('modal_grado').value='9';document.getElementById('modal_grupo').value='';document.getElementById('modal_estado').value='Activo';setTimeout(()=>document.getElementById('modal_grupo').focus(),150)}
+function editarCurso(c){document.getElementById('modalTitulo').textContent='Editar curso '+c.grupo;document.getElementById('id_curso').value=c.id_curso;document.getElementById('modal_grado').value=c.grado;document.getElementById('modal_grupo').value=c.grupo;document.getElementById('modal_estado').value=c.estado;}
 document.getElementById('modal_grado').addEventListener('change',function(){const g=this.value, campo=document.getElementById('modal_grupo');if(!document.getElementById('id_curso').value||document.getElementById('id_curso').value==='0')campo.value=g+'01';});
 </script>
 

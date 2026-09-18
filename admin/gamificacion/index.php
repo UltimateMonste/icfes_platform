@@ -596,6 +596,25 @@ body.s360-admin .input-group-text{
     border-color:var(--adm-border,#d7e0eb);
 }
 body.s360-admin .form-control::placeholder{color:var(--adm-muted,#64748b);}
+
+/* Solo corrige el selector nativo de archivos; no altera los demás controles. */
+body.s360-admin input[type="file"].form-control::file-selector-button{
+    background:var(--adm-soft,#eff6ff);
+    color:var(--adm-text,#1e293b);
+    border:0;
+    border-right:1px solid var(--adm-border,#d7e0eb);
+    margin:-.375rem -.75rem;
+    margin-right:.75rem;
+    padding:.375rem .75rem;
+    font-weight:650;
+    cursor:pointer;
+}
+body.s360-admin.adm-dark input[type="file"].form-control::file-selector-button{
+    background:#26344b;
+    color:#f1f5f9;
+    border-right-color:#3b4a63;
+}
+
 body.s360-admin .form-control:focus,
 body.s360-admin .form-select:focus{
     background:var(--adm-input,#fff);

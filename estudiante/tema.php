@@ -1564,6 +1564,136 @@ body.sd-page.sd-dark .lesson-content .remember-box a{
 }
 </style>
 
+
+<style id="studia360-tema-content-dark-fix">
+/*
+ * Contraste del contenido educativo en modo oscuro.
+ * El HTML guardado desde el editor puede traer colores inline
+ * (por ejemplo style="color:#000" o fondos blancos), por lo que
+ * estas reglas se aplican únicamente dentro de .lesson-content.
+ */
+body.sd-page.sd-dark .lesson-content,
+body.sd-page.sd-dark .lesson-content p,
+body.sd-page.sd-dark .lesson-content li,
+body.sd-page.sd-dark .lesson-content ul,
+body.sd-page.sd-dark .lesson-content ol,
+body.sd-page.sd-dark .lesson-content dl,
+body.sd-page.sd-dark .lesson-content dt,
+body.sd-page.sd-dark .lesson-content dd,
+body.sd-page.sd-dark .lesson-content span,
+body.sd-page.sd-dark .lesson-content div,
+body.sd-page.sd-dark .lesson-content label,
+body.sd-page.sd-dark .lesson-content strong,
+body.sd-page.sd-dark .lesson-content b,
+body.sd-page.sd-dark .lesson-content em,
+body.sd-page.sd-dark .lesson-content i,
+body.sd-page.sd-dark .lesson-content u,
+body.sd-page.sd-dark .lesson-content small,
+body.sd-page.sd-dark .lesson-content mark,
+body.sd-page.sd-dark .lesson-content blockquote,
+body.sd-page.sd-dark .lesson-content td,
+body.sd-page.sd-dark .lesson-content th,
+body.sd-page.sd-dark .lesson-content caption{
+    color:var(--sd-text)!important;
+}
+
+body.sd-page.sd-dark .lesson-content a,
+body.sd-page.sd-dark .lesson-content a span{
+    color:#c4b5fd!important;
+}
+
+body.sd-page.sd-dark .lesson-content h1,
+body.sd-page.sd-dark .lesson-content h2,
+body.sd-page.sd-dark .lesson-content h3,
+body.sd-page.sd-dark .lesson-content h4,
+body.sd-page.sd-dark .lesson-content h5,
+body.sd-page.sd-dark .lesson-content h6{
+    color:var(--sd-text)!important;
+}
+
+body.sd-page.sd-dark .lesson-content code{
+    color:#e9d5ff!important;
+    background:#242d40!important;
+    border-color:var(--sd-line)!important;
+}
+
+body.sd-page.sd-dark .lesson-content pre{
+    color:#edf2f7!important;
+    background:#111827!important;
+    border:1px solid var(--sd-line)!important;
+}
+
+body.sd-page.sd-dark .lesson-content table{
+    color:var(--sd-text)!important;
+    background:var(--sd-card)!important;
+    border-color:var(--sd-line)!important;
+}
+
+body.sd-page.sd-dark .lesson-content tr,
+body.sd-page.sd-dark .lesson-content td,
+body.sd-page.sd-dark .lesson-content th{
+    background-color:transparent!important;
+    border-color:var(--sd-line)!important;
+}
+
+body.sd-page.sd-dark .lesson-content hr{
+    border-color:var(--sd-line)!important;
+    opacity:1;
+}
+
+/* Fondos y colores incrustados por Word/Office o por el editor.
+   Se eliminan solo cuando están dentro de un elemento de texto.
+   Los bloques educativos principales conservan sus propios fondos. */
+body.sd-page.sd-dark .lesson-content p[style*="background"],
+body.sd-page.sd-dark .lesson-content span[style*="background"],
+body.sd-page.sd-dark .lesson-content div:not(.info-box):not(.important-box):not(.example-box):not(.exercise-box):not(.remember-box)[style*="background"],
+body.sd-page.sd-dark .lesson-content td[style*="background"],
+body.sd-page.sd-dark .lesson-content th[style*="background"],
+body.sd-page.sd-dark .lesson-content mark{
+    background:transparent!important;
+}
+
+/* Atributos HTML antiguos como bgcolor tampoco deben crear franjas blancas. */
+body.sd-page.sd-dark .lesson-content [bgcolor]{
+    background-color:transparent!important;
+}
+
+/* Si el editor dejó un color inline en un enlace, se conserva la
+   legibilidad del enlace con el color de acento. */
+body.sd-page.sd-dark .lesson-content a[style*="color"],
+body.sd-page.sd-dark .lesson-content a[style*="color"] span{
+    color:#c4b5fd!important;
+}
+
+/* Elementos de edición frecuentes que pueden conservar color de fuente. */
+body.sd-page.sd-dark .lesson-content font{
+    color:var(--sd-text)!important;
+}
+
+/* Imágenes y videos no deben recibir reglas de texto. */
+body.sd-page.sd-dark .lesson-content img,
+body.sd-page.sd-dark .lesson-content iframe,
+body.sd-page.sd-dark .lesson-content video{
+    background:#111827;
+}
+
+/* Los bloques educativos ya definidos arriba mantienen su fondo,
+   pero todo el texto interno sigue teniendo contraste. */
+body.sd-page.sd-dark .lesson-content .info-box *,
+body.sd-page.sd-dark .lesson-content .important-box *,
+body.sd-page.sd-dark .lesson-content .example-box *,
+body.sd-page.sd-dark .lesson-content .exercise-box *,
+body.sd-page.sd-dark .lesson-content .remember-box *{
+    color:#edf2f7!important;
+}
+body.sd-page.sd-dark .lesson-content .info-box a,
+body.sd-page.sd-dark .lesson-content .important-box a,
+body.sd-page.sd-dark .lesson-content .example-box a,
+body.sd-page.sd-dark .lesson-content .exercise-box a,
+body.sd-page.sd-dark .lesson-content .remember-box a{
+    color:#c4b5fd!important;
+}
+</style>
 </head>
 
 <body class="sd-page">

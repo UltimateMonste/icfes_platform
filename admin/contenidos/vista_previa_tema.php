@@ -20,6 +20,17 @@ function normalizarHtml(string $html):string{
  $prev=libxml_use_internal_errors(true);$dom=new DOMDocument('1.0','UTF-8');$ok=$dom->loadHTML('<?xml encoding="UTF-8"><div id="s360root">'.$html.'</div>',LIBXML_HTML_NOIMPLIED|LIBXML_HTML_NODEFDTD);
  if($ok){$root=$dom->getElementById('s360root');
   foreach($root->getElementsByTagName('font') as $font){$parent=$font->parentNode;while($font->firstChild)$parent->insertBefore($font->firstChild,$font);$parent->removeChild($font);}
+  /* Los colores inline con !important pueden imponerse incluso al tema oscuro.
+     Se conserva el resto del estilo (fondos, espaciado, etc.). */
+  foreach($root->getElementsByTagName('*') as $el){
+   $style=$el->getAttribute('style');
+   if($style!==''){
+    $style=preg_replace('/(?:^|;)\s*color\s*:\s*[^;]+(?:;|$)/iu',';',$style);
+    $style=preg_replace('/;\s*;/',';',$style);
+    $style=trim($style,"; \t\r\n");
+    if($style!=='')$el->setAttribute('style',$style);else$el->removeAttribute('style');
+   }
+  }
   foreach($root->getElementsByTagName('img') as $img){$src=$img->getAttribute('src');if($src)$img->setAttribute('src',assetUrl($src));$img->setAttribute('loading','lazy');$img->setAttribute('decoding','async');$img->setAttribute('style',trim($img->getAttribute('style').';max-width:100%;height:auto;'));}
   foreach($root->getElementsByTagName('iframe') as $frame){$frame->setAttribute('loading','lazy');$frame->setAttribute('allowfullscreen','allowfullscreen');$frame->setAttribute('referrerpolicy','strict-origin-when-cross-origin');}
   $out='';foreach($root->childNodes as $child)$out.=$dom->saveHTML($child);
@@ -873,6 +884,35 @@ body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justif
 }
 body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between .btn-outline-secondary:hover,
 body.s360-content-theme main .page-wrap > .d-flex.flex-column.flex-lg-row.justify-content-between .btn-light:hover{color:#fff!important;background:rgba(255,255,255,.22)!important;border-color:#fff!important}
+</style>
+
+<style id="studia360-preview-dark-text-final">
+/* ==========================================================
+   CORRECCIÓN FINAL — TEXTO DEL CONTENIDO EN MODO OSCURO
+   Algunos contenidos vienen con color definido directamente
+   en <span>, <div>, <em>, etc. El color del padre no los
+   cambia, por eso se fuerza el contraste en todos los hijos.
+   ========================================================== */
+body.s360-content-theme.s360-content-dark .content-body *{
+  color:#edf2f8!important;
+}
+body.s360-content-theme.s360-content-dark .content-body a{
+  color:var(--c-accent)!important;
+}
+body.s360-content-theme.s360-content-dark .content-body mark,
+body.s360-content-theme.s360-content-dark .content-body .highlight{
+  color:#172033!important;
+}
+body.s360-content-theme.s360-content-dark .content-body code{
+  color:#e9d5ff!important;
+  background:#111827!important;
+}
+body.s360-content-theme.s360-content-dark .content-body hr{
+  border-color:#3a465a!important;
+}
+body.s360-content-theme.s360-content-dark .content-body figcaption{
+  color:#aeb9c9!important;
+}
 </style>
 
 </head><body class="s360-admin">
